@@ -6,6 +6,9 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
+# Agent runtimes this integration supports (empty = universal/all runtimes)
+supported_agents: []
+
 # Marketplace metadata
 author:
   name: Alfe
