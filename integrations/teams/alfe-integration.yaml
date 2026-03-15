@@ -1,0 +1,37 @@
+id: teams
+name: "Microsoft Teams"
+version: 1.0.0
+description: Join Teams meetings and respond in channels
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/integration-teams/main/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/integration-teams/main/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Meeting voice
+  - Channel messaging
+  - Join by URL
+
+repository: https://github.com/AlfeAI/integration-teams.git
+
+config_schema:
+  - key: meeting_url
+    type: string
+    label: "Meeting URL"
+    description: "Paste a Teams meeting URL to join"
+    required: false
+
+capabilities:
+  - teams.meetings
+  - teams.channels
+
+hooks:
+  install: hooks/install.sh
+  uninstall: hooks/uninstall.sh

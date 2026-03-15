@@ -1,0 +1,42 @@
+id: discord
+name: "Discord"
+version: 1.0.0
+description: Connect your agent to a Discord server
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/integration-discord/main/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/integration-discord/main/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Text channels
+  - Slash commands
+  - Thread support
+  - "Voice channels (requires Voice integration)"
+
+repository: https://github.com/AlfeAI/integration-discord.git
+
+config_schema:
+  - key: discord_server
+    type: oauth_connect
+    label: "Discord Server"
+    description: "Connect your Discord server via OAuth"
+    required: true
+    oauth_provider: discord
+
+capabilities:
+  - discord.messages
+  - discord.commands
+  - discord.threads
+  - discord.voice
+
+hooks:
+  install: hooks/install.sh
+  configure: hooks/configure.sh
+  uninstall: hooks/uninstall.sh

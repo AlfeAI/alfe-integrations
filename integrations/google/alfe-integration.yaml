@@ -1,0 +1,43 @@
+id: google
+name: "Google Meet"
+version: 1.0.0
+description: Join Google Meet calls as an AI participant
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/integration-google/main/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/integration-google/main/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Auto-join meetings
+  - Voice participation
+  - Calendar integration
+
+repository: https://github.com/AlfeAI/integration-google.git
+
+config_schema:
+  - key: google_calendar
+    type: oauth_connect
+    label: "Google Calendar"
+    description: "Connect your Google Calendar for automatic meeting detection (optional)"
+    required: false
+    oauth_provider: google
+  - key: meeting_url
+    type: string
+    label: "Meeting URL"
+    description: "Paste a Google Meet URL to join (e.g. https://meet.google.com/abc-defg-hij)"
+    required: false
+
+capabilities:
+  - google.meet
+  - google.calendar
+
+hooks:
+  install: hooks/install.sh
+  uninstall: hooks/uninstall.sh

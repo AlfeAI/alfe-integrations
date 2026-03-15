@@ -1,0 +1,39 @@
+id: slack
+name: "Slack"
+version: 1.0.0
+description: Connect your agent to Slack workspaces
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/integration-slack/main/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/integration-slack/main/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Channel messaging
+  - Slash commands
+  - Thread support
+  - Direct messages
+
+repository: https://github.com/AlfeAI/integration-slack.git
+
+config_schema:
+  - key: bot_token
+    type: secret
+    label: "Slack Bot Token"
+    description: "Bot token (xoxb-...) for your Slack workspace. Uses SlackBotToken from OpenClaw config if not set."
+    required: false
+
+capabilities:
+  - slack.messages
+  - slack.commands
+  - slack.threads
+
+hooks:
+  install: hooks/install.sh
+  uninstall: hooks/uninstall.sh

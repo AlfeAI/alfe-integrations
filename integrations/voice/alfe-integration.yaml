@@ -1,0 +1,65 @@
+id: voice
+name: "Alfe Voice"
+version: 1.0.0
+description: Voice call integration for Alfe agents (Twilio + Discord)
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+# Marketplace metadata
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/integration-voice/main/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/integration-voice/main/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Inbound and outbound voice calls via Twilio
+  - Real-time speech-to-text transcription
+  - Text-to-speech responses with ElevenLabs
+  - DTMF tone handling
+  - Call transfer and conferencing support
+  - Discord voice channel integration
+
+# Source repository (used by daemon for commit-pinned install)
+repository: https://github.com/AlfeAI/integration-voice.git
+
+installs:
+  plugins:
+    - package: "@alfe.ai/openclaw-voice"
+
+config_schema:
+  - key: twilio_account_sid
+    type: string
+    label: "Twilio Account SID"
+    description: "Your Twilio Account SID from twilio.com/console"
+    required: true
+  - key: twilio_auth_token
+    type: secret
+    label: "Twilio Auth Token"
+    description: "Your Twilio Auth Token (stored in memory only, never persisted)"
+    required: true
+  - key: phone_number
+    type: string
+    label: "Twilio Phone Number"
+    description: "E.164 format, e.g. +12025551234"
+    required: true
+  - key: relay_url
+    type: string
+    label: "Voice Relay URL"
+    description: "URL of the Alfe voice relay service"
+    required: false
+    default: "wss://voice.alfe.ai"
+
+capabilities:
+  - voice.call
+  - voice.answer
+  - voice.dtmf
+  - voice.hangup
+
+hooks:
+  post_install: scripts/activate.sh
+  pre_uninstall: scripts/deactivate.sh
+  health_check: scripts/health.sh

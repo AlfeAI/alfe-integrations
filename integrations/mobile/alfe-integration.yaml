@@ -1,0 +1,41 @@
+id: mobile
+name: "Mobile"
+version: 1.0.0
+description: Give your agent a phone number for calls and SMS
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/integration-mobile/main/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/integration-mobile/main/assets/preview-dashboard.svg
+pricing:
+  type: paid
+  price: 29
+  currency: USD
+  interval: month
+features:
+  - Inbound & outbound calls
+  - SMS messaging
+  - Phone number picker from Twilio pool
+
+repository: https://github.com/AlfeAI/integration-mobile.git
+
+config_schema:
+  - key: phone_number
+    type: phone_number_picker
+    label: "Phone Number"
+    description: "Choose a phone number for your agent from the available pool"
+    required: true
+
+capabilities:
+  - mobile.call
+  - mobile.sms
+
+hooks:
+  install: hooks/install.sh
+  configure: hooks/configure.sh
+  uninstall: hooks/uninstall.sh

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6264a7"/>
+      <stop offset="100%" stop-color="#464eb8"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="24" fill="url(#bg)"/>
+  <rect x="35" y="35" width="50" height="50" rx="8" fill="url(#accent)"/><text x="60" y="68" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">T</text>
+</svg>
