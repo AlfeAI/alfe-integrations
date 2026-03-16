@@ -34,6 +34,13 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw-voice"
+      config:
+        messages:
+          tts:
+            provider: openai
+            openai:
+              baseUrl: "http://localhost:3200/v1"
+              apiKey: "unused-but-required"
 
 config_schema:
   - key: twilio_account_sid
