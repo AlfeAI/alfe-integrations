@@ -12,9 +12,9 @@ supported_agents: []
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/integration-google/main/assets/icon.svg
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/google/assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/integration-google/main/assets/preview-dashboard.svg
+  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/google/assets/preview-dashboard.svg
 pricing:
   type: free
 features:
@@ -40,7 +40,3 @@ config_schema:
 capabilities:
   - google.meet
   - google.calendar
-
-hooks:
-  install: hooks/install.sh
-  uninstall: hooks/uninstall.sh

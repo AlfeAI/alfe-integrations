@@ -12,9 +12,9 @@ supported_agents: []
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/integration-chat/main/assets/icon.svg
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/chat/assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/integration-chat/main/assets/preview-dashboard.svg
+  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/chat/assets/preview-dashboard.svg
 pricing:
   type: free
 features:
@@ -24,13 +24,13 @@ features:
 
 repository: https://github.com/AlfeAI/integration-chat.git
 
+installs:
+  plugins:
+    - package: "@alfe.ai/openclaw-chat"
+
 config_schema: []
 
 capabilities:
   - chat.web
   - chat.mobile
   - chat.sessions
-
-hooks:
-  install: hooks/install.sh
-  uninstall: hooks/uninstall.sh

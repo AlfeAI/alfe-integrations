@@ -12,9 +12,9 @@ supported_agents: []
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/integration-sync/main/assets/icon.svg
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/sync/assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/integration-sync/main/assets/preview-dashboard.svg
+  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/sync/assets/preview-dashboard.svg
 pricing:
   type: free
 features:
@@ -58,7 +58,6 @@ capabilities:
   - sync.conversations
   - sync.memory
 
-hooks:
-  install: hooks/install.sh
-  configure: hooks/configure.sh
-  uninstall: hooks/uninstall.sh
+installs:
+  plugins:
+    - package: "@alfe.ai/openclaw-sync"
