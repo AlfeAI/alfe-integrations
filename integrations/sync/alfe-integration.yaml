@@ -59,5 +59,7 @@ capabilities:
   - sync.memory
 
 installs:
-  plugins:
-    - package: "@alfe.ai/openclaw-sync"
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-sync"

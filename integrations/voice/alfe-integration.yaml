@@ -30,8 +30,10 @@ features:
 repository: https://github.com/AlfeAI/integration-voice.git
 
 installs:
-  plugins:
-    - package: "@alfe.ai/openclaw-voice"
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-voice"
 
 config_schema:
   - key: twilio_account_sid
