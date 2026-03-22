@@ -54,6 +54,12 @@ installs:
           providers:
             anthropic:
               api: anthropic-messages
+              baseUrl: "http://localhost:18193"
+              apiKey: "injected-by-proxy"
+
+hooks:
+  post_install: hooks/install.sh
+  pre_uninstall: hooks/uninstall.sh
 
 capabilities:
   - llm
