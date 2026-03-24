@@ -70,9 +70,7 @@ capabilities:
 supported_agents: []
 
 pricing:
-  type: paid
-  price: 0
-  note: "Free to install. AI usage billed via credits or BYOK."
+  type: free
 
 features:
   - "GPT-4o, GPT-4o Mini, o3 models"

@@ -70,9 +70,7 @@ capabilities:
 supported_agents: []
 
 pricing:
-  type: paid
-  price: 0
-  note: "Free to install. AI usage billed via credits or BYOK."
+  type: free
 
 features:
   - "Claude Opus 4.6, Sonnet 4.6, Haiku 4.5 models"
