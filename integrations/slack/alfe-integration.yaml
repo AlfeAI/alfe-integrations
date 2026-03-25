@@ -26,11 +26,12 @@ features:
 repository: https://github.com/AlfeAI/integration-slack.git
 
 config_schema:
-  - key: bot_token
-    type: secret
-    label: "Slack Bot Token"
-    description: "Bot token (xoxb-...) for your Slack workspace. Uses SlackBotToken from OpenClaw config if not set."
-    required: false
+  - key: slack_workspace
+    type: oauth_connect
+    label: "Slack Workspace"
+    description: "Connect your Slack workspace via OAuth"
+    required: true
+    oauth_provider: slack
 
 capabilities:
   - slack.messages
