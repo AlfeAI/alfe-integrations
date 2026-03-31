@@ -1,0 +1,116 @@
+name: webhook-handler
+description: Tools for managing and receiving webhooks from external services
+version: 1.0.0
+
+tools:
+  - name: create_webhook
+    description: >
+      Create a new webhook endpoint. Returns a URL and signing secret that
+      can be configured on external services (GitHub, Stripe, etc.) to send
+      events to this agent. The signing secret should be stored securely and
+      configured on the external service for HMAC-SHA256 signature verification.
+    parameters:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Human-readable label for this webhook (e.g. 'GitHub push events', 'Stripe payments')"
+        provider:
+          type: string
+          description: "Provider type for optimized verification (generic, github, stripe, slack)"
+          default: "generic"
+      required:
+        - name
+    returns:
+      type: object
+      properties:
+        webhookId:
+          type: string
+        url:
+          type: string
+          description: "The webhook URL to configure on the external service"
+        signingSecret:
+          type: string
+          description: "HMAC-SHA256 signing secret — shown only once, store it securely"
+
+  - name: list_webhooks
+    description: List all webhook endpoints for this agent.
+    parameters:
+      type: object
+      properties: {}
+    returns:
+      type: object
+      properties:
+        webhooks:
+          type: array
+          items:
+            type: object
+            properties:
+              webhookId:
+                type: string
+              name:
+                type: string
+              provider:
+                type: string
+              active:
+                type: boolean
+              createdBy:
+                type: string
+
+  - name: delete_webhook
+    description: Deactivate a webhook endpoint. It will no longer accept deliveries.
+    parameters:
+      type: object
+      properties:
+        webhookId:
+          type: string
+          description: "The ID of the webhook to delete"
+      required:
+        - webhookId
+
+  - name: rotate_webhook_secret
+    description: >
+      Rotate the signing secret for a webhook. Returns the new secret.
+      Update the external service configuration with the new secret.
+    parameters:
+      type: object
+      properties:
+        webhookId:
+          type: string
+          description: "The ID of the webhook whose secret to rotate"
+      required:
+        - webhookId
+    returns:
+      type: object
+      properties:
+        webhookId:
+          type: string
+        signingSecret:
+          type: string
+
+  - name: get_webhook_deliveries
+    description: List recent delivery attempts for a webhook endpoint.
+    parameters:
+      type: object
+      properties:
+        webhookId:
+          type: string
+          description: "The ID of the webhook to check deliveries for"
+      required:
+        - webhookId
+    returns:
+      type: object
+      properties:
+        deliveries:
+          type: array
+          items:
+            type: object
+            properties:
+              deliveryId:
+                type: string
+              status:
+                type: string
+              attempts:
+                type: number
+              createdAt:
+                type: string
