@@ -22,7 +22,7 @@ features:
   - Mobile app
   - "Voice button (requires Voice integration)"
 
-repository: https://github.com/AlfeAI/integration-chat.git
+repository: https://github.com/AlfeAI/integration-chat
 
 installs:
   runtimes:

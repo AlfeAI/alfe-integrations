@@ -22,7 +22,7 @@ features:
   - Channel messaging
   - Join by URL
 
-repository: https://github.com/AlfeAI/integration-teams.git
+repository: https://github.com/AlfeAI/integration-teams
 
 config_schema:
   - key: meeting_url

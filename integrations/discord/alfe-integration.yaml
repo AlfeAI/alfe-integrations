@@ -23,7 +23,7 @@ features:
   - Thread support
   - "Voice channels (requires Voice integration)"
 
-repository: https://github.com/AlfeAI/integration-discord.git
+repository: https://github.com/AlfeAI/integration-discord
 
 config_schema:
   - key: discord_server

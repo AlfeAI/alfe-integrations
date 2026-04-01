@@ -27,7 +27,7 @@ features:
   - Discord voice channel integration
 
 # Source repository (used by daemon for commit-pinned install)
-repository: https://github.com/AlfeAI/integration-voice.git
+repository: https://github.com/AlfeAI/integration-voice
 
 installs:
   runtimes:
