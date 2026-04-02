@@ -27,6 +27,11 @@ installs:
       config:
         gateway:
           bind: "lan"
+          controlUi:
+            allowedOrigins:
+              - "https://console.dev.alfe.ai"
+              - "https://console.alfe.ai"
+            dangerouslyDisableDeviceAuth: true
           auth:
             mode: "token"
             token: "{{config.gateway_token}}"
