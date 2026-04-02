@@ -1,0 +1,42 @@
+id: console
+name: "Console"
+version: 1.0.0
+description: Web-based access to your agent's OpenClaw Control UI via the Alfe dashboard
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/console/assets/icon.svg
+pricing:
+  type: free
+features:
+  - Web-based OpenClaw Control UI
+  - Authenticated proxy access through dashboard
+  - Per-agent token authentication
+
+repository: https://github.com/AlfeAI/integration-console
+
+installs:
+  runtimes:
+    openclaw:
+      config:
+        gateway:
+          bind: "lan"
+          auth:
+            mode: "token"
+            token: "{{config.gateway_token}}"
+
+config_schema:
+  - key: gateway_token
+    type: secret
+    label: "Gateway Token"
+    description: "Leave empty to auto-generate, or provide your existing OpenClaw gateway token"
+    required: false
+
+capabilities:
+  - console.web
