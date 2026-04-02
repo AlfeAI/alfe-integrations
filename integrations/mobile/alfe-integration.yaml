@@ -25,7 +25,6 @@ features:
   - SMS messaging
   - Phone number picker from Twilio pool
 
-repository: https://github.com/AlfeAI/integration-mobile
 
 config_schema:
   - key: phone_number

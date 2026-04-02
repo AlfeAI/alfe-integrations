@@ -22,7 +22,6 @@ features:
   - Voice participation
   - Calendar integration
 
-repository: https://github.com/AlfeAI/integration-google
 
 config_schema:
   - key: google_calendar

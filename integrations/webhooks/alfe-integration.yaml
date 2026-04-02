@@ -23,7 +23,6 @@ features:
   - Automatic offline queuing and retry on reconnect
 
 # Source repository (used by daemon for commit-pinned install)
-repository: https://github.com/AlfeAI/integration-webhooks
 
 installs:
   runtimes:

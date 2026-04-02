@@ -23,7 +23,6 @@ features:
   - Thread support
   - Direct messages
 
-repository: https://github.com/AlfeAI/integration-slack
 
 config_schema:
   - key: slack_workspace

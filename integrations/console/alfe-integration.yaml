@@ -19,7 +19,6 @@ features:
   - Authenticated proxy access through dashboard
   - Per-agent token authentication
 
-repository: https://github.com/AlfeAI/integration-console
 
 hooks:
   post_install: hooks/post_install.js

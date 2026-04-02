@@ -23,7 +23,6 @@ features:
   - Memory sync
   - Scheduled sync
 
-repository: https://github.com/AlfeAI/integration-sync
 
 config_schema:
   - key: sync_scope
