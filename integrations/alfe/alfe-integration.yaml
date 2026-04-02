@@ -1,0 +1,31 @@
+id: alfe
+name: "Alfe"
+version: 1.0.0
+description: Core Alfe platform plugin — integration management, LLM proxy routing
+license: MIT
+depends_on: []
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw"
+      config:
+        models:
+          providers:
+            anthropic:
+              baseUrl: "http://127.0.0.1:18193"
+              models: []
+            openai:
+              baseUrl: "http://127.0.0.1:18193"
+              models: []
+
+config_schema: []

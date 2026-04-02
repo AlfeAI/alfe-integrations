@@ -21,6 +21,9 @@ features:
 
 repository: https://github.com/AlfeAI/integration-console
 
+hooks:
+  post_install: hooks/post_install.js
+
 installs:
   runtimes:
     openclaw:
@@ -32,15 +35,12 @@ installs:
               - "https://console.dev.alfe.ai"
               - "https://console.alfe.ai"
             dangerouslyDisableDeviceAuth: true
-          auth:
-            mode: "token"
-            token: "{{config.gateway_token}}"
 
 config_schema:
   - key: gateway_token
     type: secret
     label: "Gateway Token"
-    description: "Leave empty to auto-generate, or provide your existing OpenClaw gateway token"
+    editable: agent
     required: false
 
 capabilities:
