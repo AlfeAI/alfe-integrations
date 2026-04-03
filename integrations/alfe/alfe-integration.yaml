@@ -23,9 +23,15 @@ installs:
           providers:
             anthropic:
               baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
               models: []
             openai:
               baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
+              models: []
+            google:
+              baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
               models: []
 
 config_schema: []
