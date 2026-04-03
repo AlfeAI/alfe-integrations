@@ -21,7 +21,7 @@ features:
 
 
 hooks:
-  post_install: hooks/post_install.js
+  post_activate: hooks/post_activate.js
 
 installs:
   runtimes:

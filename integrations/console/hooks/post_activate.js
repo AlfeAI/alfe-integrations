@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * Console integration post_install hook.
+ * Console integration post_activate hook.
  *
- * Generates a gateway auth token on the agent (if one doesn't already exist)
- * and reports it to the cloud via the agent self-service API.
+ * Runs on every activation to ensure the local gateway auth token is
+ * synced to the cloud. The local token always takes precedence — if one
+ * exists, it is pushed to the cloud; if not, a new one is generated.
+ *
+ * This handles:
+ * - First install (token generated + pushed)
+ * - Re-activation after error/restart (token re-synced)
+ * - Cloud record wiped (local token re-pushed)
+ * - Local token regenerated (local takes precedence)
  *
  * The agent owns its credentials — the cloud never generates gateway tokens.
  */
@@ -32,7 +39,7 @@ if (!token) {
   execFileSync('openclaw', ['config', 'set', 'gateway.auth.token', token]);
 }
 
-// Report the token to the cloud via agent self-service API
+// Always push local token to cloud — local takes precedence
 const client = new AgentApiClient({
   apiKey: config.apiKey,
   apiUrl: config.apiUrl,
