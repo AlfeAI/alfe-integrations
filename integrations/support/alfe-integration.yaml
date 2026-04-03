@@ -1,0 +1,37 @@
+id: support
+name: "Remote Support"
+version: 1.0.0
+description: Remote diagnostics and shell access for Alfe support
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+pricing:
+  type: free
+features:
+  - AI-powered remote diagnostics via Claude Code
+  - Remote shell command execution
+  - Integration health inspection
+
+commands:
+  - name: support.diagnostic
+    handler: ./commands/diagnostic.js
+    method: handleDiagnostic
+    timeout_ms: 300000
+    description: Run AI-powered diagnostic on the agent machine
+  - name: support.bash
+    handler: ./commands/bash.js
+    method: handleBash
+    timeout_ms: 30000
+    description: Run a shell command on the agent machine
+
+config_schema: []
+
+capabilities:
+  - support.diagnostic
+  - support.bash
