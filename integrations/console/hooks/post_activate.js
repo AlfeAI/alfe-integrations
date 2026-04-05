@@ -7,11 +7,9 @@
  * synced to the cloud. The local token always takes precedence — if one
  * exists, it is pushed to the cloud; if not, a new one is generated.
  *
- * This handles:
- * - First install (token generated + pushed)
- * - Re-activation after error/restart (token re-synced)
- * - Cloud record wiped (local token re-pushed)
- * - Local token regenerated (local takes precedence)
+ * NOTE: We read the token from openclaw.json directly because
+ * `openclaw config get` redacts secret values (__OPENCLAW_REDACTED__).
+ * Writing still goes through `openclaw config set` to avoid clobbering.
  *
  * The agent owns its credentials — the cloud never generates gateway tokens.
  */
@@ -20,17 +18,21 @@ import { resolveConfig } from '@alfe.ai/config';
 import { AgentApiClient } from '@alfe.ai/agent-api-client';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 
 const config = await resolveConfig();
 
-// Check if a gateway token already exists in OpenClaw config
-let token;
+// Read existing token directly from openclaw.json (CLI output redacts secrets).
+let token = '';
 try {
-  token = execFileSync('openclaw', ['config', 'get', 'gateway.auth.token'], {
-    encoding: 'utf-8',
-  }).trim();
+  const stateDir = process.env.OPENCLAW_STATE_DIR || join(homedir(), '.openclaw');
+  const configPath = process.env.OPENCLAW_CONFIG_PATH || join(stateDir, 'openclaw.json');
+  const raw = JSON.parse(readFileSync(configPath, 'utf-8'));
+  token = raw?.gateway?.auth?.token ?? '';
 } catch {
-  token = '';
+  // Config file missing or malformed — will generate a new token below.
 }
 
 // Generate a new token if none exists
