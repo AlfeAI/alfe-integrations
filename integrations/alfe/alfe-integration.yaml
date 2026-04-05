@@ -19,6 +19,8 @@ installs:
       plugins:
         - package: "@alfe.ai/openclaw"
       config:
+        session:
+          dmScope: "per-channel-peer"
         models:
           providers:
             anthropic:
