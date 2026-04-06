@@ -1,13 +1,12 @@
 id: google
-name: "Google Meet"
-version: 1.0.0
-description: Join Google Meet calls as an AI participant
+name: "Google Workspace"
+version: 2.0.0
+description: Connect your agent to Google Workspace — Chat, Drive, Gmail, Calendar, Sheets, Docs and more
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
-# Agent runtimes this integration supports (empty = universal/all runtimes)
-supported_agents: []
+supported_agents: [openclaw]
 
 author:
   name: Alfe
@@ -18,24 +17,68 @@ preview_images:
 pricing:
   type: free
 features:
-  - Auto-join meetings
-  - Voice participation
-  - Calendar integration
+  - Google Chat messaging (DMs, spaces, threads)
+  - Google Drive file management
+  - Gmail send/read/triage
+  - Google Calendar scheduling
+  - Google Sheets read/write
+  - Google Docs editing
+  - Full Google Workspace CLI (80+ skills)
 
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-google-chat"
+      skills:
+        # Core service skills
+        - clawhub: gws-shared
+        - clawhub: gws-chat
+        - clawhub: gws-drive
+        - clawhub: gws-gmail
+        - clawhub: gws-calendar
+        - clawhub: gws-sheets
+        - clawhub: gws-docs
+        - clawhub: gws-slides
+        - clawhub: gws-tasks
+        - clawhub: gws-people
+        - clawhub: gws-meet
+        - clawhub: gws-forms
+        - clawhub: gws-keep
+        # Helper skills (common operations)
+        - clawhub: gws-chat-send
+        - clawhub: gws-gmail-send
+        - clawhub: gws-gmail-triage
+        - clawhub: gws-sheets-read
+        - clawhub: gws-calendar-agenda
+        - clawhub: gws-drive-upload
+        - clawhub: gws-drive-search
+
+hooks:
+  post_install: hooks/post-install.sh
+  health_check: hooks/health.sh
 
 config_schema:
-  - key: google_calendar
+  - key: google_account
     type: oauth_connect
-    label: "Google Calendar"
-    description: "Connect your Google Calendar for automatic meeting detection (optional)"
-    required: false
+    label: "Google Account"
+    description: "Connect the Google account for this agent"
+    required: true
     oauth_provider: google
-  - key: meeting_url
+  - key: offline_message
     type: string
-    label: "Meeting URL"
-    description: "Paste a Google Meet URL to join (e.g. https://meet.google.com/abc-defg-hij)"
+    label: "Offline Auto-Reply"
+    description: "Message sent when someone messages in Google Chat while the agent is offline. Leave empty to disable."
     required: false
+    default: "I'm currently offline. I'll get back to you when I'm available."
+    editable: agent
 
 capabilities:
-  - google.meet
+  - google.chat
+  - google.drive
+  - google.gmail
   - google.calendar
+  - google.sheets
+  - google.docs
+  - google.meet
+  - google.workspace
