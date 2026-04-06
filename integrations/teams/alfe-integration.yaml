@@ -1,7 +1,7 @@
 id: teams
 name: "Microsoft Teams"
 version: 1.0.0
-description: Join Teams meetings and respond in channels
+description: Connect your agent to Microsoft Teams channels and chats
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
@@ -18,18 +18,21 @@ preview_images:
 pricing:
   type: free
 features:
-  - Meeting voice
   - Channel messaging
-  - Join by URL
-
+  - Direct messages
+  - Group chats
+  - Slash commands
+  - Adaptive cards
 
 config_schema:
-  - key: meeting_url
-    type: string
-    label: "Meeting URL"
-    description: "Paste a Teams meeting URL to join"
-    required: false
+  - key: teams_workspace
+    type: oauth_connect
+    label: "Teams Workspace"
+    description: "Connect your Microsoft Teams workspace"
+    required: true
+    oauth_provider: teams
 
 capabilities:
-  - teams.meetings
-  - teams.channels
+  - teams.messages
+  - teams.commands
+  - teams.cards
