@@ -1,0 +1,54 @@
+id: database
+name: "Database"
+version: 1.0.0
+description: MongoDB database for your organization — agents connect directly, dashboard users browse via proxy
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_scopes: [org]
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: paid
+  price: 8
+  interval: month
+
+features:
+  - Managed MongoDB Atlas Flex cluster per org
+  - Per-agent credentials with role-based access
+  - Team and project scoped databases
+  - Dashboard data explorer with CRUD
+  - Aggregation pipeline support
+  - Audit logging
+
+config_schema:
+  - key: tier
+    type: select
+    label: "Cluster Tier"
+    description: "MongoDB Atlas cluster tier"
+    required: true
+    default: flex
+    select_options:
+      - { value: flex, label: "Flex ($8-30/mo)" }
+  - key: auto_upgrade
+    type: boolean
+    label: "Auto-upgrade"
+    description: "Automatically upgrade tier when approaching limits"
+    required: false
+    default: false
+
+capabilities:
+  - database.read
+  - database.write
+  - database.admin
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-database"
