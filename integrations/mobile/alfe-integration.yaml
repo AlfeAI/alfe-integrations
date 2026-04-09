@@ -16,14 +16,12 @@ icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integratio
 preview_images:
   - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/mobile/assets/preview-dashboard.svg
 pricing:
-  type: paid
-  price: 29
-  currency: USD
-  interval: month
+  type: usage
+  description: "Monthly number rental (varies by country) + per-use SMS/call charges"
 features:
+  - Search and purchase phone numbers
   - Inbound & outbound calls
   - SMS messaging
-  - Phone number picker from Twilio pool
 
 installs:
   runtimes:
@@ -37,7 +35,7 @@ config_schema:
   - key: phone_number
     type: phone_number_picker
     label: "Phone Number"
-    description: "Choose a phone number for your agent from the available pool"
+    description: "Search for and select a phone number to purchase for your agent"
     required: true
 
 capabilities:
