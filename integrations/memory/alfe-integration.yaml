@@ -1,0 +1,68 @@
+id: memory
+name: "Memory"
+version: 1.0.0
+description: Persistent conversation memory with searchable history and knowledge graph — powered by Turbopuffer + DynamoDB
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_scopes: [org]
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: usage
+  description: "Memory processing (classification + embeddings) deducted from credit pool. Turbopuffer storage metered as 'memory' product."
+
+features:
+  - Persistent conversation memory across sessions
+  - Knowledge graph with entity-relationship tracking
+  - Tiered memory loading (L0-L3) for efficient context injection
+  - Semi-live ingestion with 1-minute idle debounce
+  - Haiku-powered classification and entity extraction
+  - Interactive dashboard with force-directed graph visualization
+  - Full CRUD for memories and knowledge graph triples
+
+config_schema:
+  - key: autoCapture
+    type: boolean
+    label: "Auto-capture"
+    description: "Automatically capture memories from conversations"
+    required: false
+    default: true
+    editable: agent
+  - key: autoRecall
+    type: boolean
+    label: "Auto-recall"
+    description: "Inject relevant memories into context at session start"
+    required: false
+    default: true
+    editable: agent
+  - key: captureMaxChars
+    type: number
+    label: "Max capture length"
+    description: "Maximum message length for auto-capture (characters)"
+    required: false
+    default: 500
+    editable: agent
+  - key: idleFlushSeconds
+    type: number
+    label: "Idle flush interval"
+    description: "Seconds of inactivity before flushing pending memories"
+    required: false
+    default: 60
+    editable: agent
+
+capabilities:
+  - memory.search
+  - memory.store
+  - memory.knowledge_graph
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-memory-cloud"
