@@ -29,8 +29,7 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw-whatsapp"
-      config:
-        apiUrl: "{{env.API_URL}}"
+      config: {}
 
 config_schema: []
 

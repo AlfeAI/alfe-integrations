@@ -28,8 +28,7 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw-mobile"
-      config:
-        apiUrl: "{{env.API_URL}}"
+      config: {}
 
 config_schema:
   - key: phone_number
