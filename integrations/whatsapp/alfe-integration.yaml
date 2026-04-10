@@ -1,0 +1,30 @@
+id: whatsapp
+name: "WhatsApp"
+version: 1.0.0
+description: Add WhatsApp messaging to your agent's phone number
+license: MIT
+depends_on: [mobile]
+min_gateway_version: 1.0.0
+
+# Agent runtimes this integration supports (empty = universal/all runtimes)
+supported_agents: []
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/whatsapp/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/whatsapp/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Send and receive WhatsApp messages
+  - Conversations visible in dashboard Chat tab
+  - Uses your agent's existing phone number from Mobile integration
+  - Media support (images, documents)
+
+config_schema: []
+
+capabilities:
+  - whatsapp.messages
+  - whatsapp.media
