@@ -30,7 +30,14 @@ commands:
     timeout_ms: 30000
     description: Run a shell command on the agent machine
 
-config_schema: []
+config_schema:
+  - key: model
+    type: string
+    label: "Diagnostic Model"
+    description: "Claude model for AI diagnostics (default: claude-sonnet-4-6)"
+    required: false
+    default: "claude-sonnet-4-6"
+    editable: admin
 
 capabilities:
   - support.diagnostic

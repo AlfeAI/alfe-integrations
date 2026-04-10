@@ -11,23 +11,13 @@
  * @returns {Promise<import('@alfe.ai/integration-manifest').CommandResult>}
  */
 export async function handleDiagnostic(payload, context) {
-  const { task, apiKey } = payload;
+  const { task, model } = payload;
 
-  // If no support API key and local proxy isn't running, we can't make LLM calls
-  if (!apiKey && !context.aiProxyRunning) {
+  if (!context.aiProxyRunning) {
     return {
       status: "error",
       result: { code: "PROXY_NOT_RUNNING", message: "AI proxy is not running — diagnostic requires LLM access" },
     };
-  }
-
-  // Prefer local proxy, fall back to cloud proxy
-  let proxyUrl;
-  if (context.aiProxyRunning) {
-    proxyUrl = context.aiProxyUrl;
-  } else {
-    const config = await import("@alfe.ai/config");
-    proxyUrl = config.getAiServiceUrlFromToken(context.apiKey);
   }
 
   try {
@@ -36,8 +26,9 @@ export async function handleDiagnostic(payload, context) {
       task,
       workspacePath: context.workspacePath,
       timeoutSeconds: 300,
-      proxyUrl,
-      apiKey,
+      proxyUrl: context.aiProxyUrl,
+      apiKey: payload.apiKey || context.apiKey,
+      model,
     });
     return {
       status: report.success ? "ok" : "error",
