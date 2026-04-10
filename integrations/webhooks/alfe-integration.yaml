@@ -1,5 +1,5 @@
 id: webhooks
-name: "Alfe Webhooks"
+name: "Webhooks"
 version: 1.0.0
 description: Receive and manage HTTP webhooks from external services
 license: MIT

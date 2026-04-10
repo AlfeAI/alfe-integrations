@@ -1,5 +1,5 @@
 id: voice
-name: "Alfe Voice"
+name: "Voice"
 version: 1.0.0
 description: Voice call integration for Alfe agents (Twilio + Discord)
 license: MIT
