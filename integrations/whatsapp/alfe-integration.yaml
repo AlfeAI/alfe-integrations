@@ -16,12 +16,21 @@ icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integratio
 preview_images:
   - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/whatsapp/assets/preview-dashboard.svg
 pricing:
-  type: free
+  type: usage
+  description: "Outbound WhatsApp messages deducted from credit pool via Twilio. Inbound (user-initiated) conversations are free."
 features:
   - Send and receive WhatsApp messages
   - Conversations visible in dashboard Chat tab
   - Uses your agent's existing phone number from Mobile integration
   - Media support (images, documents)
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-whatsapp"
+      config:
+        apiUrl: "{{env.API_URL}}"
 
 config_schema: []
 
