@@ -1,4 +1,4 @@
-# Alfe Chat Integration
+# Chat Integration
 
 Add an embeddable web chat widget and mobile app channel to your Alfe agent.
 
