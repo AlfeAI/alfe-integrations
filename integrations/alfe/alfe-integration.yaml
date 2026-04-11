@@ -26,20 +26,75 @@ installs:
             anthropic:
               baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
-              models: []
+              models:
+                - claude-opus-4-6
+                - claude-sonnet-4-6
+                - claude-haiku-4-5
               request:
                 allowPrivateNetwork: true
             openai:
               baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
-              models: []
+              models:
+                - gpt-4o
+                - gpt-4o-mini
+                - o3
+                - gpt-4.1
+                - gpt-4.1-mini
+                - gpt-4.1-nano
+                - o3-mini
+                - o4-mini
               request:
                 allowPrivateNetwork: true
             google:
               baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
-              models: []
+              models:
+                - gemini-2.5-pro
+                - gemini-2.5-flash
+                - gemini-2.5-flash-lite
+                - gemini-2.0-flash
               request:
                 allowPrivateNetwork: true
+            deepseek:
+              baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
+              models:
+                - deepseek-chat
+                - deepseek-reasoner
+              request:
+                allowPrivateNetwork: true
+            minimax:
+              baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
+              models:
+                - MiniMax-M2.7
+                - MiniMax-M2.5
+              request:
+                allowPrivateNetwork: true
+            mistral:
+              baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
+              models:
+                - mistral-large-latest
+                - mistral-small-latest
+                - codestral-latest
+              request:
+                allowPrivateNetwork: true
+            xai:
+              baseUrl: "http://127.0.0.1:18193"
+              apiKey: "alfe-proxy"
+              models:
+                - grok-4
+                - grok-4.1-fast
+              request:
+                allowPrivateNetwork: true
+
+commands:
+  - name: "alfe.config_set"
+    handler: ./commands/config-set.js
+    method: handle
+    timeout_ms: 10000
+    description: "Set an OpenClaw config key (allowlisted keys only)"
 
 config_schema: []
