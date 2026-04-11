@@ -8,6 +8,14 @@ const ALLOWED_KEYS = new Set([
   "agents.defaults.model",
 ]);
 
+/** Only allow safe characters in config values (alphanumeric, dots, hyphens, underscores) */
+const SAFE_VALUE_RE = /^[a-zA-Z0-9._-]+$/;
+
+/** Shell-escape a single argument by wrapping in single quotes */
+function shellEscape(s) {
+  return "'" + s.replace(/'/g, "'\\''") + "'";
+}
+
 /**
  * @param {Record<string, unknown>} payload
  * @param {import('@alfe.ai/integration-manifest').CommandContext} context
@@ -37,9 +45,16 @@ export async function handle(payload, context) {
     };
   }
 
+  if (!SAFE_VALUE_RE.test(value)) {
+    return {
+      status: "error",
+      result: { code: "INVALID_VALUE", message: "Config value contains disallowed characters" },
+    };
+  }
+
   try {
     const { stdout, stderr } = await context.exec(
-      `openclaw config set ${key} ${value}`,
+      `openclaw config set ${shellEscape(key)} ${shellEscape(value)}`,
       { timeoutMs: 8_000, maxBuffer: 64 * 1024 },
     );
     return {
