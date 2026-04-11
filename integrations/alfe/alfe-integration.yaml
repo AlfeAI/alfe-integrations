@@ -24,16 +24,22 @@ installs:
         models:
           providers:
             anthropic:
-              baseUrl: "http://ai-proxy.alfe.local:18193"
+              baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
               models: []
+              request:
+                allowPrivateNetwork: true
             openai:
-              baseUrl: "http://ai-proxy.alfe.local:18193"
+              baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
               models: []
+              request:
+                allowPrivateNetwork: true
             google:
-              baseUrl: "http://ai-proxy.alfe.local:18193"
+              baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
               models: []
+              request:
+                allowPrivateNetwork: true
 
 config_schema: []
