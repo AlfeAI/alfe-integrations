@@ -37,7 +37,7 @@ installs:
               request:
                 allowPrivateNetwork: true
             openai:
-              baseUrl: "http://127.0.0.1:18193"
+              baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
@@ -83,7 +83,7 @@ installs:
               request:
                 allowPrivateNetwork: true
             deepseek:
-              baseUrl: "http://127.0.0.1:18193"
+              baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
@@ -94,7 +94,7 @@ installs:
               request:
                 allowPrivateNetwork: true
             minimax:
-              baseUrl: "http://127.0.0.1:18193"
+              baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
@@ -105,7 +105,7 @@ installs:
               request:
                 allowPrivateNetwork: true
             mistral:
-              baseUrl: "http://127.0.0.1:18193"
+              baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
@@ -118,7 +118,7 @@ installs:
               request:
                 allowPrivateNetwork: true
             xai:
-              baseUrl: "http://127.0.0.1:18193"
+              baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
