@@ -22,7 +22,7 @@ import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const config = await resolveConfig();
+const config = resolveConfig();
 
 // Read existing token directly from openclaw.json (CLI output redacts secrets).
 let token = '';
