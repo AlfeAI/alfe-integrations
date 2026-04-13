@@ -23,6 +23,9 @@ installs:
           executablePath: "/usr/bin/chromium-browser"
           noSandbox: true
           headless: true
+          ssrfPolicy:
+            hostnameAllowlist:
+              - "*"
 
 hooks:
   post_install: hooks/install.sh
