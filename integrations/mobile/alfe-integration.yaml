@@ -33,3 +33,7 @@ installs:
 capabilities:
   - mobile.call
   - mobile.sms
+  - mobile.numbers.get
+  - mobile.numbers.search
+  - mobile.numbers.assign
+  - mobile.numbers.release
