@@ -16,8 +16,8 @@ icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integratio
 preview_images:
   - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/mobile/assets/preview-dashboard.svg
 pricing:
-  type: usage
-  description: "Monthly number rental (varies by country) + per-use SMS/call charges"
+  type: free
+  description: "Free to install. Phone number rental billed separately when a number is assigned."
 features:
   - Search and purchase phone numbers
   - Inbound & outbound calls
@@ -29,13 +29,6 @@ installs:
       plugins:
         - package: "@alfe.ai/openclaw-mobile"
       config: {}
-
-config_schema:
-  - key: phone_number
-    type: phone_number_picker
-    label: "Phone Number"
-    description: "Search for and select a phone number to purchase for your agent"
-    required: true
 
 capabilities:
   - mobile.call
