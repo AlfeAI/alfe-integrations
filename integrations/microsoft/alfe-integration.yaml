@@ -1,0 +1,86 @@
+id: microsoft
+name: "Microsoft 365"
+version: 1.0.0
+description: Connect your agent to Microsoft 365 — Teams, Outlook, OneDrive, Calendar, and more
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/microsoft/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/microsoft/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Teams messaging (DMs, channels, group chats)
+  - Outlook Mail send/read/triage
+  - Outlook Calendar scheduling
+  - OneDrive file management
+  - Full Microsoft 365 CLI (mgc)
+
+installs:
+  runtimes:
+    openclaw:
+      skills:
+        # Core service skills
+        - clawhub: m365-shared
+        - clawhub: m365-teams-chat
+        - clawhub: m365-onedrive
+        - clawhub: m365-outlook-mail
+        - clawhub: m365-outlook-calendar
+        - clawhub: m365-todo
+        - clawhub: m365-contacts
+        - clawhub: m365-onenote
+        - clawhub: m365-sharepoint
+        - clawhub: m365-excel
+        - clawhub: m365-word
+        - clawhub: m365-powerpoint
+        # Helper skills (common operations)
+        - clawhub: m365-teams-send
+        - clawhub: m365-outlook-send
+        - clawhub: m365-outlook-triage
+        - clawhub: m365-calendar-agenda
+        - clawhub: m365-onedrive-upload
+        - clawhub: m365-onedrive-search
+
+hooks:
+  post_install: hooks/post-install.sh
+  post_activate: hooks/post_activate.mjs
+  health_check: hooks/health.sh
+
+config_schema:
+  - key: microsoft_account
+    type: oauth_connect
+    label: "Microsoft 365 Account"
+    description: "Connect the Microsoft 365 account for this agent"
+    required: true
+    oauth_provider: microsoft
+  - key: teams_enabled
+    type: boolean
+    label: "Teams Chat"
+    description: "Allow your agent to receive and respond to Teams messages"
+    required: false
+    default: true
+    editable: agent
+  - key: offline_message
+    type: string
+    label: "Offline Auto-Reply"
+    description: "Message sent when someone messages in Teams while the agent is offline. Leave empty to disable."
+    required: false
+    default: "I'm currently offline. I'll get back to you when I'm available."
+    editable: agent
+
+capabilities:
+  - microsoft.teams
+  - microsoft.outlook.mail
+  - microsoft.outlook.calendar
+  - microsoft.onedrive
+  - microsoft.onenote
+  - microsoft.todo
+  - microsoft.contacts
+  - microsoft.sharepoint
