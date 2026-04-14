@@ -28,8 +28,6 @@ features:
 installs:
   runtimes:
     openclaw:
-      plugins:
-        - package: "@alfe.ai/openclaw-google-chat"
       skills:
         # Core service skills
         - clawhub: gws-shared
@@ -65,6 +63,13 @@ config_schema:
     description: "Connect the Google account for this agent"
     required: true
     oauth_provider: google
+  - key: google_chat_enabled
+    type: boolean
+    label: "Google Chat"
+    description: "Allow your agent to receive and respond to Google Chat messages"
+    required: false
+    default: true
+    editable: agent
   - key: offline_message
     type: string
     label: "Offline Auto-Reply"
