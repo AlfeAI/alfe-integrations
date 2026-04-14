@@ -42,7 +42,6 @@ installs:
         - clawhub: gws-slides
         - clawhub: gws-tasks
         - clawhub: gws-people
-        - clawhub: gws-meet
         - clawhub: gws-forms
         - clawhub: gws-keep
         # Helper skills (common operations)
@@ -81,5 +80,4 @@ capabilities:
   - google.calendar
   - google.sheets
   - google.docs
-  - google.meet
   - google.workspace
