@@ -44,7 +44,10 @@ writeFileSync(
   JSON.stringify({
     installed: {
       client_id: creds.clientId,
+      project_id: creds.projectId,
       client_secret: creds.clientSecret,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
     },
   }, null, 2) + '\n',
   { mode: 0o600 },
@@ -58,5 +61,15 @@ writeFileSync(
   }, null, 2) + '\n',
   { mode: 0o600 },
 );
+
+// Write enabled services config so the agent knows which Google services are available
+if (creds.enabledServices) {
+  writeFileSync(
+    join(configDir, 'services.json'),
+    JSON.stringify({ enabled: creds.enabledServices }, null, 2) + '\n',
+    { mode: 0o600 },
+  );
+  console.log(`Enabled services: ${creds.enabledServices.join(', ')}`);
+}
 
 console.log(`gws CLI configured for ${creds.email}`);
