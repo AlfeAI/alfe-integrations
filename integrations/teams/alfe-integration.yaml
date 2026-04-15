@@ -1,0 +1,54 @@
+id: teams
+name: "Microsoft Teams"
+version: 1.0.0
+description: Add your agent to Microsoft Teams as a bot with its own identity
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/teams/assets/icon.svg
+preview_images:
+  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/teams/assets/preview-dashboard.svg
+pricing:
+  type: free
+features:
+  - Per-agent bot identity in Teams
+  - DMs, channels, and group chats
+  - Adaptive card support
+  - Sideloadable Teams app package
+
+installs:
+  runtimes:
+    openclaw:
+      skills:
+        - clawhub: m365-shared
+        - clawhub: m365-teams-chat
+        - clawhub: m365-teams-send
+      plugins:
+        - package: "@alfe.ai/openclaw-teams"
+
+hooks:
+  health_check: hooks/health.sh
+
+config_schema:
+  - key: teams_bot
+    type: oauth_connect
+    label: "Microsoft Teams Bot"
+    description: "Provision a bot and connect it to your Teams organization"
+    required: true
+    oauth_provider: teams
+  - key: offline_message
+    type: string
+    label: "Offline Auto-Reply"
+    description: "Message sent when someone messages in Teams while the agent is offline. Leave empty to disable."
+    required: false
+    default: "I'm currently offline. I'll get back to you when I'm available."
+    editable: agent
+
+capabilities:
+  - microsoft.teams
