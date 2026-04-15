@@ -18,6 +18,7 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw"
+        - package: "@alfe.ai/openclaw-metrics"
       config:
         session:
           dmScope: "per-channel-peer"
