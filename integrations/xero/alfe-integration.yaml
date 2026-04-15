@@ -1,7 +1,7 @@
 id: xero
 name: "Xero Accounting"
-version: 1.0.0
-description: Connect your agent to Xero — manage invoices, contacts, payments, and financial reports
+version: 1.1.0
+description: Connect your agent to Xero — full accounting access via official Xero MCP server
 license: MIT
 min_gateway_version: 1.0.0
 
@@ -15,18 +15,18 @@ pricing:
   type: free
 
 features:
-  - Create and manage invoices and bills
-  - Manage contacts and customers
-  - Record and track payments
-  - View financial reports (P&L, Balance Sheet, Trial Balance)
-  - List bank transactions and accounts
-  - Quote and inventory management
+  - Full Xero API access via official @xeroapi/xero-mcp-server (50+ tools)
+  - Automatic OAuth2 token refresh
+  - Create and manage invoices, bills, contacts, payments
+  - Financial reports, bank transactions, quotes, inventory
+  - Chart of accounts, tax rates, currencies, and more
 
 installs:
   runtimes:
-    openclaw:
-      plugins:
-        - package: "@alfe.ai/openclaw-xero"
+    openclaw: {}
+
+hooks:
+  post_activate: hooks/post_activate.mjs
 
 config_schema:
   - key: xero_account
@@ -35,12 +35,3 @@ config_schema:
     description: "Connect the Xero account for this agent"
     required: true
     oauth_provider: xero
-
-capabilities:
-  - xero.invoices
-  - xero.contacts
-  - xero.payments
-  - xero.reports
-  - xero.bank_transactions
-  - xero.quotes
-  - xero.items
