@@ -25,6 +25,11 @@ installs:
   runtimes:
     openclaw: {}
 
+mcp_servers:
+  - id: xero
+    command: xero-mcp-proxy
+    hook_managed: true
+
 hooks:
   post_activate: hooks/post_activate.mjs
 
