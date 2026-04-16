@@ -1,0 +1,42 @@
+id: myob
+name: "MYOB Business"
+version: 1.0.0
+description: Connect your agent to MYOB Business — manage invoices, contacts, and finances via custom MCP server
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Full MYOB Business API access (contacts, invoices, payments, GL)
+  - Automatic OAuth2 token refresh (20-min tokens)
+  - Create and manage invoices, quotes, contacts
+  - General ledger, chart of accounts, journal entries
+  - Inventory items and adjustments
+
+installs:
+  runtimes:
+    openclaw: {}
+
+mcp_servers:
+  - id: myob
+    command: myob-mcp-server
+    hook_managed: true
+
+hooks:
+  post_activate: hooks/post_activate.mjs
+
+config_schema:
+  - key: myob_account
+    type: oauth_connect
+    label: "MYOB Account"
+    description: "Connect the MYOB Business account for this agent"
+    required: true
+    oauth_provider: myob
