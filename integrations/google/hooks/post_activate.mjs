@@ -39,12 +39,14 @@ const configDir = join(homedir(), '.config', 'gws');
 mkdirSync(configDir, { recursive: true, mode: 0o700 });
 
 // Write OAuth client credentials (matches Google's client_secret.json format)
+// Note: project_id is intentionally omitted — gws sends it as x-goog-user-project
+// header which triggers a serviceUsageConsumer permission check that external
+// Google Workspace users cannot satisfy on our GCP project.
 writeFileSync(
   join(configDir, 'client_secret.json'),
   JSON.stringify({
     installed: {
       client_id: creds.clientId,
-      project_id: creds.projectId,
       client_secret: creds.clientSecret,
       auth_uri: "https://accounts.google.com/o/oauth2/auth",
       token_uri: "https://oauth2.googleapis.com/token",
@@ -53,10 +55,13 @@ writeFileSync(
   { mode: 0o600 },
 );
 
-// Write refresh token credentials
+// Write refresh token credentials (standard Google authorized_user format)
 writeFileSync(
   join(configDir, 'credentials.json'),
   JSON.stringify({
+    type: 'authorized_user',
+    client_id: creds.clientId,
+    client_secret: creds.clientSecret,
     refresh_token: creds.refreshToken,
   }, null, 2) + '\n',
   { mode: 0o600 },
