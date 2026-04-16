@@ -1,0 +1,49 @@
+id: github
+name: "GitHub"
+version: 1.0.0
+description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Full GitHub API access via official @modelcontextprotocol/server-github MCP server
+  - Repository management (create, list, search)
+  - Issues and pull requests (create, comment, review)
+  - Code search and file operations
+  - Notifications and activity feeds
+
+installs:
+  runtimes:
+    openclaw: {}
+
+mcp_servers:
+  - id: github
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-github"]
+    hook_managed: true
+
+hooks:
+  post_activate: hooks/post_activate.mjs
+
+config_schema:
+  - key: github_account
+    type: oauth_connect
+    label: "GitHub Account"
+    description: "Connect the GitHub account for this agent"
+    required: true
+    oauth_provider: github
+
+capabilities:
+  - github.repositories
+  - github.issues
+  - github.pull_requests
+  - github.code_search
