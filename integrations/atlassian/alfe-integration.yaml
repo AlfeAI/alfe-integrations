@@ -1,0 +1,47 @@
+id: atlassian
+name: "Atlassian"
+version: 1.0.0
+description: Connect your agent to Atlassian — Jira and Confluence via MCP server
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Jira issue tracking (create, update, search, transitions, sprints, boards)
+  - Confluence page management (create, edit, search, spaces, comments)
+  - 72+ tools via sooperset/mcp-atlassian MCP server
+  - Automatic OAuth2 token refresh
+  - Multi-site support (select which Atlassian Cloud site to use)
+
+installs:
+  runtimes:
+    openclaw:
+      skills:
+        - clawhub: atlassian-jira
+        - clawhub: atlassian-confluence
+        - clawhub: atlassian-shared
+
+hooks:
+  post_install: hooks/post-install.sh
+  post_activate: hooks/post_activate.mjs
+
+config_schema:
+  - key: atlassian_account
+    type: oauth_connect
+    label: "Atlassian Account"
+    description: "Connect the Atlassian account for this agent"
+    required: true
+    oauth_provider: atlassian
+
+capabilities:
+  - atlassian.jira
+  - atlassian.confluence
