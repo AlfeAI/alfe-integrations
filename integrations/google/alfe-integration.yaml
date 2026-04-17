@@ -28,6 +28,8 @@ features:
 installs:
   runtimes:
     openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-google"
       skills:
         # Core service skills
         - clawhub: gws-shared
