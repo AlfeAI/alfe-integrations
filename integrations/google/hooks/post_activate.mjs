@@ -4,8 +4,13 @@
  * Google Workspace integration post_activate hook.
  *
  * Fetches decrypted OAuth credentials from the Alfe API and writes
- * them to ~/.config/gws/ so the gws CLI can authenticate with Google
- * Workspace APIs (Gmail, Drive, Calendar, Sheets, etc.).
+ * them to per-account config directories so the gws CLI can
+ * authenticate with Google Workspace APIs.
+ *
+ * Multi-account support:
+ *   - Default account → ~/.config/gws/ (no env prefix needed)
+ *   - Additional accounts → ~/.config/gws-<sanitized-email>/
+ *   - Use GOOGLE_WORKSPACE_CLI_CONFIG_DIR=<path> to target non-default
  *
  * Runs on every activation to keep credentials in sync.
  */
@@ -30,51 +35,82 @@ try {
   process.exit(0);
 }
 
-if (!creds?.refreshToken) {
+// Support both multi-account (accounts array) and legacy single-account format
+const accounts = creds.accounts ?? [{
+  email: creds.email,
+  refreshToken: creds.refreshToken,
+  clientId: creds.clientId,
+  clientSecret: creds.clientSecret,
+  enabledServices: creds.enabledServices,
+  isDefault: true,
+  displayName: undefined,
+}];
+
+if (accounts.length === 0 || !accounts[0]?.refreshToken) {
   console.log('No Google refresh token available — skipping gws auth setup');
   process.exit(0);
 }
 
-const configDir = join(homedir(), '.config', 'gws');
-mkdirSync(configDir, { recursive: true, mode: 0o700 });
-
-// Write OAuth client credentials (matches Google's client_secret.json format)
-// Note: project_id is intentionally omitted — gws sends it as x-goog-user-project
-// header which triggers a serviceUsageConsumer permission check that external
-// Google Workspace users cannot satisfy on our GCP project.
-writeFileSync(
-  join(configDir, 'client_secret.json'),
-  JSON.stringify({
-    installed: {
-      client_id: creds.clientId,
-      client_secret: creds.clientSecret,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-    },
-  }, null, 2) + '\n',
-  { mode: 0o600 },
-);
-
-// Write refresh token credentials (standard Google authorized_user format)
-writeFileSync(
-  join(configDir, 'credentials.json'),
-  JSON.stringify({
-    type: 'authorized_user',
-    client_id: creds.clientId,
-    client_secret: creds.clientSecret,
-    refresh_token: creds.refreshToken,
-  }, null, 2) + '\n',
-  { mode: 0o600 },
-);
-
-// Write enabled services config so the agent knows which Google services are available
-if (creds.enabledServices) {
-  writeFileSync(
-    join(configDir, 'services.json'),
-    JSON.stringify({ enabled: creds.enabledServices }, null, 2) + '\n',
-    { mode: 0o600 },
-  );
-  console.log(`Enabled services: ${creds.enabledServices.join(', ')}`);
+/**
+ * Sanitize email for use as a directory name.
+ * badi@olinga.com.au → badi-olinga-com-au
+ */
+function sanitizeEmail(email) {
+  return email.replace(/@/g, '-').replace(/\./g, '-');
 }
 
-console.log(`gws CLI configured for ${creds.email}`);
+for (let i = 0; i < accounts.length; i++) {
+  const account = accounts[i];
+  if (!account.refreshToken) continue;
+
+  const isDefault = account.isDefault ?? i === 0;
+
+  // Default account: ~/.config/gws/
+  // Additional accounts: ~/.config/gws-<sanitized-email>/
+  const dirName = isDefault ? 'gws' : `gws-${sanitizeEmail(account.email)}`;
+  const configDir = join(homedir(), '.config', dirName);
+  mkdirSync(configDir, { recursive: true, mode: 0o700 });
+
+  // Write OAuth client credentials (matches Google's client_secret.json format)
+  // Note: project_id is intentionally omitted — gws sends it as x-goog-user-project
+  // header which triggers a serviceUsageConsumer permission check that external
+  // Google Workspace users cannot satisfy on our GCP project.
+  writeFileSync(
+    join(configDir, 'client_secret.json'),
+    JSON.stringify({
+      installed: {
+        client_id: account.clientId,
+        client_secret: account.clientSecret,
+        auth_uri: "https://accounts.google.com/o/oauth2/auth",
+        token_uri: "https://oauth2.googleapis.com/token",
+      },
+    }, null, 2) + '\n',
+    { mode: 0o600 },
+  );
+
+  // Write refresh token credentials (standard Google authorized_user format)
+  writeFileSync(
+    join(configDir, 'credentials.json'),
+    JSON.stringify({
+      type: 'authorized_user',
+      client_id: account.clientId,
+      client_secret: account.clientSecret,
+      refresh_token: account.refreshToken,
+    }, null, 2) + '\n',
+    { mode: 0o600 },
+  );
+
+  // Write enabled services config
+  if (account.enabledServices) {
+    writeFileSync(
+      join(configDir, 'services.json'),
+      JSON.stringify({ enabled: account.enabledServices }, null, 2) + '\n',
+      { mode: 0o600 },
+    );
+  }
+
+  const label = isDefault ? '(default)' : '';
+  console.log(`gws CLI configured for ${account.email} at ${configDir} ${label}`);
+}
+
+console.log(`${accounts.length} Google account(s) configured`);
