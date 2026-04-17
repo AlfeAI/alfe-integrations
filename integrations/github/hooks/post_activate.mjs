@@ -29,8 +29,8 @@ let creds;
 try {
   creds = await client.getGithubCredentials();
 } catch (err) {
-  console.log(`No GitHub credentials available — skipping MCP server setup (${err.message})`);
-  process.exit(0);
+  console.error(`Failed to get GitHub credentials: ${err.message}`);
+  process.exit(1);
 }
 
 if (!creds?.accessToken) {

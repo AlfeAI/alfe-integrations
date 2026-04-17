@@ -34,8 +34,8 @@ let creds;
 try {
   creds = await client.getAtlassianCredentials();
 } catch (err) {
-  console.log(`No Atlassian credentials available — skipping MCP server setup (${err.message})`);
-  process.exit(0);
+  console.error(`Failed to get Atlassian credentials: ${err.message}`);
+  process.exit(1);
 }
 
 if (!creds?.accessToken || !creds?.cloudId) {

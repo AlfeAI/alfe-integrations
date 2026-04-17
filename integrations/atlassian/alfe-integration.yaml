@@ -28,7 +28,6 @@ installs:
       skills:
         - clawhub: atlassian-jira
         - clawhub: atlassian-confluence
-        - clawhub: atlassian-shared
 
 hooks:
   post_install: hooks/post-install.sh
