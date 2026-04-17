@@ -1,0 +1,41 @@
+id: notion
+name: "Notion"
+version: 1.0.0
+description: Connect your agent to Notion — pages, databases, comments and more
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Read and search Notion pages and databases
+  - Create and update pages, blocks, and database entries
+  - Manage comments and discussions
+  - Query database views with filters and sorts
+
+installs:
+  runtimes:
+    openclaw: {}
+
+mcp_servers:
+  - id: notion
+    command: notion-mcp-proxy
+    hook_managed: true
+
+hooks:
+  post_activate: hooks/post_activate.mjs
+
+config_schema:
+  - key: notion_account
+    type: oauth_connect
+    label: "Notion Workspace"
+    description: "Connect the Notion workspace for this agent"
+    required: true
+    oauth_provider: notion
