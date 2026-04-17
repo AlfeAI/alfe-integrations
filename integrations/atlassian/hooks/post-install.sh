@@ -16,7 +16,8 @@ elif command -v pip &>/dev/null; then
 else
   echo "WARNING: No Python package manager found (uvx, pipx, or pip)."
   echo "Install mcp-atlassian manually: pip install mcp-atlassian"
-  exit 1
+  # Don't fail the install — mcp-atlassian runs via uvx at runtime
+  exit 0
 fi
 
 echo "Atlassian MCP server setup complete"
