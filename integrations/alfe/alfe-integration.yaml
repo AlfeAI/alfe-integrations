@@ -20,6 +20,7 @@ installs:
         - package: "@alfe.ai/openclaw"
         - package: "@alfe.ai/openclaw-metrics"
         - package: "@alfe.ai/openclaw-identity"
+        - package: "@alfe.ai/openclaw-database"
       config:
         session:
           dmScope: "per-channel-peer"
