@@ -22,6 +22,9 @@ installs:
         - package: "@alfe.ai/openclaw-identity"
         - package: "@alfe.ai/openclaw-database"
       config:
+        browser:
+          ssrfPolicy:
+            dangerouslyAllowPrivateNetwork: true
         session:
           dmScope: "per-channel-peer"
         models:
