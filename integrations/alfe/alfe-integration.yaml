@@ -40,8 +40,6 @@ installs:
                   name: "Claude Sonnet 4.6"
                 - id: claude-haiku-4-5
                   name: "Claude Haiku 4.5"
-              request:
-                allowPrivateNetwork: true
             openai:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -71,8 +69,6 @@ installs:
                   name: "o3 Mini"
                 - id: o4-mini
                   name: "o4 Mini"
-              request:
-                allowPrivateNetwork: true
             google:
               baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
@@ -86,8 +82,6 @@ installs:
                   name: "Gemini 2.5 Flash Lite"
                 - id: gemini-2.0-flash
                   name: "Gemini 2.0 Flash"
-              request:
-                allowPrivateNetwork: true
             deepseek:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -97,8 +91,6 @@ installs:
                   name: "DeepSeek Chat"
                 - id: deepseek-reasoner
                   name: "DeepSeek Reasoner"
-              request:
-                allowPrivateNetwork: true
             minimax:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -108,8 +100,6 @@ installs:
                   name: "MiniMax M2.7"
                 - id: MiniMax-M2.5
                   name: "MiniMax M2.5"
-              request:
-                allowPrivateNetwork: true
             mistral:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -121,8 +111,6 @@ installs:
                   name: "Mistral Small"
                 - id: codestral-latest
                   name: "Codestral"
-              request:
-                allowPrivateNetwork: true
             xai:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -132,8 +120,6 @@ installs:
                   name: "Grok 4"
                 - id: grok-4.1-fast
                   name: "Grok 4.1 Fast"
-              request:
-                allowPrivateNetwork: true
 
 commands:
   - name: "alfe.config_set"
