@@ -41,6 +41,7 @@ config_schema:
     label: "Gateway Token"
     editable: agent
     required: false
+    hidden: true
 
 capabilities:
   - console.web
