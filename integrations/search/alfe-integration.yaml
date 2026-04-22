@@ -1,7 +1,7 @@
-id: brave-search
-name: "Brave Search"
+id: search
+name: "Search"
 version: 1.0.0
-description: "Web, image, and news search powered by Brave Search API"
+description: "Web, image, and news search"
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
@@ -17,7 +17,7 @@ features:
   - Web search with rich snippets, titles, and descriptions
   - Image search with thumbnails and metadata
   - News search with articles, sources, and publication dates
-  - Optional BYOK — bring your own Brave API key to bypass metered billing
+  - Optional BYOK — bring your own API key to bypass metered billing
 
 installs:
   runtimes:
@@ -33,6 +33,6 @@ config_schema:
     required: false
 
 capabilities:
-  - brave-search.web
-  - brave-search.images
-  - brave-search.news
+  - search.web
+  - search.images
+  - search.news
