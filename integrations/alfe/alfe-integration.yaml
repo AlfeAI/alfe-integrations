@@ -21,6 +21,8 @@ installs:
         - package: "@alfe.ai/openclaw-metrics"
         - package: "@alfe.ai/openclaw-identity"
         - package: "@alfe.ai/openclaw-database"
+        - package: "@alfe.ai/openclaw-search"
+        - package: "@alfe.ai/openclaw-secrets"
       config:
         browser:
           ssrfPolicy:
@@ -127,6 +129,13 @@ commands:
     method: handle
     timeout_ms: 10000
     description: "Set an OpenClaw config key (allowlisted keys only)"
+
+capabilities:
+  - search.web
+  - search.images
+  - search.news
+  - secrets.read
+  - secrets.write
 
 config_schema:
   - key: identity_failure_mode
