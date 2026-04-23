@@ -84,13 +84,13 @@ const redirectUri = `${config.apiUrl}/atlassian/oauth/callback`;
 const scopeString = 'read:me offline_access read:jira-work write:jira-work read:jira-user manage:jira-project read:confluence-content.all write:confluence-content.all read:confluence-space.summary read:confluence-user';
 
 const batch = [
-  { path: 'mcpServers.atlassian.command', value: 'uvx' },
-  { path: 'mcpServers.atlassian.args', value: ['mcp-atlassian'] },
-  { path: 'mcpServers.atlassian.env.ATLASSIAN_OAUTH_CLIENT_ID', value: clientId },
-  ...(clientSecret ? [{ path: 'mcpServers.atlassian.env.ATLASSIAN_OAUTH_CLIENT_SECRET', value: clientSecret }] : []),
-  { path: 'mcpServers.atlassian.env.ATLASSIAN_OAUTH_CLOUD_ID', value: creds.cloudId },
-  { path: 'mcpServers.atlassian.env.ATLASSIAN_OAUTH_SCOPE', value: scopeString },
-  { path: 'mcpServers.atlassian.env.ATLASSIAN_OAUTH_REDIRECT_URI', value: redirectUri },
+  { path: 'mcp.servers.atlassian.command', value: 'uvx' },
+  { path: 'mcp.servers.atlassian.args', value: ['mcp-atlassian'] },
+  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_CLIENT_ID', value: clientId },
+  ...(clientSecret ? [{ path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_CLIENT_SECRET', value: clientSecret }] : []),
+  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_CLOUD_ID', value: creds.cloudId },
+  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_SCOPE', value: scopeString },
+  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_REDIRECT_URI', value: redirectUri },
 ];
 
 try {
