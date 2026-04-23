@@ -31,7 +31,9 @@ config_schema:
     label: "Google Account"
     description: "Connect a Google account for Chat messaging"
     required: true
-    oauth_provider: google-chat
+    oauth_provider: google
+    oauth_scopes: ["chat"]
+    oauth_integration_id: google-chat
 
 capabilities:
   - google-chat.messages
