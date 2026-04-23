@@ -51,9 +51,9 @@ if (!creds?.refreshToken) {
 // Seed the token file for sooperset/mcp-atlassian.
 // The MCP server looks for ~/.mcp-atlassian/oauth-{clientId}.json and uses
 // its standard OAuth mode (client_id + client_secret) to auto-refresh.
-const clientId = config.atlassianOAuthClientId;
+const clientId = creds.clientId;
 if (!clientId) {
-  console.log('ATLASSIAN_OAUTH_CLIENT_ID not configured — skipping MCP server setup');
+  console.log('No Atlassian OAuth client ID in credentials — skipping MCP server setup');
   process.exit(0);
 }
 
@@ -79,7 +79,7 @@ try {
 
 // Configure the MCP server in OpenClaw via `openclaw config set`.
 // Env vars tell mcp-atlassian to use standard OAuth mode (which reads the seeded token file).
-const clientSecret = config.atlassianOAuthClientSecret;
+const clientSecret = creds.clientSecret;
 const redirectUri = `${config.apiUrl}/atlassian/oauth/callback`;
 const scopeString = 'read:me offline_access read:jira-work write:jira-work read:jira-user manage:jira-project read:confluence-content.all write:confluence-content.all read:confluence-space.summary read:confluence-user';
 
