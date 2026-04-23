@@ -40,8 +40,8 @@ if (!creds?.accessToken || !creds?.xeroTenantId) {
 // Register the proxy MCP server via openclaw config set.
 // The proxy reads credentials from the Alfe API at startup — no secrets in config.
 const batch = [
-  { path: 'mcp.servers.xero.command', value: 'xero-mcp-proxy' },
-  { path: 'mcp.servers.xero.args', value: [] },
+  { path: 'mcp.servers.xero.command', value: 'npx' },
+  { path: 'mcp.servers.xero.args', value: ['-y', '@alfe.ai/openclaw-xero'] },
 ];
 
 try {

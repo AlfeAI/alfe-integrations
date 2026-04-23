@@ -27,7 +27,8 @@ installs:
 
 mcp_servers:
   - id: xero
-    command: xero-mcp-proxy
+    command: npx
+    args: ["-y", "@alfe.ai/openclaw-xero"]
     hook_managed: true
 
 hooks:

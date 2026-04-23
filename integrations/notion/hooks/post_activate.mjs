@@ -40,8 +40,8 @@ if (!creds?.accessToken) {
 // Register the proxy MCP server via openclaw config set.
 // The proxy reads credentials from the Alfe API at startup — no secrets in config.
 const batch = [
-  { path: 'mcp.servers.notion.command', value: 'notion-mcp-proxy' },
-  { path: 'mcp.servers.notion.args', value: [] },
+  { path: 'mcp.servers.notion.command', value: 'npx' },
+  { path: 'mcp.servers.notion.args', value: ['-y', '@alfe.ai/openclaw-notion'] },
 ];
 
 try {

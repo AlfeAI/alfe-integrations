@@ -26,7 +26,8 @@ installs:
 
 mcp_servers:
   - id: notion
-    command: notion-mcp-proxy
+    command: npx
+    args: ["-y", "@alfe.ai/openclaw-notion"]
     hook_managed: true
 
 hooks:
