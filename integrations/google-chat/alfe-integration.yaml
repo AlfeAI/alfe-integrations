@@ -1,0 +1,38 @@
+id: google-chat
+name: "Google Chat"
+version: 1.0.0
+description: Receive and respond to Google Chat direct messages
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/google-chat/assets/icon.svg
+pricing:
+  type: free
+features:
+  - Google Chat direct messages
+  - Per-agent Google identity
+  - Automatic space discovery
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-google-chat"
+
+config_schema:
+  - key: google_chat_account
+    type: oauth_connect
+    label: "Google Account"
+    description: "Connect a Google account for Chat messaging"
+    required: true
+    oauth_provider: google-chat
+
+capabilities:
+  - google-chat.messages
+  - google-chat.dm
