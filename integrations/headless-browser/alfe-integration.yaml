@@ -1,7 +1,7 @@
 id: headless-browser
 name: "Headless Browser"
 version: 1.0.0
-description: Installs and configures Chromium for headless Linux servers
+description: Installs and configures Google Chrome for headless Linux servers
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
@@ -20,7 +20,7 @@ installs:
     openclaw:
       config:
         browser:
-          executablePath: "/usr/bin/chromium-browser"
+          executablePath: "/usr/bin/google-chrome-stable"
           noSandbox: true
           headless: true
 
