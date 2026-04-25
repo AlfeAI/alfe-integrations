@@ -29,6 +29,11 @@ let creds;
 try {
   creds = await client.getGithubCredentials();
 } catch (err) {
+  // 404 means OAuth not connected yet — skip gracefully
+  if (err.message?.includes('(404)')) {
+    console.log('GitHub not connected — skipping MCP server setup');
+    process.exit(0);
+  }
   console.error(`Failed to get GitHub credentials: ${err.message}`);
   process.exit(1);
 }

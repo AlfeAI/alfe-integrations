@@ -34,6 +34,11 @@ let creds;
 try {
   creds = await client.getAtlassianCredentials();
 } catch (err) {
+  // 404 means OAuth not connected yet — skip gracefully
+  if (err.message?.includes('(404)')) {
+    console.log('Atlassian not connected — skipping MCP server setup');
+    process.exit(0);
+  }
   console.error(`Failed to get Atlassian credentials: ${err.message}`);
   process.exit(1);
 }
