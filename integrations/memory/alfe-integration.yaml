@@ -66,3 +66,9 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw-memory-cloud"
+      config:
+        plugins:
+          entries:
+            memory-cloud:
+              hooks:
+                allowConversationAccess: true
