@@ -137,17 +137,4 @@ capabilities:
   - secrets.read
   - secrets.write
 
-config_schema:
-  - key: identity_failure_mode
-    type: select
-    label: "Identity Failure Mode"
-    description: "Controls behavior when identity service is unavailable"
-    default: "open"
-    editable: agent
-    select_options:
-      - value: "open"
-        label: "Open — chat allowed, tools blocked without identity"
-      - value: "closed"
-        label: "Closed — everything blocked without identity"
-      - value: "permissive"
-        label: "Permissive — everything allowed, identity is advisory"
+config_schema: []
