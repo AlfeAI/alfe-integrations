@@ -24,10 +24,13 @@ features:
 
 installs:
   runtimes:
-    openclaw:
-      skills:
-        - clawhub: atlassian-jira
-        - clawhub: atlassian-confluence
+    openclaw: {}
+
+mcp_servers:
+  - id: atlassian
+    command: uvx
+    args: ["mcp-atlassian"]
+    hook_managed: true
 
 hooks:
   post_install: hooks/post-install.sh
