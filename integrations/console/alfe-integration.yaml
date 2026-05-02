@@ -1,6 +1,6 @@
 id: console
 name: "Console"
-version: 1.1.0
+version: 1.2.0
 description: Web-based access to your agent's OpenClaw Control UI via the Alfe dashboard
 license: MIT
 depends_on: []
@@ -16,19 +16,21 @@ pricing:
   type: free
 features:
   - Web-based OpenClaw Control UI
-  - Authenticated proxy access through dashboard
+  - Authenticated direct connection from agent to console service
   - Per-agent token authentication
 
 
 hooks:
   post_activate: hooks/post_activate.js
 
-# As of v1.1.0 the console no longer publishes the gateway token to the cloud
-# and OpenClaw stays bound to loopback. The cloud reaches the agent via the
-# daemon's outbound tunnel WS instead of dialing the agent host directly.
+# As of v1.2.0 the agent runs the @alfe.ai/openclaw-console plugin which
+# maintains an outbound WS to the console service. Browser sessions are
+# multiplexed over that WS — no gateway data-plane hop, no public IP.
 installs:
   runtimes:
     openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-console"
       config:
         gateway:
           controlUi:
