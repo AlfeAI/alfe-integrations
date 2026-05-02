@@ -3,28 +3,26 @@
 /**
  * Console integration post_activate hook.
  *
- * Runs on every activation to ensure the local gateway auth token is
- * synced to the cloud. The local token always takes precedence — if one
- * exists, it is pushed to the cloud; if not, a new one is generated.
+ * Ensures the local OpenClaw gateway has an auth token in
+ * `~/.openclaw/openclaw.json` under `gateway.auth.token`. The daemon's
+ * tunnel handler reads that token to authenticate its own loopback
+ * requests when forwarding console traffic to localhost:18789.
  *
- * NOTE: We read the token from openclaw.json directly because
+ * NOTE: We read the existing token via the JSON file because
  * `openclaw config get` redacts secret values (__OPENCLAW_REDACTED__).
- * Writing still goes through `openclaw config set` to avoid clobbering.
+ * Writes still go through `openclaw config set` to avoid clobbering.
  *
- * The agent owns its credentials — the cloud never generates gateway tokens.
+ * As of console integration v1.1.0 the token is NOT pushed to the cloud —
+ * it stays on the agent host. The console service uses the gateway tunnel
+ * to reach the daemon, which injects this token on the way to OpenClaw.
  */
 
-import { resolveConfig } from '@alfe.ai/config';
-import { AgentApiClient } from '@alfe.ai/agent-api-client';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const config = resolveConfig();
-
-// Read existing token directly from openclaw.json (CLI output redacts secrets).
 let token = '';
 try {
   const stateDir = process.env.OPENCLAW_STATE_DIR || join(homedir(), '.openclaw');
@@ -32,19 +30,10 @@ try {
   const raw = JSON.parse(readFileSync(configPath, 'utf-8'));
   token = raw?.gateway?.auth?.token ?? '';
 } catch {
-  // Config file missing or malformed — will generate a new token below.
+  // Config file missing or malformed — generate one below.
 }
 
-// Generate a new token if none exists
 if (!token) {
   token = randomUUID();
   execFileSync('openclaw', ['config', 'set', 'gateway.auth.token', token]);
 }
-
-// Always push local token to cloud — local takes precedence
-const client = new AgentApiClient({
-  apiKey: config.apiKey,
-  apiUrl: config.apiUrl,
-});
-
-await client.updateIntegrationConfig('console', { gateway_token: token });

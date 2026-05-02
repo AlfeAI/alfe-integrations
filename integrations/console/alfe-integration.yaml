@@ -1,6 +1,6 @@
 id: console
 name: "Console"
-version: 1.0.0
+version: 1.1.0
 description: Web-based access to your agent's OpenClaw Control UI via the Alfe dashboard
 license: MIT
 depends_on: []
@@ -23,25 +23,19 @@ features:
 hooks:
   post_activate: hooks/post_activate.js
 
+# As of v1.1.0 the console no longer publishes the gateway token to the cloud
+# and OpenClaw stays bound to loopback. The cloud reaches the agent via the
+# daemon's outbound tunnel WS instead of dialing the agent host directly.
 installs:
   runtimes:
     openclaw:
       config:
         gateway:
-          bind: "lan"
           controlUi:
             allowedOrigins:
               - "https://console.dev.alfe.ai"
               - "https://console.alfe.ai"
             dangerouslyDisableDeviceAuth: true
-
-config_schema:
-  - key: gateway_token
-    type: secret
-    label: "Gateway Token"
-    editable: agent
-    required: false
-    hidden: true
 
 capabilities:
   - console.web
