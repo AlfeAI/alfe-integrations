@@ -1,6 +1,6 @@
 id: console
 name: "Console"
-version: 1.2.0
+version: 1.0.0
 description: Web-based access to your agent's OpenClaw Control UI via the Alfe dashboard
 license: MIT
 depends_on: []
