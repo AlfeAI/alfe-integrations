@@ -23,6 +23,7 @@ installs:
         - package: "@alfe.ai/openclaw-database"
         - package: "@alfe.ai/openclaw-search"
         - package: "@alfe.ai/openclaw-secrets"
+        - package: "@alfe.ai/openclaw-mcp-bundler"
       config:
         browser:
           ssrfPolicy:
