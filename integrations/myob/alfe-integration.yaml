@@ -1,6 +1,6 @@
 id: myob
 name: "MYOB Business"
-version: 1.0.0
+version: 1.0.1
 description: Connect your agent to MYOB Business — manage invoices, contacts, and finances via custom MCP server
 license: MIT
 min_gateway_version: 1.0.0
@@ -27,7 +27,8 @@ installs:
 
 mcp_servers:
   - id: myob
-    command: myob-mcp-server
+    command: npx
+    args: ["-y", "@alfe.ai/openclaw-myob"]
     hook_managed: true
 
 hooks:

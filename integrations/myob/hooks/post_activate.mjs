@@ -40,8 +40,8 @@ if (!creds?.accessToken || !creds?.myobBusinessId) {
 // Register the MCP server via openclaw config set.
 // The server reads credentials from the Alfe API at startup — no secrets in config.
 const batch = [
-  { path: 'mcp.servers.myob-myob.command', value: 'myob-mcp-server' },
-  { path: 'mcp.servers.myob-myob.args', value: [] },
+  { path: 'mcp.servers.myob.command', value: 'npx' },
+  { path: 'mcp.servers.myob.args', value: ['-y', '@alfe.ai/openclaw-myob'] },
 ];
 
 try {
