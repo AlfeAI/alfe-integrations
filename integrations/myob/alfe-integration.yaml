@@ -1,6 +1,6 @@
 id: myob
 name: "MYOB Business"
-version: 1.0.1
+version: 1.0.0
 description: Connect your agent to MYOB Business — manage invoices, contacts, and finances via custom MCP server
 license: MIT
 min_gateway_version: 1.0.0
