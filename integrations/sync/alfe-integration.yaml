@@ -62,3 +62,10 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw-sync"
+      config:
+        plugins:
+          entries:
+            "@alfe.ai/openclaw-sync":
+              config:
+                syncScope: "{{config.sync_scope}}"
+                syncSchedule: "{{config.sync_schedule}}"
