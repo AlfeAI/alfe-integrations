@@ -62,6 +62,8 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw-sync"
+      skills:
+        - path: skills/alfe-sync
       config:
         plugins:
           entries:
