@@ -1,6 +1,6 @@
 id: xero
 name: "Xero Accounting"
-version: 1.2.0
+version: 1.0.0
 description: Connect your agent to Xero — full accounting access via official Xero MCP server
 license: MIT
 min_gateway_version: 1.0.0
