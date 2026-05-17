@@ -1,6 +1,6 @@
 id: github
 name: "GitHub"
-version: 1.0.0
+version: 1.1.0
 description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more
 license: MIT
 min_gateway_version: 1.0.0
@@ -29,10 +29,9 @@ mcp_servers:
   - id: github
     command: npx
     args: ["-y", "@modelcontextprotocol/server-github"]
-    hook_managed: true
-
-hooks:
-  post_activate: hooks/post_activate.mjs
+    requires_credentials: github
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: "{{credentials.github.accessToken}}"
 
 config_schema:
   - key: github_account

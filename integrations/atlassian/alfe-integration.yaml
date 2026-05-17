@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.0
+version: 1.1.0
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []
@@ -30,7 +30,13 @@ mcp_servers:
   - id: atlassian
     command: uvx
     args: ["mcp-atlassian"]
-    hook_managed: true
+    requires_credentials: atlassian
+    env:
+      ATLASSIAN_OAUTH_CLIENT_ID: "{{credentials.atlassian.clientId}}"
+      ATLASSIAN_OAUTH_CLIENT_SECRET: "{{credentials.atlassian.clientSecret}}"
+      ATLASSIAN_OAUTH_CLOUD_ID: "{{credentials.atlassian.cloudId}}"
+      ATLASSIAN_OAUTH_SCOPE: "read:me offline_access read:jira-work write:jira-work read:jira-user manage:jira-project read:confluence-content.all write:confluence-content.all read:confluence-space.summary read:confluence-user"
+      ATLASSIAN_OAUTH_REDIRECT_URI: "{{alfe.apiUrl}}/atlassian/oauth/callback"
 
 hooks:
   post_install: hooks/post-install.sh

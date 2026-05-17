@@ -3,25 +3,27 @@
 /**
  * Atlassian integration post_activate hook.
  *
- * Fetches OAuth2 credentials from the Alfe API, seeds the
- * sooperset/mcp-atlassian token file (~/.mcp-atlassian/oauth-{clientId}.json),
- * and configures the MCP server in OpenClaw's config.
+ * Seeds the sooperset/mcp-atlassian token file at
+ *   ~/.mcp-atlassian/oauth-{clientId}.json
+ * so the MCP server can bootstrap its internal refresh loop without
+ * making a Connect call on every startup.
  *
- * The MCP server auto-refreshes tokens internally using its standard OAuth mode
- * (client_id + client_secret + seeded refresh token).
+ * The MCP server registration itself is handled by the integration
+ * framework's `mcp-applier` (see manifest `mcp_servers[]` + the
+ * `{{credentials.atlassian.*}}` and `{{alfe.apiUrl}}` interpolation).
+ * The hook only exists for this token-file side effect, which is not
+ * something the applier can do.
  *
- * Runs on every activation to ensure the token file and MCP config are current.
+ * Runs on every activation to keep the token file current. Gracefully
+ * skips when Atlassian isn't connected yet (the applier also skips
+ * MCP registration in that case via `requires_credentials: atlassian`).
  */
 
 import { resolveConfig } from '@alfe.ai/config';
 import { AgentApiClient } from '@alfe.ai/agent-api-client';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-
-const execFileAsync = promisify(execFile);
 
 const config = resolveConfig();
 const client = new AgentApiClient({
@@ -29,14 +31,12 @@ const client = new AgentApiClient({
   apiUrl: config.apiUrl,
 });
 
-// Verify Atlassian is connected before configuring MCP server
 let creds;
 try {
   creds = await client.getAtlassianCredentials();
 } catch (err) {
-  // 404 means OAuth not connected yet — skip gracefully
   if (err.message?.includes('(404)')) {
-    console.log('Atlassian not connected — skipping MCP server setup');
+    console.log('Atlassian not connected — skipping token-file seed');
     process.exit(0);
   }
   console.error(`Failed to get Atlassian credentials: ${err.message}`);
@@ -44,7 +44,7 @@ try {
 }
 
 if (!creds?.accessToken || !creds?.cloudId) {
-  console.log('No Atlassian access token or site — skipping MCP server setup');
+  console.log('No Atlassian access token or site — skipping token-file seed');
   process.exit(0);
 }
 
@@ -53,12 +53,9 @@ if (!creds?.refreshToken) {
   process.exit(0);
 }
 
-// Seed the token file for sooperset/mcp-atlassian.
-// The MCP server looks for ~/.mcp-atlassian/oauth-{clientId}.json and uses
-// its standard OAuth mode (client_id + client_secret) to auto-refresh.
 const clientId = creds.clientId;
 if (!clientId) {
-  console.log('No Atlassian OAuth client ID in credentials — skipping MCP server setup');
+  console.log('No Atlassian OAuth client ID in credentials — skipping token-file seed');
   process.exit(0);
 }
 
@@ -79,31 +76,5 @@ try {
   console.log(`Seeded Atlassian token file at ${tokenFilePath}`);
 } catch (err) {
   console.error(`Failed to seed Atlassian token file: ${err.message}`);
-  process.exit(1);
-}
-
-// Configure the MCP server in OpenClaw via `openclaw config set`.
-// Env vars tell mcp-atlassian to use standard OAuth mode (which reads the seeded token file).
-const clientSecret = creds.clientSecret;
-const redirectUri = `${config.apiUrl}/atlassian/oauth/callback`;
-const scopeString = 'read:me offline_access read:jira-work write:jira-work read:jira-user manage:jira-project read:confluence-content.all write:confluence-content.all read:confluence-space.summary read:confluence-user';
-
-const batch = [
-  { path: 'mcp.servers.atlassian.command', value: 'uvx' },
-  { path: 'mcp.servers.atlassian.args', value: ['mcp-atlassian'] },
-  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_CLIENT_ID', value: clientId },
-  ...(clientSecret ? [{ path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_CLIENT_SECRET', value: clientSecret }] : []),
-  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_CLOUD_ID', value: creds.cloudId },
-  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_SCOPE', value: scopeString },
-  { path: 'mcp.servers.atlassian.env.ATLASSIAN_OAUTH_REDIRECT_URI', value: redirectUri },
-];
-
-try {
-  await execFileAsync('openclaw', [
-    'config', 'set', '--batch-json', JSON.stringify(batch), '--strict-json',
-  ], { timeout: 10_000 });
-  console.log('Atlassian MCP server configured');
-} catch (err) {
-  console.error(`Failed to configure Atlassian MCP server: ${err.message}`);
   process.exit(1);
 }
