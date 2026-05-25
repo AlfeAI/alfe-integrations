@@ -5,6 +5,10 @@ description: Connect your agent to Xero — full accounting access via official 
 license: MIT
 min_gateway_version: 1.0.0
 
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [xero]
+
 supported_agents: [openclaw]
 
 author:

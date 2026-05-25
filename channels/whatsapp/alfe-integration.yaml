@@ -6,15 +6,21 @@ license: MIT
 depends_on: [mobile]
 min_gateway_version: 1.0.0
 
+# Channel type — drives Channel-driven activation in getDesiredState.
+# Locked enum from packages/integration-manifest.
+# requires_connection is intentionally absent until PR 10 introduces the
+# `mobile` connect provider; whatsapp channels anchor on a Mobile Connection.
+channel_type: whatsapp
+
 # Agent runtimes this integration supports (empty = universal/all runtimes)
 supported_agents: []
 
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/whatsapp/assets/icon.svg
+icon: ./assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/whatsapp/assets/preview-dashboard.svg
+  - ./assets/preview-dashboard.svg
 pricing:
   type: usage
   description: "Outbound WhatsApp messages deducted from credit pool via Twilio. Inbound (user-initiated) conversations are free."

@@ -6,12 +6,19 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
+# Connect providers whose credentials this channel adapter resolves.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [google]
+# Channel type — drives Channel-driven activation in getDesiredState.
+# Locked enum from packages/integration-manifest.
+channel_type: google_chat
+
 supported_agents: [openclaw]
 
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/google-chat/assets/icon.svg
+icon: ./assets/icon.svg
 pricing:
   type: free
 features:

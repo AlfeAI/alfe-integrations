@@ -6,14 +6,18 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [microsoft]
+
 supported_agents: [openclaw]
 
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/microsoft/assets/icon.svg
+icon: ./assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/microsoft/assets/preview-dashboard.svg
+  - ./assets/preview-dashboard.svg
 pricing:
   type: free
 features:

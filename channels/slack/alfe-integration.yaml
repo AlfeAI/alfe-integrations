@@ -6,15 +6,22 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
+# Connect providers whose credentials this channel adapter resolves.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [slack]
+# Channel type — drives Channel-driven activation in getDesiredState.
+# Locked enum from packages/integration-manifest.
+channel_type: slack
+
 # Agent runtimes this integration supports (empty = universal/all runtimes)
 supported_agents: []
 
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/slack/assets/icon.svg
+icon: ./assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/slack/assets/preview-dashboard.svg
+  - ./assets/preview-dashboard.svg
 pricing:
   type: free
 features:

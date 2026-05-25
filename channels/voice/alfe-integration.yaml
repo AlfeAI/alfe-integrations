@@ -6,6 +6,12 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
+# Channel type — drives Channel-driven activation in getDesiredState.
+# Locked enum from packages/integration-manifest.
+# requires_connection is intentionally absent until PR 10 introduces the
+# `mobile` connect provider; voice channels anchor on a Mobile Connection.
+channel_type: voice
+
 # Agent runtimes this integration supports (empty = universal/all runtimes)
 supported_agents: [openclaw]
 
@@ -13,9 +19,9 @@ supported_agents: [openclaw]
 author:
   name: Alfe
   url: https://alfe.ai
-icon: https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/voice/assets/icon.svg
+icon: ./assets/icon.svg
 preview_images:
-  - https://raw.githubusercontent.com/AlfeAI/alfe-integrations/main/integrations/voice/assets/preview-dashboard.svg
+  - ./assets/preview-dashboard.svg
 pricing:
   type: free
 features:
