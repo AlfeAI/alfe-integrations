@@ -23,10 +23,10 @@ features:
   - Jira issue tracking (create, update, search, transitions, sprints, boards)
   - Confluence page management (create, edit, search, spaces, comments)
   - 72+ tools via sooperset/mcp-atlassian MCP server
-  - Multi-site support (Pattern A — pass `cloudId` to target a specific Atlassian site)
+  - "Multi-site support (Pattern A — pass `cloudId` to target a specific Atlassian site)"
   - Multi-account support (one OAuth user can own multiple Cloud sites)
   - Automatic per-Connection OAuth2 token refresh with fan-out across sites
-  - Partial-failure surfacing — sites that fail to initialise are visible in atlassian_list_accounts with `connected: false`
+  - "Partial-failure surfacing — sites that fail to initialise are visible in atlassian_list_accounts with `connected: false`"
 
 installs:
   runtimes:
