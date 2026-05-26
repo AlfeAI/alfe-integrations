@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.0
+version: 2.0.0
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []
@@ -23,8 +23,10 @@ features:
   - Jira issue tracking (create, update, search, transitions, sprints, boards)
   - Confluence page management (create, edit, search, spaces, comments)
   - 72+ tools via sooperset/mcp-atlassian MCP server
-  - Automatic OAuth2 token refresh
-  - Multi-site support (select which Atlassian Cloud site to use)
+  - Multi-site support (Pattern A — pass `cloudId` to target a specific Atlassian site)
+  - Multi-account support (one OAuth user can own multiple Cloud sites)
+  - Automatic per-Connection OAuth2 token refresh with fan-out across sites
+  - Partial-failure surfacing — sites that fail to initialise are visible in atlassian_list_accounts with `connected: false`
 
 installs:
   runtimes:
@@ -32,15 +34,13 @@ installs:
 
 mcp_servers:
   - id: atlassian
-    command: uvx
-    args: ["mcp-atlassian"]
+    command: npx
+    # The proxy resolves credentials itself via @alfe.ai/agent-api-client,
+    # so no `env` injection is needed here. `requires_credentials` is kept
+    # so install gating and marketplace UX still understand this
+    # integration as credential-driven.
+    args: ["-y", "@alfe.ai/openclaw-atlassian"]
     requires_credentials: atlassian
-    env:
-      ATLASSIAN_OAUTH_CLIENT_ID: "{{credentials.atlassian.clientId}}"
-      ATLASSIAN_OAUTH_CLIENT_SECRET: "{{credentials.atlassian.clientSecret}}"
-      ATLASSIAN_OAUTH_CLOUD_ID: "{{credentials.atlassian.cloudId}}"
-      ATLASSIAN_OAUTH_SCOPE: "read:me offline_access read:jira-work write:jira-work read:jira-user manage:jira-project read:confluence-content.all write:confluence-content.all read:confluence-space.summary read:confluence-user"
-      ATLASSIAN_OAUTH_REDIRECT_URI: "{{alfe.apiUrl}}/atlassian/oauth/callback"
 
 hooks:
   post_install: hooks/post-install.sh
