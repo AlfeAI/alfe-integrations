@@ -1,7 +1,7 @@
 id: github
 name: "GitHub"
-version: 1.0.0
-description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more
+version: 2.0.0
+description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more (multi-account)
 license: MIT
 min_gateway_version: 1.0.0
 
@@ -19,11 +19,12 @@ pricing:
   type: free
 
 features:
-  - Full GitHub API access via official @modelcontextprotocol/server-github MCP server
+  - Multi-account support — connect a personal account and an org bot side-by-side
+  - Pattern A — every credential-touching tool requires an explicit `login` selector
+  - Full GitHub API access via the @alfe.ai/openclaw-github proxy
   - Repository management (create, list, search)
   - Issues and pull requests (create, comment, review)
   - Code search and file operations
-  - Notifications and activity feeds
 
 installs:
   runtimes:
@@ -32,10 +33,12 @@ installs:
 mcp_servers:
   - id: github
     command: npx
-    args: ["-y", "@modelcontextprotocol/server-github"]
+    # Proxy fetches creds from the Alfe API at startup (Pattern A
+    # multi-account). The `requires_credentials` flag keeps the
+    # applier from registering the MCP until GitHub is actually
+    # connected.
+    args: ["-y", "@alfe.ai/openclaw-github"]
     requires_credentials: github
-    env:
-      GITHUB_PERSONAL_ACCESS_TOKEN: "{{credentials.github.accessToken}}"
 
 config_schema:
   - key: github_account
