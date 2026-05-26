@@ -1,7 +1,7 @@
 id: alfe
 name: "Alfe"
-version: 1.0.0
-description: Core Alfe platform plugin — integration management, LLM proxy routing
+version: 2.0.0
+description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks
 license: MIT
 depends_on: []
 supported_agents: [openclaw]
@@ -24,6 +24,18 @@ installs:
         - package: "@alfe.ai/openclaw-search"
         - package: "@alfe.ai/openclaw-secrets"
         - package: "@alfe.ai/openclaw-mcp-bundler"
+        # Folded in from the legacy `chat` integration (PR 11 of
+        # channels-and-credential-driven-integrations). The chat plugin
+        # is now a platform-baseline capability and ships with `alfe`.
+        - package: "@alfe.ai/openclaw-chat"
+        # Folded in from the legacy `webhooks` integration (PR 11).
+        - package: "@alfe.ai/openclaw-webhooks"
+      skills:
+        # Folded in from the legacy `webhooks` integration's
+        # `installs.runtimes.openclaw.skills` (PR 11). Lives at
+        # integrations/integrations/alfe/skills/webhook-handler/ in the
+        # submodule.
+        - path: skills/webhook-handler
       config:
         browser:
           ssrfPolicy:
@@ -137,5 +149,28 @@ capabilities:
   - search.news
   - secrets.read
   - secrets.write
+  # Folded in from the legacy `chat` integration (PR 11).
+  - chat.web
+  - chat.mobile
+  - chat.sessions
+  # Folded in from the legacy `webhooks` integration (PR 11).
+  - webhooks.receive
+  - webhooks.manage
 
-config_schema: []
+# Folded in from the legacy `webhooks` integration (PR 11). Kept as
+# admin-tunable knobs rather than baked into the plugin so operators
+# can adjust per-tenant limits without a plugin release.
+config_schema:
+  - key: max_webhooks
+    type: number
+    label: "Maximum Webhooks"
+    description: "Maximum number of webhook endpoints this agent can create (default: 10)"
+    required: false
+    default: 10
+    editable: admin
+  - key: webhooks_ws_url
+    type: string
+    label: "Webhooks Service URL"
+    description: "WebSocket URL of the Alfe webhooks service"
+    required: false
+    default: "wss://webhooks.alfe.ai/ws"
