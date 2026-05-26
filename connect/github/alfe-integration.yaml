@@ -33,10 +33,13 @@ installs:
 mcp_servers:
   - id: github
     command: npx
-    # Proxy fetches creds from the Alfe API at startup (Pattern A
-    # multi-account). The `requires_credentials` flag keeps the
-    # applier from registering the MCP until GitHub is actually
-    # connected.
+    # The proxy fetches credentials from the Alfe API at startup
+    # (Pattern A multi-account) rather than reading them via env
+    # interpolation. `requires_credentials` is kept for marketplace /
+    # registry semantics — the McpApplier's env-presence gate is moot
+    # here because `env` is empty, so the MCP starts as soon as the
+    # integration is installed, and the proxy itself degrades to
+    # discovery-only tools when zero accounts are connected.
     args: ["-y", "@alfe.ai/openclaw-github"]
     requires_credentials: github
 
