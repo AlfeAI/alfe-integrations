@@ -27,7 +27,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-mobile"
+        - package: "@alfe.ai/openclaw-mobile@0.0.14"
       config: {}
 
 capabilities:

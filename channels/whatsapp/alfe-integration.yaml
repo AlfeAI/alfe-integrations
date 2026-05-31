@@ -34,7 +34,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-whatsapp"
+        - package: "@alfe.ai/openclaw-whatsapp@0.0.14"
       config: {}
 
 config_schema: []

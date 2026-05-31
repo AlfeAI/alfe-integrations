@@ -37,7 +37,7 @@ installs:
         - clawhub: m365-teams-chat
         - clawhub: m365-teams-send
       plugins:
-        - package: "@alfe.ai/openclaw-teams"
+        - package: "@alfe.ai/openclaw-teams@0.0.18"
 
 hooks:
   health_check: hooks/health.sh

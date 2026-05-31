@@ -31,7 +31,7 @@ installs:
 mcp_servers:
   - id: notion
     command: npx
-    args: ["-y", "@alfe.ai/openclaw-notion"]
+    args: ["-y", "@alfe.ai/openclaw-notion@0.2.0"]
     # Proxy fetches creds from the Alfe API at startup; the
     # `requires_credentials` flag keeps the applier from registering
     # the MCP until Notion is actually connected.

@@ -38,7 +38,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-voice"
+        - package: "@alfe.ai/openclaw-voice@0.0.16"
       config:
         messages:
           tts:

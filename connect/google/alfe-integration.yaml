@@ -33,7 +33,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-google"
+        - package: "@alfe.ai/openclaw-google@0.0.20"
       skills:
         # Core service skills
         - clawhub: gws-shared
