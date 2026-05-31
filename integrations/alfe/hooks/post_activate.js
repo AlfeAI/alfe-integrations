@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Console integration post_activate hook.
+ * alfe integration post_activate hook (formerly console integration's).
+ *
+ * Originally the only hook for the standalone `console` integration; PR
+ * 12 of channels-and-credential-driven-integrations folded console
+ * into alfe and this hook moved with it. alfe is universally installed,
+ * so the loopback-token bootstrap now runs on every agent rather than
+ * only on agents that explicitly opted into console.
  *
  * Ensures the local OpenClaw gateway has an auth token in
  * `~/.openclaw/openclaw.json` under `gateway.auth.token`. The daemon's
@@ -12,9 +18,9 @@
  * `openclaw config get` redacts secret values (__OPENCLAW_REDACTED__).
  * Writes still go through `openclaw config set` to avoid clobbering.
  *
- * As of console integration v1.1.0 the token is NOT pushed to the cloud —
- * it stays on the agent host. The console service uses the gateway tunnel
- * to reach the daemon, which injects this token on the way to OpenClaw.
+ * The token is NOT pushed to the cloud — it stays on the agent host.
+ * The console service uses the gateway tunnel to reach the daemon,
+ * which injects this token on the way to OpenClaw.
  */
 
 import { execFileSync } from 'node:child_process';

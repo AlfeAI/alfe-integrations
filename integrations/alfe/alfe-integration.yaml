@@ -1,10 +1,20 @@
 id: alfe
 name: "Alfe"
-version: 2.0.0
-description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks
+version: 2.1.0
+description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
 supported_agents: [openclaw]
+
+# Folded in from the legacy `console` integration (PR 12 of
+# channels-and-credential-driven-integrations). The console
+# integration carried a single `post_activate` hook that ensured
+# `~/.openclaw/openclaw.json` had `gateway.auth.token` set so the
+# daemon could authenticate its own loopback requests when
+# forwarding console traffic to localhost:18789. The hook is now
+# baselined with `alfe`.
+hooks:
+  post_activate: hooks/post_activate.js
 
 author:
   name: Alfe
@@ -30,6 +40,10 @@ installs:
         - package: "@alfe.ai/openclaw-chat"
         # Folded in from the legacy `webhooks` integration (PR 11).
         - package: "@alfe.ai/openclaw-webhooks"
+        # Folded in from the legacy `console` integration (PR 12 follow-up to
+        # channels-and-credential-driven-integrations). The console plugin
+        # is now a platform-baseline capability and ships with alfe.
+        - package: "@alfe.ai/openclaw-console"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
@@ -42,6 +56,20 @@ installs:
             dangerouslyAllowPrivateNetwork: true
         session:
           dmScope: "per-channel-peer"
+        # Folded in from the legacy `console` integration (PR 12). The
+        # console plugin maintains an outbound WS to the console service
+        # and multiplexes browser sessions over it — no gateway data-
+        # plane hop, no public IP. `allowedOrigins` lists the console
+        # service origins permitted to attach; `dangerouslyDisableDevice
+        # Auth` short-circuits the local device-auth handshake because
+        # the daemon's tunnel handler now injects an authenticated token
+        # via the post_activate hook below.
+        gateway:
+          controlUi:
+            allowedOrigins:
+              - "https://console.dev.alfe.ai"
+              - "https://console.alfe.ai"
+            dangerouslyDisableDeviceAuth: true
         models:
           providers:
             anthropic:
@@ -156,6 +184,8 @@ capabilities:
   # Folded in from the legacy `webhooks` integration (PR 11).
   - webhooks.receive
   - webhooks.manage
+  # Folded in from the legacy `console` integration (PR 12).
+  - console.web
 
 # Folded in from the legacy `webhooks` integration (PR 11). Kept as
 # admin-tunable knobs rather than baked into the plugin so operators
