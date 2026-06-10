@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.0.1
+version: 1.0.0
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
