@@ -39,7 +39,7 @@ mcp_servers:
     # so no `env` injection is needed here. `requires_credentials` is kept
     # so install gating and marketplace UX still understand this
     # integration as credential-driven.
-    args: ["-y", "@alfe.ai/openclaw-atlassian@0.2.0"]
+    args: ["-y", "@alfe.ai/openclaw-atlassian@0.2.1"]
     requires_credentials: atlassian
 
 hooks:
