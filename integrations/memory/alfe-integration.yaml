@@ -6,7 +6,7 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
-supported_scopes: [org]
+supported_scopes: [agent]
 supported_agents: [openclaw]
 
 author:
