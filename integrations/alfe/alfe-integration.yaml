@@ -27,7 +27,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.0.43"
+        - package: "@alfe.ai/openclaw@0.0.44"
         - package: "@alfe.ai/openclaw-metrics@0.0.24"
         - package: "@alfe.ai/openclaw-identity@0.1.5"
         - package: "@alfe.ai/openclaw-database@0.0.22"
