@@ -6,6 +6,22 @@ license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
+# Channel type — drives Channel-driven activation in getDesiredState.
+# Locked enum from packages/integration-manifest.
+#
+# A Mobile Connection ALWAYS provisions a default `sms` ChannelEntity on
+# purchase (services/connect/api/connections/mobile/purchase/post.ts), so
+# anchoring activation on the `sms` channel makes the mobile integration
+# (and its `@alfe.ai/openclaw-mobile` plugin) install whenever an agent has
+# a working phone number — exactly the always-on SMS/calls baseline this
+# integration represents.
+#
+# EITHER semantics (compose.ts): with `channel_type` set, Channel presence
+# is the sole activation trigger. `requires_connection` is intentionally
+# omitted — it would be advisory only here and the `sms` channel already
+# implies the parent `mobile` Connection.
+channel_type: sms
+
 # Agent runtimes this integration supports
 supported_agents: [openclaw]
 
