@@ -8,9 +8,9 @@
  * authenticate with Google Workspace APIs.
  *
  * Multi-account support:
- *   - Default account → ~/.config/gws/ (no env prefix needed)
- *   - Additional accounts → ~/.config/gws-<sanitized-email>/
- *   - Use GOOGLE_WORKSPACE_CLI_CONFIG_DIR=<path> to target non-default
+ *   - Every account → ~/.config/gws-<sanitized-email>/
+ *   - The openclaw-google plugin sets GOOGLE_WORKSPACE_CLI_CONFIG_DIR to
+ *     that per-email dir when running gws for a given account.
  *
  * Runs on every activation to keep credentials in sync.
  */
@@ -63,12 +63,12 @@ for (let i = 0; i < accounts.length; i++) {
   const account = accounts[i];
   if (!account.refreshToken) continue;
 
-  const isDefault = account.isDefault ?? i === 0;
-
-  // Default account: ~/.config/gws/
-  // Additional accounts: ~/.config/gws-<sanitized-email>/
-  const dirName = isDefault ? 'gws' : `gws-${sanitizeEmail(account.email)}`;
-  const configDir = join(homedir(), '.config', dirName);
+  // Every account gets its own per-email config dir. The openclaw-google
+  // plugin resolves ALL accounts at ~/.config/gws-<sanitized-email>/
+  // (the "default account → ~/.config/gws/" concept was removed 2026-05-14);
+  // special-casing the first account to a bare `gws/` dir wrote creds to a
+  // path the plugin never reads, leaving that account's email unreachable.
+  const configDir = join(homedir(), '.config', `gws-${sanitizeEmail(account.email)}`);
   mkdirSync(configDir, { recursive: true, mode: 0o700 });
 
   // Write OAuth client credentials (matches Google's client_secret.json format)
@@ -109,8 +109,7 @@ for (let i = 0; i < accounts.length; i++) {
     );
   }
 
-  const label = isDefault ? '(default)' : '';
-  console.log(`gws CLI configured for ${account.email} at ${configDir} ${label}`);
+  console.log(`gws CLI configured for ${account.email} at ${configDir}`);
 }
 
 console.log(`${accounts.length} Google account(s) configured`);
