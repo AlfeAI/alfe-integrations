@@ -1,6 +1,6 @@
 id: headless-browser
 name: "Headless Browser"
-version: 1.0.0
+version: 1.0.1
 description: Installs and configures Google Chrome for headless Linux servers
 license: MIT
 depends_on: []
