@@ -21,6 +21,15 @@
  * The token is NOT pushed to the cloud — it stays on the agent host.
  * The console service uses the gateway tunnel to reach the daemon,
  * which injects this token on the way to OpenClaw.
+ *
+ * RACE-HARDENING: this runs at the tail of activation, right after the
+ * applier's `openclaw config set --batch-json`. Each `config set` triggers
+ * an async runtime hot-reload that rewrites openclaw.json, so a `config set`
+ * that races the in-flight reload fails with a bare "Command failed". We
+ * retry with backoff and re-read the file before each attempt (another writer
+ * may have set the token), and on failure we emit a SCRUBBED message — the
+ * failed argv contains the token, so it must never reach stderr (which the
+ * daemon surfaces in the integration's user-facing errorMessage).
  */
 
 import { execFileSync } from 'node:child_process';
@@ -29,17 +38,63 @@ import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-let token = '';
-try {
-  const stateDir = process.env.OPENCLAW_STATE_DIR || join(homedir(), '.openclaw');
-  const configPath = process.env.OPENCLAW_CONFIG_PATH || join(stateDir, 'openclaw.json');
-  const raw = JSON.parse(readFileSync(configPath, 'utf-8'));
-  token = raw?.gateway?.auth?.token ?? '';
-} catch {
-  // Config file missing or malformed — generate one below.
+const RETRIES = 5;
+const BASE_DELAY_MS = 500;
+const MAX_DELAY_MS = 4000;
+
+const stateDir = process.env.OPENCLAW_STATE_DIR || join(homedir(), '.openclaw');
+const configPath = process.env.OPENCLAW_CONFIG_PATH || join(stateDir, 'openclaw.json');
+
+/** Synchronous sleep — this hook runs sync (execFileSync), so block cleanly. */
+function sleep(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
-if (!token) {
-  token = randomUUID();
-  execFileSync('openclaw', ['config', 'set', 'gateway.auth.token', token]);
+function readToken() {
+  try {
+    const raw = JSON.parse(readFileSync(configPath, 'utf-8'));
+    return raw?.gateway?.auth?.token ?? '';
+  } catch {
+    // Config file missing or malformed — treat as absent.
+    return '';
+  }
+}
+
+if (!readToken()) {
+  const token = randomUUID();
+  let written = false;
+  let lastStderr = '';
+
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
+    // A concurrent writer (or a prior attempt whose write landed despite a
+    // reported failure) may have set the token since we last looked.
+    if (readToken()) {
+      written = true;
+      break;
+    }
+    try {
+      // Capture stderr (don't inherit) so a failure can't print the token argv.
+      execFileSync('openclaw', ['config', 'set', 'gateway.auth.token', token], {
+        stdio: ['ignore', 'ignore', 'pipe'],
+      });
+      written = true;
+      break;
+    } catch (err) {
+      lastStderr = err && err.stderr ? String(err.stderr).trim() : '';
+      if (attempt < RETRIES) {
+        // Exponential backoff (capped) to let the hot-reload settle.
+        sleep(Math.min(MAX_DELAY_MS, BASE_DELAY_MS * 2 ** attempt));
+      }
+    }
+  }
+
+  if (!written) {
+    // Scrub: never echo the token (it lives in the failed command's argv).
+    process.stderr.write(
+      `post_activate: failed to set gateway.auth.token after ${RETRIES + 1} attempts` +
+        (lastStderr ? `: ${lastStderr}` : '') +
+        '\n',
+    );
+    process.exit(1);
+  }
 }
