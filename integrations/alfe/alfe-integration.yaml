@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.0.2
+version: 1.0.3
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -44,6 +44,11 @@ installs:
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
         - package: "@alfe.ai/openclaw-console@0.0.7"
+        # Scoped org/team/project knowledge resources (Phase 3 of the
+        # knowledge-resources feature). Reads/searches/contributes shared
+        # docs + facts + profile; distinct from private per-agent memory.
+        # Pin must match the first published version of the new package.
+        - package: "@alfe.ai/openclaw-knowledge@0.0.1"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
