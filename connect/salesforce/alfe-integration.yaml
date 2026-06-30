@@ -35,7 +35,7 @@ installs:
 mcp_servers:
   - id: salesforce
     command: npx
-    args: ["-y", "@alfe.ai/salesforce-mcp@0.0.1"]
+    args: ["-y", "@alfe.ai/salesforce-mcp@0.0.2"]
     # The server fetches credentials (access token + instance URL) from the
     # Alfe API at startup, so no env interpolation is needed. The
     # `requires_credentials` flag makes the applier skip registration when
