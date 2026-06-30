@@ -13,8 +13,10 @@ requires_connection: [discord]
 # Locked enum from packages/integration-manifest.
 channel_type: discord
 
-# Agent runtimes this integration supports (empty = universal/all runtimes)
-supported_agents: []
+# Agent runtimes this integration supports. OpenClaw-only: this channel
+# adapter has no Hermes equivalent yet. (An empty list means "all runtimes",
+# which would wrongly attempt this on Hermes — so it is pinned to openclaw.)
+supported_agents: [openclaw]
 
 author:
   name: Alfe

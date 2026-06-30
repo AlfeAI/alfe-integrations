@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [atlassian]
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, hermes]
 
 author:
   name: Alfe
@@ -31,6 +31,9 @@ features:
 installs:
   runtimes:
     openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
 
 mcp_servers:
   - id: atlassian
@@ -39,7 +42,7 @@ mcp_servers:
     # so no `env` injection is needed here. `requires_credentials` is kept
     # so install gating and marketplace UX still understand this
     # integration as credential-driven.
-    args: ["-y", "@alfe.ai/openclaw-atlassian@0.2.1"]
+    args: ["-y", "@alfe.ai/atlassian-mcp@0.3.0"]
     requires_credentials: atlassian
 
 hooks:

@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [xero]
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, hermes]
 
 author:
   name: Alfe
@@ -28,11 +28,14 @@ features:
 installs:
   runtimes:
     openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
 
 mcp_servers:
   - id: xero
     command: npx
-    args: ["-y", "@alfe.ai/openclaw-xero@0.2.0"]
+    args: ["-y", "@alfe.ai/xero-mcp@0.3.0"]
     # Proxy fetches creds from the Alfe API at startup; the
     # `requires_credentials` flag keeps the applier from registering
     # the MCP until Xero is actually connected.

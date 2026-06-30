@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [github]
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, hermes]
 
 author:
   name: Alfe
@@ -21,7 +21,7 @@ pricing:
 features:
   - Multi-account support — connect a personal account and an org bot side-by-side
   - Pattern A — every credential-touching tool requires an explicit `login` selector
-  - Full GitHub API access via the @alfe.ai/openclaw-github proxy
+  - Full GitHub API access via the @alfe.ai/github-mcp proxy
   - Repository management (create, list, search)
   - Issues and pull requests (create, comment, review)
   - Code search and file operations
@@ -29,6 +29,9 @@ features:
 installs:
   runtimes:
     openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
 
 mcp_servers:
   - id: github
@@ -40,7 +43,7 @@ mcp_servers:
     # here because `env` is empty, so the MCP starts as soon as the
     # integration is installed, and the proxy itself degrades to
     # discovery-only tools when zero accounts are connected.
-    args: ["-y", "@alfe.ai/openclaw-github@0.2.0"]
+    args: ["-y", "@alfe.ai/github-mcp@0.3.0"]
     requires_credentials: github
 
 config_schema:

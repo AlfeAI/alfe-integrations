@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [myob]
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, hermes]
 
 author:
   name: Alfe
@@ -28,11 +28,14 @@ features:
 installs:
   runtimes:
     openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
 
 mcp_servers:
   - id: myob
     command: npx
-    args: ["-y", "@alfe.ai/openclaw-myob@0.2.3"]
+    args: ["-y", "@alfe.ai/myob-mcp@0.3.0"]
     # The proxy fetches credentials from the Alfe API at startup, so
     # no env interpolation is needed. The `requires_credentials` flag
     # makes the applier skip registration when MYOB isn't connected

@@ -12,8 +12,11 @@ min_gateway_version: 1.0.0
 # `mobile` connect provider; whatsapp channels anchor on a Mobile Connection.
 channel_type: whatsapp
 
-# Agent runtimes this integration supports (empty = universal/all runtimes)
-supported_agents: []
+# Agent runtimes this integration supports. OpenClaw-only: installs the
+# @alfe.ai/openclaw-whatsapp plugin, which has no Hermes equivalent yet.
+# (An empty list means "all runtimes", which would wrongly attempt this on
+# Hermes — so it is pinned to openclaw.)
+supported_agents: [openclaw]
 
 author:
   name: Alfe
