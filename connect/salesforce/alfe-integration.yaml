@@ -1,0 +1,54 @@
+id: salesforce
+name: "Salesforce"
+version: 1.0.0
+description: Connect your agent to Salesforce — query and manage CRM records (accounts, contacts, opportunities, leads, cases, and custom objects) via SOQL and the REST API
+license: MIT
+min_gateway_version: 1.0.0
+
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [salesforce]
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - SOQL queries across all standard and custom objects
+  - Create / read / update / delete any sObject
+  - SOSL search and object describe
+  - Multi-org support (pass `orgId` to target a specific connected org)
+  - Automatic per-org OAuth2 token refresh
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: salesforce
+    command: npx
+    args: ["-y", "@alfe.ai/salesforce-mcp@0.1.0"]
+    # The server fetches credentials (access token + instance URL) from the
+    # Alfe API at startup, so no env interpolation is needed. The
+    # `requires_credentials` flag makes the applier skip registration when
+    # Salesforce isn't connected yet.
+    requires_credentials: salesforce
+
+config_schema:
+  - key: salesforce_account
+    type: oauth_connect
+    label: "Salesforce Account"
+    description: "Connect the Salesforce org for this agent"
+    required: true
+    oauth_provider: salesforce
+
+capabilities:
+  - salesforce.crm
