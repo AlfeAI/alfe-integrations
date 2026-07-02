@@ -1,6 +1,6 @@
 id: voice
 name: "Voice"
-version: 1.0.0
+version: 1.0.1
 description: Voice call integration for Alfe agents (Twilio + Discord)
 license: MIT
 depends_on: []
@@ -32,20 +32,13 @@ features:
   - Call transfer and conferencing support
   - Discord voice channel integration
 
-# Source repository (used by daemon for commit-pinned install)
-
-installs:
-  runtimes:
-    openclaw:
-      plugins:
-        - package: "@alfe.ai/openclaw-voice@0.0.16"
-      config:
-        messages:
-          tts:
-            provider: openai
-            openai:
-              baseUrl: "http://localhost:3200/v1"
-              apiKey: "unused-but-required"
+# The `@alfe.ai/openclaw-voice` plugin (voice_tts / voice_stt + telephony
+# tools) is now installed by the baseline `alfe` integration for EVERY
+# agent, so this channel integration no longer declares it — that avoids a
+# redundant install and a version-conflict surface (the daemon dedups plugin
+# installs by bare package name, so a divergent pin here would be silently
+# ignored). This integration owns only the Twilio/telephony concern:
+# config_schema below + channel_type activation + the relay hooks.
 
 config_schema:
   - key: twilio_account_sid
