@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.0
+version: 1.1.1
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -30,7 +30,11 @@ installs:
         - package: "@alfe.ai/openclaw@0.0.44"
         - package: "@alfe.ai/openclaw-metrics@0.0.24"
         - package: "@alfe.ai/openclaw-identity@0.1.5"
-        - package: "@alfe.ai/openclaw-database@0.0.22"
+        # FROZEN (2026-07-03): the per-tenant database feature is frozen — the
+        # @alfe.ai/openclaw-database plugin (18 db_* tools) is no longer shipped
+        # to new agents. Backend provisioning is disabled and clusters were torn
+        # down. To revive, re-add `@alfe.ai/openclaw-database@0.0.22` here and
+        # bump the manifest version. See services/database/REVIVE.md.
         - package: "@alfe.ai/openclaw-search@0.0.16"
         - package: "@alfe.ai/openclaw-secrets@0.2.4"
         - package: "@alfe.ai/openclaw-mcp-bundler@0.0.19"
