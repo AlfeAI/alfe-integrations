@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.0.5
+version: 1.1.0
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -56,6 +56,20 @@ installs:
         # only the Twilio/telephony concern. Single owner avoids the
         # bare-name install dedup silently ignoring a divergent second pin.
         - package: "@alfe.ai/openclaw-voice@0.1.0"
+        # Interactive remote-control relay. A CORE capability (like chat /
+        # console / webhooks / voice above) so EVERY agent gets the relay
+        # connection + web terminal — the terminal needs no browser at all.
+        # The browser co-browse surface additionally needs Chrome (the
+        # `headless-browser` integration) and degrades gracefully when it's
+        # absent: the terminal + relay keep working, only browser_* tools error.
+        # Reads `browser.ssrfPolicy` from the config block below; derives its
+        # per-stage relay URL from the agent's apiUrl (no hardcoded URL).
+        #
+        # PIN: must match the first PUBLISHED version of @alfe.ai/openclaw-remote
+        # (currently 0.0.0, unpublished). plugin-engineer publishes via
+        # changeset+CI; this pin + the submodule-pointer bump must NOT land until
+        # that version is on npm, or reconcile/install fails "version not found".
+        - package: "@alfe.ai/openclaw-remote@0.0.1"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
@@ -231,6 +245,11 @@ capabilities:
   - webhooks.manage
   # Folded in from the legacy `console` integration (PR 12).
   - console.web
+  # Interactive remote-control relay. `terminal.session` is universal (every
+  # agent); `browser.cobrowse` additionally requires the headless-browser
+  # (Chrome) integration and no-ops gracefully without it.
+  - browser.cobrowse
+  - terminal.session
 
 # Folded in from the legacy `webhooks` integration (PR 11). Kept as
 # admin-tunable knobs rather than baked into the plugin so operators
