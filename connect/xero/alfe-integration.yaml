@@ -1,6 +1,6 @@
 id: xero
 name: "Xero Accounting"
-version: 1.0.1
+version: 1.0.2
 description: Connect your agent to Xero — full accounting access via official Xero MCP server
 license: MIT
 min_gateway_version: 1.0.0
@@ -35,7 +35,7 @@ installs:
 mcp_servers:
   - id: xero
     command: npx
-    args: ["-y", "@alfe.ai/xero-mcp@0.3.1"]
+    args: ["-y", "@alfe.ai/xero-mcp@0.3.2"]
     # Proxy fetches creds from the Alfe API at startup; the
     # `requires_credentials` flag keeps the applier from registering
     # the MCP until Xero is actually connected.

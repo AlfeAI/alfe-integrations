@@ -1,6 +1,6 @@
 id: github
 name: "GitHub"
-version: 1.0.1
+version: 1.0.2
 description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more (multi-account)
 license: MIT
 min_gateway_version: 1.0.0
@@ -43,7 +43,7 @@ mcp_servers:
     # here because `env` is empty, so the MCP starts as soon as the
     # integration is installed, and the proxy itself degrades to
     # discovery-only tools when zero accounts are connected.
-    args: ["-y", "@alfe.ai/github-mcp@0.3.1"]
+    args: ["-y", "@alfe.ai/github-mcp@0.3.2"]
     requires_credentials: github
 
 config_schema:

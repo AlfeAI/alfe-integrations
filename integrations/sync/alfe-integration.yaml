@@ -1,6 +1,6 @@
 id: sync
 name: "Sync"
-version: 1.0.1
+version: 1.0.2
 description: Back up your agent configuration and memory to the cloud
 license: MIT
 depends_on: []
@@ -61,7 +61,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-sync@0.1.11"
+        - package: "@alfe.ai/openclaw-sync@0.2.0"
       skills:
         - path: skills/alfe-sync
       config:

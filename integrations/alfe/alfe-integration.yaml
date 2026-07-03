@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.4
+version: 1.1.5
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -27,39 +27,34 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.2.0"
-        - package: "@alfe.ai/openclaw-metrics@0.0.26"
-        - package: "@alfe.ai/openclaw-identity@0.1.10"
-        # FROZEN (2026-07-03): the per-tenant database feature is frozen — the
-        # @alfe.ai/openclaw-database plugin (18 db_* tools) is no longer shipped
-        # to new agents. Backend provisioning is disabled and clusters were torn
-        # down. To revive, re-add `@alfe.ai/openclaw-database@0.0.22` here and
-        # bump the manifest version. See services/database/REVIVE.md.
-        - package: "@alfe.ai/openclaw-search@0.0.22"
-        - package: "@alfe.ai/openclaw-secrets@0.2.9"
+        - package: "@alfe.ai/openclaw@0.3.1"
+        - package: "@alfe.ai/openclaw-metrics@0.0.27"
+        - package: "@alfe.ai/openclaw-identity@0.1.11"
+        - package: "@alfe.ai/openclaw-search@0.0.23"
+        - package: "@alfe.ai/openclaw-secrets@0.2.10"
         - package: "@alfe.ai/openclaw-mcp-bundler@0.0.22"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.3.1"
+        - package: "@alfe.ai/openclaw-chat@0.3.2"
         # Folded in from the legacy `webhooks` integration (PR 11).
-        - package: "@alfe.ai/openclaw-webhooks@0.0.17"
+        - package: "@alfe.ai/openclaw-webhooks@0.0.18"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
-        - package: "@alfe.ai/openclaw-console@0.0.10"
+        - package: "@alfe.ai/openclaw-console@0.0.11"
         # Scoped org/team/project knowledge resources (Phase 3 of the
         # knowledge-resources feature). Reads/searches/contributes shared
         # docs + facts + profile; distinct from private per-agent memory.
         # Pin must match the first published version of the new package.
-        - package: "@alfe.ai/openclaw-knowledge@0.0.4"
+        - package: "@alfe.ai/openclaw-knowledge@0.0.5"
         # Voice tools are a platform-baseline capability: EVERY agent gets
         # `voice_tts` / `voice_stt` (and the telephony placeholder tools),
         # not just agents with a phone number. The `voice` channel
         # integration therefore no longer re-declares this plugin — it owns
         # only the Twilio/telephony concern. Single owner avoids the
         # bare-name install dedup silently ignoring a divergent second pin.
-        - package: "@alfe.ai/openclaw-voice@0.1.0"
+        - package: "@alfe.ai/openclaw-voice@0.1.1"
         # Interactive remote-control relay. A CORE capability (like chat /
         # console / webhooks / voice above) so EVERY agent gets the relay
         # connection + web terminal — the terminal needs no browser at all.
@@ -75,7 +70,7 @@ installs:
         # the old node-pty with no linux-x64 prebuild). Bump this + the
         # submodule-pointer only AFTER the version is on npm, or install fails
         # "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.0.2"
+        - package: "@alfe.ai/openclaw-remote@0.0.3"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
