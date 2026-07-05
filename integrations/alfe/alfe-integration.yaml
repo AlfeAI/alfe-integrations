@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.15
+version: 1.1.16
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -43,11 +43,15 @@ installs:
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
         - package: "@alfe.ai/openclaw-console@0.0.11"
-        # Scoped org/team/project knowledge resources (Phase 3 of the
-        # knowledge-resources feature). Reads/searches/contributes shared
-        # docs + facts + profile; distinct from private per-agent memory.
-        # Pin must match the first published version of the new package.
-        - package: "@alfe.ai/openclaw-knowledge@0.0.5"
+        # Scoped org/team/project knowledge resources: search + read + propose/
+        # edit shared DOCUMENTS + profile (facts primitive removed 2026-07-06 —
+        # one home per fact; agents find the right doc and edit it, quick capture
+        # stays in private per-agent memory). Ships resource_propose_change so a
+        # non-member agent can propose to scopes it can't write directly.
+        # 0.0.8 = the propose-change build (0.0.7 predates it). NOTE: pinned
+        # ahead of publish at the user's request — must be live on npm before any
+        # agent reconcile picks this up.
+        - package: "@alfe.ai/openclaw-knowledge@0.0.8"
         # Voice tools are a platform-baseline capability: EVERY agent gets
         # `voice_tts` / `voice_stt` (and the telephony placeholder tools),
         # not just agents with a phone number. The `voice` channel
