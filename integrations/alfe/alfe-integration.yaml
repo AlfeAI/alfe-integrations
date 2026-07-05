@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.14
+version: 1.1.15
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -67,10 +67,12 @@ installs:
         # PIN: must match a PUBLISHED version of @alfe.ai/openclaw-remote.
         # 0.0.2 pulls @alfe.ai/terminal@^0.1.1 — the prebuilt-multiarch node-pty
         # that makes the web terminal work on managed Linux VMs (0.0.1 shipped
-        # the old node-pty with no linux-x64 prebuild). Bump this + the
-        # submodule-pointer only AFTER the version is on npm, or install fails
-        # "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.0.3"
+        # the old node-pty with no linux-x64 prebuild). 0.0.6 makes
+        # request_browser_takeover return a dashboard control-URL the agent
+        # shares in chat (no dependency on the chat event→card path). Bump this
+        # + the submodule-pointer only AFTER the version is on npm, or install
+        # fails "version not found".
+        - package: "@alfe.ai/openclaw-remote@0.0.6"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
