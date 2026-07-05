@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.13
+version: 1.1.14
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -27,7 +27,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.0"
+        - package: "@alfe.ai/openclaw@0.4.1"
         - package: "@alfe.ai/openclaw-metrics@0.0.27"
         - package: "@alfe.ai/openclaw-identity@0.1.12"
         - package: "@alfe.ai/openclaw-search@0.0.25"
@@ -47,7 +47,7 @@ installs:
         # knowledge-resources feature). Reads/searches/contributes shared
         # docs + facts + profile; distinct from private per-agent memory.
         # Pin must match the first published version of the new package.
-        - package: "@alfe.ai/openclaw-knowledge@0.0.5"
+        - package: "@alfe.ai/openclaw-knowledge@0.0.7"
         # Voice tools are a platform-baseline capability: EVERY agent gets
         # `voice_tts` / `voice_stt` (and the telephony placeholder tools),
         # not just agents with a phone number. The `voice` channel
