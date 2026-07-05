@@ -74,6 +74,36 @@ The default ignore set (which the user does **not** need to add to
   `.preserve.*`
 - Language churn — `__pycache__`, `*.pyc`, `*.log`
 
+## After a recovery — `.conflict-*` sidecars and `RECOVERY-*.md`
+
+When your workspace is restored from the cloud (VM rebuild, machine
+re-adoption, or a restart after downtime), any local file that differed from
+the cloud copy is NOT silently overwritten. Instead:
+
+- The cloud version is restored at the original path (the cloud is the
+  source of truth for anything it holds).
+- Your pre-recovery local version is preserved next to it as
+  `<name>.conflict-<timestamp><ext>` (e.g. `SOUL.conflict-2026-07-06T…Z.md`).
+- A `RECOVERY-<timestamp>.md` report in your working directory lists every
+  preserved file with both hashes, and a note is appended to your
+  `HEARTBEAT.md` so you see it on your next heartbeat.
+
+**What you should do:** open each sidecar, compare it with the live file,
+merge anything worth keeping, then delete the sidecar. When all sidecars are
+handled, delete the `RECOVERY-*.md` report and remove the recovery section
+from `HEARTBEAT.md` (including its `<!-- alfe-sync:recovery-nudge -->`
+marker). Deleting many sidecars at once is safe — they are exempt from the
+delete brake.
+
+Two things to know:
+
+- After a full VM rebuild, sidecars for persona files (`SOUL.md`,
+  `IDENTITY.md`, …) usually just contain the pristine setup template — sync
+  can't tell a template seed from a real edit. If the sidecar is only the
+  template, delete it.
+- Files over 100 MB are not sidecarred; the report lists them as replaced
+  without a preserved copy.
+
 ## Safety brake
 
 The watcher has a built-in rate brake: if cumulative deletes in a 60-second
