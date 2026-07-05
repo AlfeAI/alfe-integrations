@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.10
+version: 1.1.11
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -87,13 +87,20 @@ installs:
         # OpenClaw has NO per-dispatch thinking parameter — the chat
         # relay's `thinking:'low'` RPC field can't reach the run; the
         # level resolves session `/think` override → per-agent
-        # `thinkingDefault` → this default. Without it, Claude models
-        # never emit `stream:'thinking'` events and chat thinking cards
-        # only work for inline-<think> models (deepseek/glm). `low`
-        # bounds the token cost; users can `/think off|high` per session.
+        # `thinkingDefault` → this default. TWO keys gate live thought
+        # streaming (verified against the openclaw dist):
+        #   - thinkingDefault != off  → the model PRODUCES reasoning
+        #   - reasoningDefault: stream → reasoning is EMITTED to the
+        #     agent-event bus as stream:'thinking' deltas (what the
+        #     console shows and the chat plugin forwards as thinking
+        #     cards). "off" (the default) emits nothing; "on" would fold
+        #     reasoning into the reply text instead — never use it here.
+        # `low` bounds the token cost; `/think off|high` and `/reasoning`
+        # per-session overrides still win.
         agents:
           defaults:
             thinkingDefault: "low"
+            reasoningDefault: "stream"
         # Folded in from the legacy `console` integration (PR 12). The
         # console plugin maintains an outbound WS to the console service
         # and multiplexes browser sessions over it — no gateway data-
