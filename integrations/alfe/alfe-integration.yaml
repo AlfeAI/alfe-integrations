@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.16
+version: 1.1.17
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -27,7 +27,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.1"
+        - package: "@alfe.ai/openclaw@0.4.3"
         - package: "@alfe.ai/openclaw-metrics@0.0.27"
         - package: "@alfe.ai/openclaw-identity@0.1.12"
         - package: "@alfe.ai/openclaw-search@0.0.25"
