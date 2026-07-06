@@ -34,7 +34,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -58,6 +58,32 @@ function readToken() {
     // Config file missing or malformed — treat as absent.
     return '';
   }
+}
+
+/**
+ * This hook is an OpenClaw-only concern (the token lives in openclaw.json and
+ * writes go through `openclaw config set`). On agents running another runtime
+ * (e.g. hermes) there is no `openclaw` binary, so the token bootstrap is a
+ * no-op — exit 0 instead of burning retries and failing activation. Probe the
+ * canonical install path first so a transiently wrong PATH on an OpenClaw box
+ * can't false-negative us into silently skipping the real bootstrap; only if
+ * the binary is missing there do we fall back to a PATH lookup.
+ * (Framework-side gating on supported_agents ships with the daemon; this
+ * probe keeps the manifest safe on daemons that predate it.)
+ */
+function openclawAvailable() {
+  if (existsSync('/usr/local/bin/openclaw')) return true;
+  try {
+    execFileSync('openclaw', ['--version'], { stdio: ['ignore', 'ignore', 'ignore'] });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+if (!openclawAvailable()) {
+  process.stdout.write('post_activate: openclaw binary not found — skipping gateway.auth.token bootstrap (non-openclaw runtime)\n');
+  process.exit(0);
 }
 
 if (!readToken()) {
