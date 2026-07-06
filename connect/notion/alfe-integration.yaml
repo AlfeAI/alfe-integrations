@@ -1,6 +1,6 @@
 id: notion
 name: "Notion"
-version: 1.0.2
+version: 1.0.3
 description: Connect your agent to Notion — pages, databases, comments and more
 license: MIT
 min_gateway_version: 1.0.0
@@ -34,7 +34,7 @@ installs:
 mcp_servers:
   - id: notion
     command: npx
-    args: ["-y", "@alfe.ai/notion-mcp@0.3.2"]
+    args: ["-y", "@alfe.ai/notion-mcp@0.3.8"]
     # Proxy fetches creds from the Alfe API at startup; the
     # `requires_credentials` flag keeps the applier from registering
     # the MCP until Notion is actually connected.

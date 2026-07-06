@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.2
+version: 1.0.3
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []
@@ -42,7 +42,7 @@ mcp_servers:
     # so no `env` injection is needed here. `requires_credentials` is kept
     # so install gating and marketplace UX still understand this
     # integration as credential-driven.
-    args: ["-y", "@alfe.ai/atlassian-mcp@0.3.2"]
+    args: ["-y", "@alfe.ai/atlassian-mcp@0.3.8"]
     requires_credentials: atlassian
 
 hooks:

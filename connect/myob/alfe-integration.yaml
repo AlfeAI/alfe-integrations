@@ -1,6 +1,6 @@
 id: myob
 name: "MYOB Business"
-version: 1.0.3
+version: 1.0.4
 description: Connect your agent to MYOB Business — manage invoices, contacts, and finances via custom MCP server
 license: MIT
 min_gateway_version: 1.0.0
@@ -35,7 +35,7 @@ installs:
 mcp_servers:
   - id: myob
     command: npx
-    args: ["-y", "@alfe.ai/myob-mcp@0.3.2"]
+    args: ["-y", "@alfe.ai/myob-mcp@0.3.8"]
     # The proxy fetches credentials from the Alfe API at startup, so
     # no env interpolation is needed. The `requires_credentials` flag
     # makes the applier skip registration when MYOB isn't connected

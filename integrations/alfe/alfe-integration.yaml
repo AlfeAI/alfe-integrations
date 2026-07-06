@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.20
+version: 1.1.21
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -27,12 +27,12 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.3"
-        - package: "@alfe.ai/openclaw-metrics@0.0.27"
-        - package: "@alfe.ai/openclaw-identity@0.1.12"
-        - package: "@alfe.ai/openclaw-search@0.0.25"
-        - package: "@alfe.ai/openclaw-secrets@0.2.10"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.22"
+        - package: "@alfe.ai/openclaw@0.4.4"
+        - package: "@alfe.ai/openclaw-metrics@0.0.31"
+        - package: "@alfe.ai/openclaw-identity@0.1.19"
+        - package: "@alfe.ai/openclaw-search@0.0.30"
+        - package: "@alfe.ai/openclaw-secrets@0.2.16"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.23"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
@@ -51,14 +51,14 @@ installs:
         # 0.0.8 = the propose-change build (0.0.7 predates it). NOTE: pinned
         # ahead of publish at the user's request — must be live on npm before any
         # agent reconcile picks this up.
-        - package: "@alfe.ai/openclaw-knowledge@0.0.8"
+        - package: "@alfe.ai/openclaw-knowledge@0.0.11"
         # Voice tools are a platform-baseline capability: EVERY agent gets
         # `voice_tts` / `voice_stt` (and the telephony placeholder tools),
         # not just agents with a phone number. The `voice` channel
         # integration therefore no longer re-declares this plugin — it owns
         # only the Twilio/telephony concern. Single owner avoids the
         # bare-name install dedup silently ignoring a divergent second pin.
-        - package: "@alfe.ai/openclaw-voice@0.1.1"
+        - package: "@alfe.ai/openclaw-voice@0.1.7"
         # Interactive remote-control relay. A CORE capability (like chat /
         # console / webhooks / voice above) so EVERY agent gets the relay
         # connection + web terminal — the terminal needs no browser at all.
@@ -76,7 +76,7 @@ installs:
         # shares in chat (no dependency on the chat event→card path). Bump this
         # + the submodule-pointer only AFTER the version is on npm, or install
         # fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.0.6"
+        - package: "@alfe.ai/openclaw-remote@0.0.8"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at

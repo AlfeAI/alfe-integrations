@@ -1,6 +1,6 @@
 id: memory
 name: "Memory"
-version: 1.0.3
+version: 1.0.4
 description: Persistent conversation memory with searchable history and knowledge graph — powered by Turbopuffer + DynamoDB
 license: MIT
 depends_on: []
@@ -80,7 +80,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-memory-cloud@0.0.26"
+        - package: "@alfe.ai/openclaw-memory-cloud@0.0.30"
       config:
         plugins:
           slots:

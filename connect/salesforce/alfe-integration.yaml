@@ -1,6 +1,6 @@
 id: salesforce
 name: "Salesforce"
-version: 1.0.3
+version: 1.0.4
 description: Connect your agent to Salesforce — query and manage CRM records (accounts, contacts, opportunities, leads, cases, and custom objects) via SOQL and the REST API
 license: MIT
 min_gateway_version: 1.0.0
@@ -35,7 +35,7 @@ installs:
 mcp_servers:
   - id: salesforce
     command: npx
-    args: ["-y", "@alfe.ai/salesforce-mcp@0.0.4"]
+    args: ["-y", "@alfe.ai/salesforce-mcp@0.0.10"]
     # The server fetches credentials (access token + instance URL) from the
     # Alfe API at startup, so no env interpolation is needed. The
     # `requires_credentials` flag makes the applier skip registration when
