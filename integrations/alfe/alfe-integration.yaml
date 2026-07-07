@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.23
+version: 1.1.24
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -127,17 +127,32 @@ installs:
               baseUrl: "http://127.0.0.1:18193"
               apiKey: "alfe-proxy"
               api: "anthropic-messages"
+              # The anthropic-messages transport hard-requires a positive
+              # maxTokens on every model definition (bare {id, name} entries
+              # are schema-enriched with maxTokens: 0 and every run fails
+              # with "requires a positive maxTokens value"). The OpenAI-style
+              # providers below don't need it — max_tokens is optional there.
               models:
                 - id: claude-opus-4-8
                   name: "Claude Opus 4.8"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-opus-4-7
                   name: "Claude Opus 4.7"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-opus-4-6
                   name: "Claude Opus 4.6"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-sonnet-4-6
                   name: "Claude Sonnet 4.6"
+                  contextWindow: 1000000
+                  maxTokens: 64000
                 - id: claude-haiku-4-5
                   name: "Claude Haiku 4.5"
+                  contextWindow: 200000
+                  maxTokens: 64000
             openai:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -252,7 +267,10 @@ commands:
   - name: "alfe.config_set"
     handler: ./commands/config-set.js
     method: handle
-    timeout_ms: 10000
+    # `openclaw config set` spawns the full OpenClaw CLI, which takes 5s+ on
+    # a small VM under load — 10s dispatch budget produced gateway 504s
+    # ("daemon did not respond") and dashboard model changes never applied.
+    timeout_ms: 30000
     description: "Set an OpenClaw config key (allowlisted keys only)"
 
 capabilities:

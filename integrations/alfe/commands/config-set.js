@@ -55,7 +55,9 @@ export async function handle(payload, context) {
   try {
     const { stdout, stderr } = await context.exec(
       `openclaw config set ${shellEscape(key)} ${shellEscape(value)}`,
-      { timeoutMs: 8_000, maxBuffer: 64 * 1024 },
+      // The OpenClaw CLI takes 5s+ to boot on a small VM under load; keep
+      // this under the command's 30s dispatch budget in the manifest.
+      { timeoutMs: 25_000, maxBuffer: 64 * 1024 },
     );
     return {
       status: "ok",
