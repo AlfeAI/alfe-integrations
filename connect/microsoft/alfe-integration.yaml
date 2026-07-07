@@ -1,6 +1,6 @@
 id: microsoft
 name: "Microsoft 365"
-version: 1.0.0
+version: 1.0.1
 description: Connect your agent to Microsoft 365 — Outlook Mail, Calendar, OneDrive, and more
 license: MIT
 depends_on: []
