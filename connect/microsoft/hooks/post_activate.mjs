@@ -34,23 +34,16 @@ const client = new AgentApiClient({
 
 let creds;
 try {
-  creds = await client.getMicrosoftCredentials();
+  // Same multi-account endpoint the openclaw-microsoft plugin uses. We only
+  // read `email` here to validate the connection resolves — the plugin talks to
+  // Graph directly, so there is nothing to materialise on disk.
+  creds = await client.getMicrosoftAccounts();
 } catch (err) {
   console.log(`No Microsoft credentials available — skipping Microsoft 365 setup (${err.message})`);
   process.exit(0);
 }
 
-// Support both the multi-account (accounts array) shape and, defensively, a
-// legacy single-account shape — mirroring the Google hook's "support both"
-// fallback during the connect wire-shape rollout.
-const accounts = creds.accounts ?? [{
-  email: creds.email,
-  refreshToken: creds.refreshToken,
-  clientId: creds.clientId,
-  clientSecret: creds.clientSecret,
-  displayName: undefined,
-  connectedAt: undefined,
-}];
+const accounts = creds.accounts ?? [];
 
 if (accounts.length === 0 || !accounts[0]?.email) {
   console.log('No Microsoft account connected — nothing to configure');
