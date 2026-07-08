@@ -1,6 +1,6 @@
 id: microsoft
 name: "Microsoft 365"
-version: 1.0.1
+version: 1.1.0
 description: Connect your agent to Microsoft 365 — Outlook Mail, Calendar, OneDrive, and more
 license: MIT
 depends_on: []
@@ -25,30 +25,23 @@ features:
   - Outlook Calendar scheduling
   - OneDrive file management
   - OneNote, To Do, Contacts, SharePoint access
-  - Full Microsoft 365 CLI (mgc)
+  - Direct Microsoft Graph access from your agent
 
 installs:
   runtimes:
     openclaw:
-      skills:
-        # Core service skills
-        - clawhub: m365-shared
-        - clawhub: m365-onedrive
-        - clawhub: m365-outlook-mail
-        - clawhub: m365-outlook-calendar
-        - clawhub: m365-todo
-        - clawhub: m365-contacts
-        - clawhub: m365-onenote
-        - clawhub: m365-sharepoint
-        - clawhub: m365-excel
-        - clawhub: m365-word
-        - clawhub: m365-powerpoint
-        # Helper skills (common operations)
-        - clawhub: m365-outlook-send
-        - clawhub: m365-outlook-triage
-        - clawhub: m365-calendar-agenda
-        - clawhub: m365-onedrive-upload
-        - clawhub: m365-onedrive-search
+      plugins:
+        - package: "@alfe.ai/openclaw-microsoft@0.1.0"
+      # NOTE: the `m365-*` ClawHub skills below were removed 2026-07-08 — they
+      # were never published to clawhub.ai, so every install 404'd and (with the
+      # skill-install masking fix in @alfe/integrations) all-skills-fail would
+      # force this integration to report `error` despite the working plugin.
+      # The openclaw-microsoft plugin (Graph REST) is fully functional without
+      # them. Re-add here once the skills are authored + `clawhub skill publish`ed:
+      #   m365-shared, m365-onedrive, m365-outlook-mail, m365-outlook-calendar,
+      #   m365-todo, m365-contacts, m365-onenote, m365-sharepoint, m365-excel,
+      #   m365-word, m365-powerpoint, m365-outlook-send, m365-outlook-triage,
+      #   m365-calendar-agenda, m365-onedrive-upload, m365-onedrive-search
 
 hooks:
   post_install: hooks/post-install.sh
