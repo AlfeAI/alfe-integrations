@@ -187,9 +187,9 @@ installs:
                 - id: o4-mini
                   name: "o4 Mini"
             google:
-              baseUrl: "http://127.0.0.1:18193"
+              baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
-              api: "google-generative-ai"
+              api: "openai-completions"
               models:
                 - id: gemini-3.5-flash
                   name: "Gemini 3.5 Flash"
