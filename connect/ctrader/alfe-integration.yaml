@@ -1,0 +1,58 @@
+id: ctrader
+name: "cTrader"
+version: 1.0.0
+description: Trade forex & CFDs on cTrader (full trading) — place, modify, and close orders and read positions, orders, balances, symbols, and live market data via the cTrader Open API
+license: MIT
+min_gateway_version: 1.0.0
+
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [ctrader]
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Full trading — place, modify, and close market/limit orders and cancel pending orders
+  - Read open positions, working orders, and account balances
+  - List tradable symbols and pull live market data (quotes / prices)
+  - Inspect account details (broker, currency, leverage)
+  - Automatic OAuth2 token refresh via the Alfe connection
+  - Live vs demo is selected automatically from the connected account's host
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: ctrader
+    command: npx
+    args: ["-y", "@alfe.ai/ctrader-mcp@0.1.0"]
+    # The server self-fetches its OAuth-derived credentials (clientId,
+    # clientSecret, accessToken, accountId, host) from the Alfe API at
+    # startup via @alfe.ai/agent-api-client, so no env interpolation is
+    # needed. The `requires_credentials` flag makes the applier skip
+    # registration until cTrader is actually connected.
+    requires_credentials: ctrader
+
+config_schema:
+  - key: ctrader_account
+    type: oauth_connect
+    label: "cTrader Account"
+    description: "Connect the cTrader account for this agent"
+    required: true
+    oauth_provider: ctrader
+
+capabilities:
+  - ctrader.trading
+  - ctrader.account
+  - ctrader.data
