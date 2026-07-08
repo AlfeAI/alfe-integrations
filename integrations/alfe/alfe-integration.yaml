@@ -31,7 +31,7 @@ installs:
         - package: "@alfe.ai/openclaw-metrics@0.0.31"
         - package: "@alfe.ai/openclaw-identity@0.1.19"
         - package: "@alfe.ai/openclaw-search@0.0.30"
-        - package: "@alfe.ai/openclaw-secrets@0.2.16"
+        - package: "@alfe.ai/openclaw-secrets@0.2.18"
         - package: "@alfe.ai/openclaw-mcp-bundler@0.0.23"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
