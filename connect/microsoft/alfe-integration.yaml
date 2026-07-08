@@ -1,6 +1,6 @@
 id: microsoft
 name: "Microsoft 365"
-version: 1.1.0
+version: 1.2.0
 description: Connect your agent to Microsoft 365 — Outlook Mail, Calendar, OneDrive, and more
 license: MIT
 depends_on: []
@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [microsoft]
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, hermes]
 
 author:
   name: Alfe
@@ -29,24 +29,19 @@ features:
 
 installs:
   runtimes:
-    openclaw:
-      plugins:
-        - package: "@alfe.ai/openclaw-microsoft@0.1.0"
-      # NOTE: the `m365-*` ClawHub skills below were removed 2026-07-08 — they
-      # were never published to clawhub.ai, so every install 404'd and (with the
-      # skill-install masking fix in @alfe/integrations) all-skills-fail would
-      # force this integration to report `error` despite the working plugin.
-      # The openclaw-microsoft plugin (Graph REST) is fully functional without
-      # them. Re-add here once the skills are authored + `clawhub skill publish`ed:
-      #   m365-shared, m365-onedrive, m365-outlook-mail, m365-outlook-calendar,
-      #   m365-todo, m365-contacts, m365-onenote, m365-sharepoint, m365-excel,
-      #   m365-word, m365-powerpoint, m365-outlook-send, m365-outlook-triage,
-      #   m365-calendar-agenda, m365-onedrive-upload, m365-onedrive-search
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
 
-hooks:
-  post_install: hooks/post-install.sh
-  post_activate: hooks/post_activate.mjs
-  health_check: hooks/health.sh
+mcp_servers:
+  - id: microsoft
+    command: npx
+    args: ["-y", "@alfe.ai/microsoft-mcp@0.1.0"]
+    # Server fetches creds from the Alfe API at startup; the
+    # `requires_credentials` flag keeps the applier from registering
+    # the MCP until Microsoft is actually connected.
+    requires_credentials: microsoft
 
 config_schema:
   - key: microsoft_account
