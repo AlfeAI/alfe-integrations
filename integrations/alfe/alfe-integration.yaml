@@ -6,6 +6,12 @@ license: MIT
 depends_on: []
 supported_agents: [openclaw]
 
+# Alfe brand app-icon tile (light symbol on purple gradient) — the website
+# logo, self-contained so it reads on both light and dark dashboards. Rendered
+# from brand/masters/icon-tile.svg. Relative path is resolved to a commit-pinned
+# raw.githubusercontent.com URL at publish time (see integrations DEVELOPING.md).
+icon: ./assets/icon.png
+
 # Folded in from the legacy `console` integration (PR 12 of
 # channels-and-credential-driven-integrations). The console
 # integration carried a single `post_activate` hook that ensured
