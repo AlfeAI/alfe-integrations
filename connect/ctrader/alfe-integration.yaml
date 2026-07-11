@@ -2,6 +2,7 @@ id: ctrader
 name: "cTrader"
 version: 1.0.0
 description: Trade forex & CFDs on cTrader (full trading) — place, modify, and close orders and read positions, orders, balances, symbols, and live market data via the cTrader Open API
+icon: ./assets/icon.svg
 license: MIT
 min_gateway_version: 1.0.0
 

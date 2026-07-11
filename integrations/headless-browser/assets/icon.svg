@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="24" fill="url(#bg)"/>
+  <!-- Google Chrome mark: red top, green lower-left, yellow lower-right -->
+  <path d="M60,60 L89.4,43 A34,34 0 0,0 30.6,43 Z" fill="#EA4335"/>
+  <path d="M60,60 L30.6,43 A34,34 0 0,0 60,94 Z" fill="#34A853"/>
+  <path d="M60,60 L60,94 A34,34 0 0,1 89.4,43 Z" fill="#FBBC05"/>
+  <!-- white seams between the three sectors -->
+  <path d="M60,60 L60,94 M60,60 L30.6,43 M60,60 L89.4,43" stroke="#ffffff" stroke-width="5"/>
+  <circle cx="60" cy="60" r="16" fill="#ffffff"/>
+  <circle cx="60" cy="60" r="12" fill="#4285F4"/>
+</svg>

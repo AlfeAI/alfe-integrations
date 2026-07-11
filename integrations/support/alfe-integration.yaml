@@ -2,6 +2,7 @@ id: support
 name: "Remote Support"
 version: 1.0.0
 description: Remote diagnostics and shell access for Alfe support
+icon: ./assets/icon.svg
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
