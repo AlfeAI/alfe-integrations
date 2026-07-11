@@ -1,0 +1,52 @@
+id: news
+name: "News Search"
+version: 1.0.0
+description: Search news across 500K+ sources (APITube / NewsData) with sentiment.
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: usage
+
+capabilities:
+  - news.search
+  - news.headlines
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: news
+    command: npx
+    args: ["-y", "@alfe.ai/news-mcp@0.1.0"]
+    # Alfe-managed provider keys live server-side in `services/news`; the MCP
+    # self-fetches its config via @alfe.ai/agent-api-client at startup. NO env
+    # block. NO requires_credentials / requires_connection — there is no OAuth
+    # Connection, and a requires_credentials gate would strand the server
+    # unregistered forever.
+
+# Optional BYOK: agent-editable secrets. Keys byte-match `services/news`'
+# BYOK_CONFIG_KEYS. Presence of a BYOK key skips billing entirely; absence
+# falls back to the Alfe-managed server-side key (metered).
+config_schema:
+  - key: apitube_api_key
+    type: secret
+    label: "APITube API key (optional BYOK)"
+    required: false
+    editable: agent
+  - key: newsdata_api_key
+    type: secret
+    label: "NewsData API key (optional BYOK)"
+    required: false
+    editable: agent
