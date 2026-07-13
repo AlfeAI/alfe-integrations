@@ -1,6 +1,6 @@
 id: ctrader
 name: "cTrader"
-version: 1.1.0
+version: 1.2.0
 description: Trade forex & CFDs on cTrader (full trading) — place, modify, and close orders and read positions, orders, balances, symbols, and live market data via the cTrader Open API
 icon: ./assets/icon.svg
 license: MIT
@@ -37,7 +37,7 @@ installs:
 mcp_servers:
   - id: ctrader
     command: npx
-    args: ["-y", "@alfe.ai/ctrader-mcp@0.2.0"]
+    args: ["-y", "@alfe.ai/ctrader-mcp@0.2.1"]
     # The server self-fetches its OAuth-derived credentials (clientId,
     # clientSecret, accessToken, accountId, host) from the Alfe API at
     # startup via @alfe.ai/agent-api-client, so no env interpolation is
