@@ -1,6 +1,6 @@
 id: news
 name: "News Search"
-version: 1.0.0
+version: 1.0.1
 description: Search news across 500K+ sources (APITube / NewsData) with sentiment.
 icon: ./assets/icon.svg
 license: MIT
@@ -29,7 +29,7 @@ installs:
 mcp_servers:
   - id: news
     command: npx
-    args: ["-y", "@alfe.ai/news-mcp@0.1.0"]
+    args: ["-y", "@alfe.ai/news-mcp@0.2.0"]
     # Alfe-managed provider keys live server-side in `services/news`; the MCP
     # self-fetches its config via @alfe.ai/agent-api-client at startup. NO env
     # block. NO requires_credentials / requires_connection — there is no OAuth
