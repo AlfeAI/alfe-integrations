@@ -15,13 +15,16 @@ author:
   name: Alfe
   url: https://alfe.ai
 
+# Unmetered: posts use the tenant's own app-password against their own
+# PDS — zero Alfe-funded cost (same posture as github). Alfe-funded
+# platforms (X, Reddit) will declare usage pricing + wire the meter hook.
 pricing:
-  type: usage
+  type: free
 
 features:
-  - Post text and image posts to your Bluesky feed
+  - Post text (with clickable link facets) to your Bluesky feed
   - Reply to posts and threads
-  - Search the Bluesky firehose for posts and accounts
+  - Search Bluesky posts
   - Read notifications (likes, reposts, replies, follows, mentions)
   - Pull basic post metrics (likes, reposts, replies)
   - Multi-account support — connect several handles side-by-side, select with an `account` argument
