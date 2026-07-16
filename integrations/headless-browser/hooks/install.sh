@@ -37,10 +37,12 @@ if chrome_ready; then
 fi
 
 echo "Installing google-chrome-stable..."
-# `mktemp` without `--suffix` for portability; apt-get is happy to install a
-# local .deb regardless of the file extension.
-TMP_DEB="$(mktemp)"
-trap 'rm -f "${TMP_DEB}"' EXIT
+# mktemp -d (portable on GNU + BSD) + a named .deb inside it: apt only accepts
+# local package files whose names end in .deb — an extensionless mktemp file
+# gets "E: Unsupported file ... given on commandline".
+TMP_DIR="$(mktemp -d)"
+TMP_DEB="${TMP_DIR}/google-chrome-stable.deb"
+trap 'rm -rf "${TMP_DIR}"' EXIT
 
 CHROME_DEB_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
 # Prefer wget; fall back to curl. Either can be absent on a stripped-down box —
