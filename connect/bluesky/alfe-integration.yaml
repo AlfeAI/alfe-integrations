@@ -1,0 +1,75 @@
+id: bluesky
+name: "Bluesky"
+version: 1.0.0
+description: Connect your agent to Bluesky — post, reply, search the firehose, read notifications, and pull post metrics on the AT Protocol via @alfe.ai/social-mcp
+license: MIT
+min_gateway_version: 1.0.0
+
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [bluesky]
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: usage
+
+features:
+  - Post text and image posts to your Bluesky feed
+  - Reply to posts and threads
+  - Search the Bluesky firehose for posts and accounts
+  - Read notifications (likes, reposts, replies, follows, mentions)
+  - Pull basic post metrics (likes, reposts, replies)
+  - Multi-account support — connect several handles side-by-side, select with an `account` argument
+  - App-password auth via the Alfe connection — no OAuth app to register
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: bluesky
+    command: npx
+    # The provider MUST ride in `args`, never `env`. The shared
+    # @alfe.ai/social-mcp package selects its driver from `--provider`,
+    # and the mcp-applier's `resolveEnv` short-circuit only fires when a
+    # server declares `env` interpolation. Keeping `env` EMPTY means the
+    # server is registered as soon as the integration installs and the
+    # driver itself degrades to discovery-only (`social_list_accounts`)
+    # when zero Bluesky accounts are connected — the same graceful
+    # zero-account path github-mcp / ctrader-mcp rely on. A non-empty
+    # `env` here would make a zero-account 404 skip registration entirely
+    # and break that degradation.
+    #
+    # NOTE: @alfe.ai/social-mcp@0.1.0 publishes via changesets CI on the
+    # next push to main. Do NOT rely on this integration until that
+    # publish lands (cf. the news-mcp 0.1.0-never-published incident).
+    args: ["-y", "@alfe.ai/social-mcp@0.1.0", "--provider", "bluesky"]
+    # The server self-fetches its per-account credentials from the Alfe
+    # API at startup (Pattern A multi-account), so no env interpolation is
+    # needed. `requires_credentials` is kept for marketplace / registry
+    # semantics; the applier's env-presence gate is moot because `env` is
+    # empty, so the MCP starts as soon as the integration is installed.
+    requires_credentials: bluesky
+
+config_schema:
+  - key: bluesky_account
+    type: oauth_connect
+    label: "Bluesky Account"
+    description: "Connect the Bluesky handle for this agent (app password)"
+    required: true
+    oauth_provider: bluesky
+
+capabilities:
+  - social.post
+  - social.reply
+  - social.search
+  - social.metrics
+  - social.notifications
