@@ -1,6 +1,6 @@
 id: bluesky
 name: "Bluesky"
-version: 1.0.0
+version: 1.0.1
 description: Connect your agent to Bluesky — post, reply, search the firehose, read notifications, and pull post metrics on the AT Protocol via @alfe.ai/social-mcp
 license: MIT
 min_gateway_version: 1.0.0
@@ -51,10 +51,11 @@ mcp_servers:
     # `env` here would make a zero-account 404 skip registration entirely
     # and break that degradation.
     #
-    # NOTE: @alfe.ai/social-mcp@0.1.0 publishes via changesets CI on the
-    # next push to main. Do NOT rely on this integration until that
-    # publish lands (cf. the news-mcp 0.1.0-never-published incident).
-    args: ["-y", "@alfe.ai/social-mcp@0.1.0", "--provider", "bluesky"]
+    # NOTE: the pin must be the version changesets actually PUBLISHES —
+    # a `minor` changeset on an on-disk 0.1.0 publishes 0.2.0, never
+    # 0.1.0 (root DEVELOPING.md "pre-bump its pin"). The original 0.1.0
+    # pin here 404'd on install (cf. the news-mcp incident).
+    args: ["-y", "@alfe.ai/social-mcp@0.2.0", "--provider", "bluesky"]
     # The server self-fetches its per-account credentials from the Alfe
     # API at startup (Pattern A multi-account), so no env interpolation is
     # needed. `requires_credentials` is kept for marketplace / registry
