@@ -48,7 +48,7 @@ config_schema:
   - key: api_key
     type: secret
     label: "Mailchimp Transactional (Mandrill) API key"
-    description: "From Mailchimp Transactional > Settings > API keys. Send-side/transactional only, not audience marketing."
+    description: "From Mailchimp Transactional > Settings > API keys — the key must have the 'AI Agents' permission group enabled or no tools will work. Send-side/transactional only, not audience marketing."
     required: true
     editable: agent
 
