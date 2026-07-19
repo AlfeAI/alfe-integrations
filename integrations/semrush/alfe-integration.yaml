@@ -1,0 +1,62 @@
+id: semrush
+name: "Semrush"
+version: 1.0.0
+description: SEO, keyword, traffic & competitive research via the Semrush MCP (BYOK API key).
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+# BYOK — the user supplies their own Semrush API key; Alfe does not meter or resell.
+pricing:
+  type: free
+
+features:
+  - Domain overview, organic & paid search research
+  - Keyword research, difficulty and intent
+  - Backlink analysis
+  - Traffic & competitive intelligence
+  - Bring-your-own Semrush API key (requires an API-units add-on)
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: semrush
+    command: npx
+    # mcp-remote bridges the hosted Semrush MCP (HTTP streamable) to stdio.
+    # PINNED — bare/older mcp-remote carries CVE-2025-6514 (RCE in <=0.1.15).
+    # The `${SEMRUSH_API_KEY}` placeholder is substituted by mcp-remote itself
+    # from process.env (NOT by the applier — the applier interpolates `env`
+    # only, so the secret never lands in argv/`ps`).
+    args:
+      - "-y"
+      - "mcp-remote@0.1.38"
+      - "https://mcp.semrush.com/v2/mcp"
+      - "--header"
+      - "Authorization: Apikey ${SEMRUSH_API_KEY}"
+    env:
+      SEMRUSH_API_KEY: "{{config.api_key}}"
+
+config_schema:
+  - key: api_key
+    type: secret
+    label: "Semrush API key"
+    description: "From Semrush > Subscription info > API units. Requires an API-units add-on."
+    required: true
+    editable: agent
+
+capabilities:
+  - semrush.research
+  - semrush.keywords
+  - semrush.backlinks
+  - semrush.traffic

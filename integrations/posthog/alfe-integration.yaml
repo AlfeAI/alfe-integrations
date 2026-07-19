@@ -1,0 +1,58 @@
+id: posthog
+name: "PostHog"
+version: 1.0.0
+description: Product analytics, feature flags & error tracking via the PostHog MCP (BYOK personal API key).
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+# BYOK — the user supplies their own PostHog personal API key.
+pricing:
+  type: free
+
+features:
+  - Query product-analytics insights and trends
+  - Inspect and manage feature flags
+  - Error-tracking and LLM-observability data
+  - Bring-your-own PostHog personal API key (use the MCP Server preset)
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: posthog
+    command: npx
+    # mcp-remote bridges the hosted PostHog MCP to stdio. PINNED — bare/older
+    # mcp-remote carries CVE-2025-6514 (RCE in <=0.1.15). `${POSTHOG_API_KEY}`
+    # is substituted by mcp-remote from process.env (secret stays out of argv).
+    args:
+      - "-y"
+      - "mcp-remote@0.1.38"
+      - "https://mcp.posthog.com/mcp"
+      - "--header"
+      - "Authorization: Bearer ${POSTHOG_API_KEY}"
+    env:
+      POSTHOG_API_KEY: "{{config.api_key}}"
+
+config_schema:
+  - key: api_key
+    type: secret
+    label: "PostHog personal API key"
+    description: "Create a personal API key in PostHog using the 'MCP Server' preset (starts with phx_)."
+    required: true
+    editable: agent
+
+capabilities:
+  - posthog.insights
+  - posthog.feature_flags
+  - posthog.error_tracking

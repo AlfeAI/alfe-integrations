@@ -1,0 +1,58 @@
+id: stripe
+name: "Stripe"
+version: 1.0.0
+description: Query Stripe payments, customers, subscriptions & revenue via the official Stripe MCP (BYOK restricted key).
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+# BYOK — the user supplies their own Stripe key. Strongly prefer a RESTRICTED key.
+pricing:
+  type: free
+
+features:
+  - Read customers, charges, subscriptions and balance
+  - Revenue and billing insight
+  - "Security: the Stripe MCP is read-write — use a RESTRICTED key (rk_...) scoped to read, never a full secret key (sk_...)"
+  - Bring-your-own Stripe restricted key
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: stripe
+    command: npx
+    # mcp-remote bridges the hosted Stripe MCP to stdio. PINNED — bare/older
+    # mcp-remote carries CVE-2025-6514 (RCE in <=0.1.15). `${STRIPE_API_KEY}`
+    # is substituted by mcp-remote from process.env (secret stays out of argv).
+    args:
+      - "-y"
+      - "mcp-remote@0.1.38"
+      - "https://mcp.stripe.com"
+      - "--header"
+      - "Authorization: Bearer ${STRIPE_API_KEY}"
+    env:
+      STRIPE_API_KEY: "{{config.api_key}}"
+
+config_schema:
+  - key: api_key
+    type: secret
+    label: "Stripe restricted key (rk_...)"
+    description: "Create a RESTRICTED key in Stripe > Developers > API keys, scoped to read. The MCP is read-write — do not use a full sk_ secret key."
+    required: true
+    editable: agent
+
+capabilities:
+  - stripe.customers
+  - stripe.payments
+  - stripe.subscriptions

@@ -1,0 +1,57 @@
+id: mailchimp
+name: "Mailchimp Transactional"
+version: 1.0.0
+description: Send and inspect transactional email via the Mailchimp Transactional (Mandrill) MCP (BYOK API key).
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+# BYOK — the user supplies their own Mandrill API key.
+pricing:
+  type: free
+
+features:
+  - Send transactional email (Mandrill)
+  - Message templates, status and search
+  - "Note: this is the transactional/Mandrill surface, NOT audience/campaign marketing"
+  - Bring-your-own Mailchimp Transactional (Mandrill) API key
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: mailchimp
+    command: npx
+    # mcp-remote bridges the hosted Mandrill MCP to stdio. PINNED — bare/older
+    # mcp-remote carries CVE-2025-6514 (RCE in <=0.1.15). `${MAILCHIMP_API_KEY}`
+    # is substituted by mcp-remote from process.env (secret stays out of argv).
+    args:
+      - "-y"
+      - "mcp-remote@0.1.38"
+      - "https://mandrillapp.com/mcp"
+      - "--header"
+      - "Authorization: Bearer ${MAILCHIMP_API_KEY}"
+    env:
+      MAILCHIMP_API_KEY: "{{config.api_key}}"
+
+config_schema:
+  - key: api_key
+    type: secret
+    label: "Mailchimp Transactional (Mandrill) API key"
+    description: "From Mailchimp Transactional > Settings > API keys. Send-side/transactional only, not audience marketing."
+    required: true
+    editable: agent
+
+capabilities:
+  - mailchimp.transactional_send
+  - mailchimp.templates
