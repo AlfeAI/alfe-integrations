@@ -1,0 +1,59 @@
+id: shopify
+name: "Shopify"
+version: 1.0.0
+description: Manage your Shopify store — products, orders (incl. fulfil, refund, cancel), customers, and inventory via the Shopify Admin GraphQL API
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [shopify]
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - List, get, create, and update products; set variant prices
+  - List and get orders; fulfil, refund, and cancel orders
+  - List, get, create, and update customers
+  - List locations, read inventory levels, and adjust inventory quantities
+  - Multi-store support (pass the `shop` myshopify domain to target a connected store)
+  - Offline OAuth tokens that never expire — no reconnection on a timer
+
+installs:
+  runtimes:
+    openclaw: {}
+    # Hermes runs the same runtime-agnostic stdio MCP server declared in
+    # the top-level `mcp_servers` block — no plugin/skill/config to apply.
+    hermes: {}
+
+mcp_servers:
+  - id: shopify
+    command: npx
+    args: ["-y", "@alfe.ai/shopify-mcp@0.2.0"]
+    # The server fetches credentials (offline access token + shop domain) from
+    # the Alfe API at startup via @alfe.ai/agent-api-client, so no env
+    # interpolation is needed. The `requires_credentials` flag makes the applier
+    # skip registration until Shopify is actually connected.
+    requires_credentials: shopify
+
+config_schema:
+  - key: shopify_account
+    type: oauth_connect
+    label: "Shopify Store"
+    description: "Connect the Shopify store for this agent"
+    required: true
+    oauth_provider: shopify
+
+capabilities:
+  - shopify.products
+  - shopify.orders
+  - shopify.customers
+  - shopify.inventory
