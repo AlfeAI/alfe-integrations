@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.31
+version: 1.1.32
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -141,6 +141,10 @@ installs:
               # with "requires a positive maxTokens value"). The OpenAI-style
               # providers below don't need it — max_tokens is optional there.
               models:
+                - id: claude-opus-5
+                  name: "Claude Opus 5"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-opus-4-8
                   name: "Claude Opus 4.8"
                   contextWindow: 1000000
@@ -153,10 +157,14 @@ installs:
                   name: "Claude Opus 4.6"
                   contextWindow: 1000000
                   maxTokens: 128000
+                - id: claude-sonnet-5
+                  name: "Claude Sonnet 5"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-sonnet-4-6
                   name: "Claude Sonnet 4.6"
                   contextWindow: 1000000
-                  maxTokens: 64000
+                  maxTokens: 128000
                 - id: claude-haiku-4-5
                   name: "Claude Haiku 4.5"
                   contextWindow: 200000
@@ -188,6 +196,14 @@ installs:
                   name: "GPT-5.4 Pro"
                 - id: gpt-5.5
                   name: "GPT-5.5"
+                - id: gpt-5.5-pro
+                  name: "GPT-5.5 Pro"
+                - id: gpt-5.6-sol
+                  name: "GPT-5.6 Sol"
+                - id: gpt-5.6-terra
+                  name: "GPT-5.6 Terra"
+                - id: gpt-5.6-luna
+                  name: "GPT-5.6 Luna"
                 - id: o3-mini
                   name: "o3 Mini"
                 - id: o4-mini
@@ -237,6 +253,10 @@ installs:
                   name: "MiniMax M2.7 High Speed"
                 - id: MiniMax-M2.5
                   name: "MiniMax M2.5"
+                - id: MiniMax-M2.1
+                  name: "MiniMax M2.1"
+                - id: MiniMax-M2
+                  name: "MiniMax M2"
             mistral:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -244,15 +264,29 @@ installs:
               models:
                 - id: mistral-large-latest
                   name: "Mistral Large"
+                - id: mistral-medium-latest
+                  name: "Mistral Medium"
                 - id: mistral-small-latest
                   name: "Mistral Small"
                 - id: codestral-latest
                   name: "Codestral"
+                - id: ministral-8b-latest
+                  name: "Ministral 8B"
+                - id: ministral-3b-latest
+                  name: "Ministral 3B"
+                - id: magistral-medium-latest
+                  name: "Magistral Medium"
+                - id: magistral-small-latest
+                  name: "Magistral Small"
+                - id: devstral-medium-latest
+                  name: "Devstral Medium"
             xai:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: grok-4.5
+                  name: "Grok 4.5"
                 - id: grok-4.3
                   name: "Grok 4.3"
                 - id: grok-4
@@ -264,12 +298,46 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
-                - id: glm-5-2
+                # Zhipu model ids MUST be dotted (glm-5.2) — hyphenated ids
+                # (glm-5-2) 400 upstream with "模型不存在 / model does not exist".
+                - id: glm-5.2
                   name: "GLM 5.2"
-                - id: glm-5-1
+                - id: glm-5.1
                   name: "GLM 5.1"
-                - id: glm-5-1-air
-                  name: "GLM 5.1 Air"
+                - id: glm-4.6
+                  name: "GLM 4.6"
+                - id: glm-4.5
+                  name: "GLM 4.5"
+                - id: glm-4.5-air
+                  name: "GLM 4.5 Air"
+            moonshot:
+              baseUrl: "http://127.0.0.1:18193/v1"
+              apiKey: "alfe-proxy"
+              api: "openai-completions"
+              models:
+                - id: kimi-k3
+                  name: "Kimi K3"
+                - id: kimi-k2.6
+                  name: "Kimi K2.6"
+                - id: kimi-k2.7-code
+                  name: "Kimi K2.7 Code"
+                - id: kimi-k2.7-code-highspeed
+                  name: "Kimi K2.7 Code HighSpeed"
+                - id: kimi-k2.5
+                  name: "Kimi K2.5"
+            qwen:
+              baseUrl: "http://127.0.0.1:18193/v1"
+              apiKey: "alfe-proxy"
+              api: "openai-completions"
+              models:
+                - id: qwen3.7-max
+                  name: "Qwen 3.7 Max"
+                - id: qwen3.7-plus
+                  name: "Qwen 3.7 Plus"
+                - id: qwen3.6-flash
+                  name: "Qwen 3.6 Flash"
+                - id: qwen3.5-flash
+                  name: "Qwen 3.5 Flash"
 
 commands:
   - name: "alfe.config_set"
