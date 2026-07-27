@@ -323,8 +323,6 @@ installs:
                   name: "Kimi K2.7 Code"
                 - id: kimi-k2.7-code-highspeed
                   name: "Kimi K2.7 Code HighSpeed"
-                - id: kimi-k2.5
-                  name: "Kimi K2.5"
             qwen:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
