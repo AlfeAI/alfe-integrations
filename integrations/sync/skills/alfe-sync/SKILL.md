@@ -11,14 +11,15 @@ to clean up something that shouldn't have been synced.
 ## When the user says "stop syncing X" or "X shouldn't sync"
 
 Append a glob to the workspace's `.alfesyncignore` file (gitignore syntax).
-The watcher reloads ignore patterns automatically on the next event.
+The watcher reloads the file immediately and re-scans directories that the old
+rules pruned.
 
 ```bash
 # Append to .alfesyncignore (workspace root). Examples:
 echo '.vscode/' >> .alfesyncignore     # ignore the .vscode dir at any depth
 echo '*.log' >> .alfesyncignore        # ignore log files anywhere
 echo 'temp/'  >> .alfesyncignore       # ignore a directory at any depth
-echo '!important.log' >> .alfesyncignore  # un-ignore one path that matched above
+echo '!important.log' >> .alfesyncignore  # cancel an earlier user rule only
 ```
 
 If the user also wants to remove what's already in the cloud, follow up with
@@ -68,6 +69,11 @@ The default ignore set (which the user does **not** need to add to
 
 - Secrets — `.env`, `.env.*`
 - VCS / build / package noise — `.git`, `node_modules`, `dist`, `.sst`, `.build`
+- The root `shared/` mirror — shared files come from the org files bucket, not
+  the private backup
+- OpenClaw live runtime state — `state/`, `tasks/`, `flows/`, `memory/`, and
+  `browser/` (WAL databases and high-churn profiles must never be snapshotted)
+- OpenClaw plugin installs — root `npm/`, `extensions/`, and `plugins/`
 - Browser caches from the headless-browser plugin — Chromium HTTP / GPU /
   shader cache directories under `browser/openclaw/user-data/...`
 - OpenClaw config-rotation backups — `openclaw.json.bak*`, `.clobbered.*`,
@@ -117,7 +123,7 @@ explicit user intent) and has the dry-run-by-default safety net instead.
 
 - `.alfesyncignore` itself is synced normally, so changes to it propagate
   to the cloud and to other restores.
-- Negation patterns (`!path`) work — they un-ignore something matched by
-  an earlier rule, gitignore-style.
+- Negation patterns (`!path`) cancel an earlier workspace-user rule,
+  gitignore-style. They cannot un-ignore built-in safety defaults.
 - If the user wants to roll back a workspace, see `alfesync restore` (full
   / active / memory modes).

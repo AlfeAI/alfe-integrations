@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.32
+version: 1.1.43
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -33,31 +33,34 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.4"
-        - package: "@alfe.ai/openclaw-metrics@0.0.31"
-        - package: "@alfe.ai/openclaw-identity@0.1.19"
-        - package: "@alfe.ai/openclaw-search@0.0.30"
-        - package: "@alfe.ai/openclaw-secrets@0.2.18"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.24"
+        - package: "@alfe.ai/openclaw@0.4.10"
+        - package: "@alfe.ai/openclaw-identity@0.1.27"
+        # 0.0.38 is the Changesets-predicted boundary release: lazy config keeps
+        # the catalog present through transient config errors; model input and
+        # raw Brave output are bounded/projected; modern provider calls forward
+        # cancellation. Publish before integration reconcile.
+        - package: "@alfe.ai/openclaw-search@0.0.38"
+        - package: "@alfe.ai/openclaw-secrets@0.2.24"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.27"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.9.6"
+        - package: "@alfe.ai/openclaw-chat@0.9.9"
         # Folded in from the legacy `webhooks` integration (PR 11).
-        - package: "@alfe.ai/openclaw-webhooks@0.0.18"
+        - package: "@alfe.ai/openclaw-webhooks@0.0.19"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
-        - package: "@alfe.ai/openclaw-console@0.0.11"
+        - package: "@alfe.ai/openclaw-console@0.0.12"
         # Scoped org/team/project knowledge resources: search + read + propose/
         # edit shared DOCUMENTS + profile (facts primitive removed 2026-07-06 —
         # one home per fact; agents find the right doc and edit it, quick capture
         # stays in private per-agent memory). Ships resource_propose_change so a
         # non-member agent can propose to scopes it can't write directly.
-        # 0.0.8 = the propose-change build (0.0.7 predates it). NOTE: pinned
-        # ahead of publish at the user's request — must be live on npm before any
-        # agent reconcile picks this up.
-        - package: "@alfe.ai/openclaw-knowledge@0.0.11"
+        # 0.0.19 adds bounded tool/context boundaries and includes the existing
+        # propose-change path. NOTE: pinned ahead of publish at the user's
+        # request — must be live on npm before any agent reconcile picks this up.
+        - package: "@alfe.ai/openclaw-knowledge@0.0.19"
         # Voice tools are a platform-baseline capability: EVERY agent gets
         # `voice_tts` / `voice_stt` (and the telephony placeholder tools),
         # not just agents with a phone number. The `voice` channel
@@ -74,17 +77,14 @@ installs:
         # Reads `browser.ssrfPolicy` from the config block below; derives its
         # per-stage relay URL from the agent's apiUrl (no hardcoded URL).
         #
-        # PIN: must match a PUBLISHED version of @alfe.ai/openclaw-remote.
-        # 0.0.2 pulls @alfe.ai/terminal@^0.1.1 — the prebuilt-multiarch node-pty
-        # that makes the web terminal work on managed Linux VMs (0.0.1 shipped
-        # the old node-pty with no linux-x64 prebuild). 0.0.6 makes
-        # request_browser_takeover return a dashboard control-URL the agent
-        # shares in chat (no dependency on the chat event→card path). 0.0.9 fixes
-        # the co-browse takeover: grant the human turn only on a real claim
-        # (TAKEOVER_REQUEST) + addHold across the wait (no more about:blank);
-        # pulls @alfe.ai/browser@^0.2.0. Bump this + the submodule-pointer only
-        # AFTER the version is on npm, or install fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.0.9"
+        # PIN: 0.0.15 is the Changesets-predicted release from the full refactor
+        # pass. It process-owns relay/surface state across module reloads,
+        # generation-fences stale callbacks, closes sessions on disconnect,
+        # bounds/redacts every tool boundary, and emits screenshots as image
+        # content instead of model-facing base64 JSON. Publish it before merging
+        # or reconciling this integration, or install will fail "version not
+        # found".
+        - package: "@alfe.ai/openclaw-remote@0.0.15"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
@@ -92,9 +92,14 @@ installs:
         # submodule.
         - path: skills/webhook-handler
       config:
+        plugins:
+          entries:
+            "@alfe.ai/openclaw-webhooks":
+              config:
+                webhooksWsUrl: "{{config.webhooks_ws_url}}"
         browser:
           ssrfPolicy:
-            dangerouslyAllowPrivateNetwork: true
+            dangerouslyAllowPrivateNetwork: false
         session:
           dmScope: "per-channel-peer"
         # Structured thinking for reasoning-capable models (claude-*).
@@ -382,6 +387,6 @@ config_schema:
   - key: webhooks_ws_url
     type: string
     label: "Webhooks Service URL"
-    description: "WebSocket URL of the Alfe webhooks service"
+    description: "Optional WebSocket URL override; empty derives the current stage from the agent API URL"
     required: false
-    default: "wss://webhooks.alfe.ai/ws"
+    default: ""

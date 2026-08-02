@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.3
+version: 1.0.4
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []
@@ -27,6 +27,7 @@ features:
   - Multi-account support (one OAuth user can own multiple Cloud sites)
   - Automatic per-Connection OAuth2 token refresh with fan-out across sites
   - "Partial-failure surfacing — sites that fail to initialise are visible in atlassian_list_accounts with `connected: false`"
+  - Exact target confirmation for permanent Jira and Confluence deletion tools
 
 installs:
   runtimes:
@@ -42,7 +43,7 @@ mcp_servers:
     # so no `env` injection is needed here. `requires_credentials` is kept
     # so install gating and marketplace UX still understand this
     # integration as credential-driven.
-    args: ["-y", "@alfe.ai/atlassian-mcp@0.3.8"]
+    args: ["-y", "@alfe.ai/atlassian-mcp@0.3.18"]
     requires_credentials: atlassian
 
 hooks:

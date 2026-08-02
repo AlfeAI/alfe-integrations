@@ -6,9 +6,10 @@ tools:
   - name: create_webhook
     description: >
       Create a new webhook endpoint. Returns a URL and signing secret that
-      can be configured on external services (GitHub, Stripe, etc.) to send
-      events to this agent. The signing secret should be stored securely and
-      configured on the external service for HMAC-SHA256 signature verification.
+      a sender uses to sign the exact raw request body with HMAC-SHA256. Send
+      the result as X-Alfe-Signature-256 in sha256=<lowercase hex> form. The
+      signing secret is shown once and should be stored securely. Provider is
+      payload metadata; it does not switch to a provider-native signature.
     parameters:
       type: object
       properties:
@@ -31,7 +32,7 @@ tools:
           description: "The webhook URL to configure on the external service"
         signingSecret:
           type: string
-          description: "HMAC-SHA256 signing secret — shown only once, store it securely"
+          description: "Secret for X-Alfe-Signature-256 HMAC-SHA256 signing — shown only once"
 
   - name: list_webhooks
     description: List all webhook endpoints for this agent.

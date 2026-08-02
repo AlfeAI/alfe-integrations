@@ -19,7 +19,7 @@ alfe integration install sync
 
 Choose what to sync and how often:
 - **Sync scope**: Configuration, conversation history, and/or agent memory
-- **Schedule**: Real-time, hourly, daily, or manual
+- **Schedule**: Real-time, hourly, daily, or weekly
 
 ## License
 

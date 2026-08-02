@@ -1,6 +1,6 @@
 id: teams
 name: "Microsoft Teams"
-version: 1.0.3
+version: 1.0.4
 description: Add your agent to Microsoft Teams as a bot with its own identity
 license: MIT
 depends_on: []
@@ -37,7 +37,10 @@ installs:
         - clawhub: m365-teams-chat
         - clawhub: m365-teams-send
       plugins:
-        - package: "@alfe.ai/openclaw-teams@0.0.30"
+        # 0.0.38 is the Changesets-predicted boundary release: stateless
+        # per-pass registration, lazy config, bounded Cards/messages/channel
+        # output, and redacted provider diagnostics. Publish before reconcile.
+        - package: "@alfe.ai/openclaw-teams@0.0.38"
 
 hooks:
   health_check: hooks/health.sh
