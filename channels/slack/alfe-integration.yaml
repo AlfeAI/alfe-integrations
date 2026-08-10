@@ -1,7 +1,7 @@
 id: slack
 name: "Slack"
-version: 1.0.0
-description: Connect your agent to Slack workspaces
+version: 1.1.0
+description: Give your agent its own Slack bot for direct messages and channel mentions
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
