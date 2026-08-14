@@ -1,6 +1,6 @@
 id: mobile
 name: "Mobile"
-version: 1.0.3
+version: 1.1.0
 description: Give your agent a phone number for calls and SMS
 license: MIT
 depends_on: []
@@ -9,18 +9,18 @@ min_gateway_version: 1.0.0
 # Channel type — drives Channel-driven activation in getDesiredState.
 # Locked enum from packages/integration-manifest.
 #
-# A Mobile Connection ALWAYS provisions a default `sms` ChannelEntity on
+# A Mobile Connection ALWAYS provisions a default `mobile` ChannelEntity on
 # purchase (services/connect/api/connections/mobile/purchase/post.ts), so
-# anchoring activation on the `sms` channel makes the mobile integration
+# anchoring activation on the `mobile` channel makes the mobile integration
 # (and its `@alfe.ai/openclaw-mobile` plugin) install whenever an agent has
 # a working phone number — exactly the always-on SMS/calls baseline this
 # integration represents.
 #
 # EITHER semantics (compose.ts): with `channel_type` set, Channel presence
 # is the sole activation trigger. `requires_connection` is intentionally
-# omitted — it would be advisory only here and the `sms` channel already
+# omitted — it would be advisory only here and the `mobile` channel already
 # implies the parent `mobile` Connection.
-channel_type: sms
+channel_type: mobile
 
 # Agent runtimes this integration supports
 supported_agents: [openclaw]
