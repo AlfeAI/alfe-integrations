@@ -10,16 +10,17 @@ Give your AI agent a phone number for calls and SMS messaging. Powered by Twilio
 
 ## How It Works
 
-1. **Install** from the Alfe dashboard integrations tab
-2. **Pick a number** from the available pool using the phone number picker
-3. **Start messaging** — your agent can now send/receive SMS and handle voice calls
+1. **Pick a number** from the Mobile connection flow in the Alfe dashboard
+2. **Wait for activation** while Alfe purchases and configures the number
+3. **Start messaging or calling** — both use the same Mobile conversation for each caller
 
 ## Architecture
 
 - Phone numbers are managed server-side by Alfe (Twilio credentials never exposed to users)
-- Inbound SMS/voice webhooks route to Lambda endpoints that forward to the agent
+- Inbound SMS and PSTN calls route to the same `alfe:mobile:<E.164>` conversation
+- Live calls reuse the web voice pipeline for transcription, agent turns, streaming TTS, and barge-in
 - Outbound messaging uses the `@alfe.ai/openclaw-mobile` OpenClaw plugin
-- The plugin registers `alfe-sms` and `alfe-mobile-voice` channels
+- The Mobile Channel is created automatically with the purchased number; WhatsApp remains opt-in and separate
 
 ## Hooks
 
