@@ -33,22 +33,22 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.4"
-        - package: "@alfe.ai/openclaw-metrics@0.0.31"
+        - package: "@alfe.ai/openclaw@0.4.12"
+        - package: "@alfe.ai/openclaw-metrics@0.0.37"
         - package: "@alfe.ai/openclaw-identity@0.1.30"
         - package: "@alfe.ai/openclaw-search@0.0.41"
         - package: "@alfe.ai/openclaw-secrets@0.2.27"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.24"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.27"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.9.11"
+        - package: "@alfe.ai/openclaw-chat@0.9.12"
         # Folded in from the legacy `webhooks` integration (PR 11).
-        - package: "@alfe.ai/openclaw-webhooks@0.0.18"
+        - package: "@alfe.ai/openclaw-webhooks@0.0.21"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
-        - package: "@alfe.ai/openclaw-console@0.0.11"
+        - package: "@alfe.ai/openclaw-console@0.0.13"
         # Scoped org/team/project knowledge resources: search + read + propose/
         # edit shared DOCUMENTS + profile (facts primitive removed 2026-07-06 —
         # one home per fact; agents find the right doc and edit it, quick capture
@@ -84,7 +84,7 @@ installs:
         # (TAKEOVER_REQUEST) + addHold across the wait (no more about:blank);
         # pulls @alfe.ai/browser@^0.2.0. Bump this + the submodule-pointer only
         # AFTER the version is on npm, or install fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.0.9"
+        - package: "@alfe.ai/openclaw-remote@0.0.17"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
