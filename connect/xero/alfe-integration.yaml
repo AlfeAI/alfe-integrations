@@ -1,6 +1,6 @@
 id: xero
 name: "Xero Accounting"
-version: 1.0.4
+version: 1.0.5
 description: Connect your agent to Xero — full accounting access via official Xero MCP server
 license: MIT
 min_gateway_version: 1.0.0
@@ -41,10 +41,4 @@ mcp_servers:
     # the MCP until Xero is actually connected.
     requires_credentials: xero
 
-config_schema:
-  - key: xero_account
-    type: oauth_connect
-    label: "Xero Account"
-    description: "Connect the Xero account for this agent"
-    required: true
-    oauth_provider: xero
+config_schema: []

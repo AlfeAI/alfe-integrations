@@ -1,6 +1,6 @@
 id: google
 name: "Google Workspace"
-version: 1.0.5
+version: 1.0.6
 description: Connect your agent to Google Workspace — Chat, Drive, Gmail, Calendar, Sheets, Docs and more
 license: MIT
 depends_on: []
@@ -62,13 +62,7 @@ hooks:
   post_activate: hooks/post_activate.mjs
   health_check: hooks/health.sh
 
-config_schema:
-  - key: google_account
-    type: oauth_connect
-    label: "Google Account"
-    description: "Connect the Google account for this agent"
-    required: true
-    oauth_provider: google
+config_schema: []
 
 capabilities:
   - google.chat

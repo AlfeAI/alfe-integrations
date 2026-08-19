@@ -7,15 +7,27 @@ REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 errors=0
 
-for manifest in "$REPO_ROOT"/integrations/*/alfe-integration.yaml; do
+# Keep validation dependency-free and cover every catalogue family. The old
+# `npx js-yaml` invocation no longer exposed a compatible CLI and only walked
+# the integrations/ directory, so it reported every file as invalid while
+# silently skipping Connections and Channels.
+validate_yaml() {
+  ruby -e '
+    require "yaml"
+    YAML.safe_load_file(ARGV.fetch(0), permitted_classes: [], permitted_symbols: [], aliases: true)
+  ' "$1"
+}
+
+while IFS= read -r manifest; do
   integration="$(basename "$(dirname "$manifest")")"
-  if npx -y js-yaml "$manifest" > /dev/null 2>&1; then
-    echo "✅ $integration — valid YAML"
+  family="$(basename "$(dirname "$(dirname "$manifest")")")"
+  if validate_yaml "$manifest" > /dev/null 2>&1; then
+    echo "✅ $family/$integration — valid YAML"
   else
-    echo "❌ $integration — invalid YAML"
+    echo "❌ $family/$integration — invalid YAML"
     errors=$((errors + 1))
   fi
-done
+done < <(find "$REPO_ROOT" -mindepth 3 -maxdepth 3 -name alfe-integration.yaml -type f | sort)
 
 if [ "$errors" -gt 0 ]; then
   echo ""

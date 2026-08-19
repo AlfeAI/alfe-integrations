@@ -1,6 +1,6 @@
 id: google-chat
 name: "Google Chat"
-version: 1.0.5
+version: 1.0.6
 description: Receive and respond to Google Chat direct messages
 license: MIT
 depends_on: []
@@ -32,15 +32,7 @@ installs:
       plugins:
         - package: "@alfe.ai/openclaw-google-chat@0.0.31"
 
-config_schema:
-  - key: google_chat_account
-    type: oauth_connect
-    label: "Google Account"
-    description: "Connect a Google account for Chat messaging"
-    required: true
-    oauth_provider: google
-    oauth_scopes: ["chat"]
-    oauth_integration_id: google-chat
+config_schema: []
 
 capabilities:
   - google-chat.messages

@@ -1,6 +1,6 @@
 id: notion
 name: "Notion"
-version: 1.0.4
+version: 1.0.5
 description: Connect your agent to Notion — pages, databases, comments and more
 license: MIT
 min_gateway_version: 1.0.0
@@ -40,10 +40,4 @@ mcp_servers:
     # the MCP until Notion is actually connected.
     requires_credentials: notion
 
-config_schema:
-  - key: notion_account
-    type: oauth_connect
-    label: "Notion Workspace"
-    description: "Connect the Notion workspace for this agent"
-    required: true
-    oauth_provider: notion
+config_schema: []

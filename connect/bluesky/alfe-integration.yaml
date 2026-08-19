@@ -1,6 +1,6 @@
 id: bluesky
 name: "Bluesky"
-version: 1.0.3
+version: 1.0.4
 description: Connect your agent to Bluesky — post, reply, search the firehose, read notifications, and pull post metrics on the AT Protocol via @alfe.ai/social-mcp
 license: MIT
 min_gateway_version: 1.0.0
@@ -63,13 +63,7 @@ mcp_servers:
     # empty, so the MCP starts as soon as the integration is installed.
     requires_credentials: bluesky
 
-config_schema:
-  - key: bluesky_account
-    type: oauth_connect
-    label: "Bluesky Account"
-    description: "Connect the Bluesky handle for this agent (app password)"
-    required: true
-    oauth_provider: bluesky
+config_schema: []
 
 capabilities:
   - social.post

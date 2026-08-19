@@ -1,6 +1,6 @@
 id: discord
 name: "Discord"
-version: 1.0.0
+version: 1.0.1
 description: Connect your agent to a Discord server
 license: MIT
 depends_on: []
@@ -33,13 +33,7 @@ features:
   - "Voice channels (requires Voice integration)"
 
 
-config_schema:
-  - key: discord_server
-    type: oauth_connect
-    label: "Discord Server"
-    description: "Connect your Discord server via OAuth"
-    required: true
-    oauth_provider: discord
+config_schema: []
 
 capabilities:
   - discord.messages

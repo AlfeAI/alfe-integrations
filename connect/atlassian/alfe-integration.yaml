@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.4
+version: 1.0.5
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []
@@ -49,13 +49,7 @@ hooks:
   post_install: hooks/post-install.sh
   post_activate: hooks/post_activate.mjs
 
-config_schema:
-  - key: atlassian_account
-    type: oauth_connect
-    label: "Atlassian Account"
-    description: "Connect the Atlassian account for this agent"
-    required: true
-    oauth_provider: atlassian
+config_schema: []
 
 capabilities:
   - atlassian.jira

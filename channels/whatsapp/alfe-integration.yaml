@@ -1,6 +1,6 @@
 id: whatsapp
 name: "WhatsApp"
-version: 1.0.4
+version: 1.0.5
 description: Add WhatsApp messaging to your agent's phone number
 license: MIT
 depends_on: [mobile]
@@ -8,8 +8,7 @@ min_gateway_version: 1.0.0
 
 # Channel type — drives Channel-driven activation in getDesiredState.
 # Locked enum from packages/integration-manifest.
-# requires_connection is intentionally absent until PR 10 introduces the
-# `mobile` connect provider; whatsapp channels anchor on a Mobile Connection.
+requires_connection: [mobile]
 channel_type: whatsapp
 
 # Agent runtimes this integration supports. OpenClaw-only: installs the
