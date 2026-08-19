@@ -1,6 +1,6 @@
 id: teams
 name: "Microsoft Teams"
-version: 1.0.4
+version: 1.1.1
 description: Add your agent to Microsoft Teams as a bot with its own identity
 license: MIT
 depends_on: []
@@ -43,6 +43,12 @@ hooks:
   health_check: hooks/health.sh
 
 config_schema:
+  - key: microsoft_account
+    type: oauth_connect
+    label: "Microsoft Account"
+    description: "Connect the Microsoft account that owns this agent's Teams bot"
+    required: true
+    oauth_provider: microsoft
   - key: teams_bot
     type: oauth_connect
     label: "Microsoft Teams Bot"
