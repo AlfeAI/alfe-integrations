@@ -1,6 +1,6 @@
 id: microsoft
 name: "Microsoft 365"
-version: 1.2.1
+version: 1.2.2
 description: Connect your agent to Microsoft 365 — Outlook Mail, Calendar, OneDrive, and more
 license: MIT
 depends_on: []
@@ -37,19 +37,13 @@ installs:
 mcp_servers:
   - id: microsoft
     command: npx
-    args: ["-y", "@alfe.ai/microsoft-mcp@0.1.9"]
+    args: ["-y", "@alfe.ai/microsoft-mcp@0.1.10"]
     # Server fetches creds from the Alfe API at startup; the
     # `requires_credentials` flag keeps the applier from registering
     # the MCP until Microsoft is actually connected.
     requires_credentials: microsoft
 
-config_schema:
-  - key: microsoft_account
-    type: oauth_connect
-    label: "Microsoft 365 Account"
-    description: "Connect the Microsoft 365 account for this agent"
-    required: true
-    oauth_provider: microsoft
+config_schema: []
 
 capabilities:
   - microsoft.outlook.mail

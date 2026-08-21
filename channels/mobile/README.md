@@ -22,13 +22,12 @@ Give your AI agent a phone number for calls and SMS messaging. Powered by Twilio
 - Outbound messaging uses the `@alfe.ai/openclaw-mobile` OpenClaw plugin
 - The Mobile Channel is created automatically with the purchased number; WhatsApp remains opt-in and separate
 
-## Hooks
+## Runtime installation
 
-| Hook | Purpose |
-|------|---------|
-| `hooks/install.sh` | Installs the `@alfe.ai/openclaw-mobile` plugin |
-| `hooks/configure.sh` | Applies phone number config to the state directory |
-| `hooks/uninstall.sh` | Removes the plugin and cleans up state |
+The capability manifest installs the pinned `@alfe.ai/openclaw-mobile` plugin
+through the integration runtime. Mobile does not use lifecycle hook scripts;
+phone-number provisioning and cleanup remain owned by the Mobile and Connect
+services.
 
 ## Configuration
 
