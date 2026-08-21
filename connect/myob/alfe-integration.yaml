@@ -35,7 +35,7 @@ installs:
 mcp_servers:
   - id: myob
     command: npx
-    args: ["-y", "@alfe.ai/myob-mcp@0.3.19"]
+    args: ["-y", "@alfe.ai/myob-mcp@0.3.20"]
     # The proxy fetches credentials from the Alfe API at startup, so
     # no env interpolation is needed. The `requires_credentials` flag
     # makes the applier skip registration when MYOB isn't connected

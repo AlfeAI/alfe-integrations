@@ -38,7 +38,7 @@ installs:
 mcp_servers:
   - id: ctrader
     command: npx
-    args: ["-y", "@alfe.ai/ctrader-mcp@0.3.9"]
+    args: ["-y", "@alfe.ai/ctrader-mcp@0.3.10"]
     # The server self-fetches its OAuth-derived credentials (clientId,
     # clientSecret, accessToken, accountId, host) from the Alfe API at
     # startup via @alfe.ai/agent-api-client, so no env interpolation is

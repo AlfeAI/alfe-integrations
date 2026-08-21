@@ -55,7 +55,7 @@ mcp_servers:
     # a `minor` changeset on an on-disk 0.1.0 publishes 0.2.0, never
     # 0.1.0 (root DEVELOPING.md "pre-bump its pin"). The original 0.1.0
     # pin here 404'd on install (cf. the news-mcp incident).
-    args: ["-y", "@alfe.ai/social-mcp@0.2.7", "--provider", "bluesky"]
+    args: ["-y", "@alfe.ai/social-mcp@0.2.8", "--provider", "bluesky"]
     # The server self-fetches its per-account credentials from the Alfe
     # API at startup (Pattern A multi-account), so no env interpolation is
     # needed. `requires_credentials` is kept for marketplace / registry

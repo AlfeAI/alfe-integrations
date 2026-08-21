@@ -30,7 +30,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-google-chat@0.0.31"
+        - package: "@alfe.ai/openclaw-google-chat@0.0.32"
 
 config_schema: []
 
