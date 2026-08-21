@@ -1,6 +1,6 @@
 id: sync
 name: "Sync"
-version: 1.0.7
+version: 1.0.8
 description: Back up your agent configuration and memory to the cloud
 license: MIT
 depends_on: []
@@ -25,18 +25,6 @@ features:
 
 
 config_schema:
-  - key: sync_scope
-    type: multi_select
-    label: "Sync Scope"
-    description: "Choose what to sync to the cloud"
-    required: true
-    select_options:
-      - value: config
-        label: "Configuration"
-      - value: conversations
-        label: "Conversation history"
-      - value: memory
-        label: "Agent memory"
   - key: sync_schedule
     type: select
     label: "Schedule"
@@ -61,7 +49,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-sync@0.3.10"
+        - package: "@alfe.ai/openclaw-sync@0.3.11"
       skills:
         - path: skills/alfe-sync
       config:
@@ -69,5 +57,4 @@ installs:
           entries:
             "@alfe.ai/openclaw-sync":
               config:
-                syncScope: "{{config.sync_scope}}"
                 syncSchedule: "{{config.sync_schedule}}"
