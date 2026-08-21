@@ -1,6 +1,6 @@
 id: ctrader
 name: "cTrader"
-version: 1.3.4
+version: 1.3.5
 description: Trade forex & CFDs on cTrader (full trading) — orders (market/limit/stop/stop-limit, trailing stops), Level 2 depth, live quotes, trade history, PnL, margin, and market data via the cTrader Open API
 icon: ./assets/icon.svg
 license: MIT

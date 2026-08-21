@@ -1,6 +1,6 @@
 id: sync
 name: "Sync"
-version: 1.0.8
+version: 1.0.9
 description: Back up your agent configuration and memory to the cloud
 license: MIT
 depends_on: []

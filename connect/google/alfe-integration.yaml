@@ -1,6 +1,6 @@
 id: google
 name: "Google Workspace"
-version: 1.0.6
+version: 1.0.7
 description: Connect your agent to Google Workspace — Chat, Drive, Gmail, Calendar, Sheets, Docs and more
 license: MIT
 depends_on: []

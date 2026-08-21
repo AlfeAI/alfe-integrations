@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.5
+version: 1.0.6
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []

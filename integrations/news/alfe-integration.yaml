@@ -1,6 +1,6 @@
 id: news
 name: "News Search"
-version: 1.0.3
+version: 1.0.4
 description: Search news across 500K+ sources (APITube / NewsData) with sentiment.
 icon: ./assets/icon.svg
 license: MIT

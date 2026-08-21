@@ -1,6 +1,6 @@
 id: github
 name: "GitHub"
-version: 1.0.5
+version: 1.0.6
 description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more (multi-account)
 license: MIT
 min_gateway_version: 1.0.0

@@ -1,6 +1,6 @@
 id: bluesky
 name: "Bluesky"
-version: 1.0.4
+version: 1.0.5
 description: Connect your agent to Bluesky — post, reply, search the firehose, read notifications, and pull post metrics on the AT Protocol via @alfe.ai/social-mcp
 license: MIT
 min_gateway_version: 1.0.0

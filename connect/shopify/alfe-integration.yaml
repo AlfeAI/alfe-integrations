@@ -1,6 +1,6 @@
 id: shopify
 name: "Shopify"
-version: 1.0.3
+version: 1.0.4
 description: Manage your Shopify store — products, orders (incl. fulfil, refund, cancel), customers, and inventory via the Shopify Admin GraphQL API
 icon: ./assets/icon.svg
 license: MIT

@@ -1,6 +1,6 @@
 id: whatsapp
 name: "WhatsApp"
-version: 1.0.5
+version: 1.0.6
 description: Add WhatsApp messaging to your agent's phone number
 license: MIT
 depends_on: [mobile]
