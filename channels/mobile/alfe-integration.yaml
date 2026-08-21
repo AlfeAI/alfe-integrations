@@ -43,7 +43,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-mobile@0.0.29"
+        - package: "@alfe.ai/openclaw-mobile@0.0.30"
       config: {}
 
 capabilities:
