@@ -1,6 +1,6 @@
 id: telegram
 name: "Telegram (local user session)"
-version: 1.0.0
+version: 1.0.1
 description: Monitor explicitly subscribed Telegram chats through a user session held only on the agent machine
 license: MIT
 depends_on: []
@@ -30,7 +30,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-telegram@0.0.1"
+        - package: "@alfe.ai/openclaw-telegram@0.0.2"
 
 config_schema: []
 
