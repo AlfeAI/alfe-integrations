@@ -1,0 +1,40 @@
+id: telegram
+name: "Telegram (local user session)"
+version: 1.0.1
+description: Monitor explicitly subscribed Telegram chats through a user session held only on the agent machine
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+# This is intentionally Connection-driven, not Channel-driven. One local
+# Telegram user account can monitor many chats and Telegram does not expose an
+# OAuth grant that provides that account-level chat access.
+requires_connection: [telegram]
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: ./assets/icon.svg
+pricing:
+  type: free
+features:
+  - Telegram user login and session stay only on the agent machine
+  - Discover private chats, groups, and channels visible to that user
+  - Explicitly subscribe and unsubscribe individual chats
+  - Durable local delivery queue for subscribed text messages and captions
+  - Read-only monitoring — agent responses are never posted back to Telegram
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-telegram@0.0.2"
+
+config_schema: []
+
+capabilities:
+  - telegram.dialogs
+  - telegram.subscriptions
+  - telegram.messages.read
