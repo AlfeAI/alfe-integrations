@@ -1,6 +1,6 @@
 id: whatsapp
 name: "WhatsApp"
-version: 1.0.6
+version: 1.0.7
 description: Add WhatsApp messaging to your agent's phone number
 license: MIT
 depends_on: [mobile]
@@ -36,7 +36,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-whatsapp@0.0.30"
+        - package: "@alfe.ai/openclaw-whatsapp@0.0.31"
       config: {}
 
 config_schema: []
