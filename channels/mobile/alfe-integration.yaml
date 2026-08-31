@@ -1,6 +1,6 @@
 id: mobile
 name: "Mobile"
-version: 1.1.4
+version: 1.1.5
 description: Give your agent a phone number for calls and SMS
 license: MIT
 depends_on: []
@@ -43,7 +43,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-mobile@0.0.32"
+        - package: "@alfe.ai/openclaw-mobile@0.0.33"
       config: {}
 
 capabilities:

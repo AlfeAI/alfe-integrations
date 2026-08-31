@@ -1,6 +1,6 @@
 id: google-chat
 name: "Google Chat"
-version: 1.0.7
+version: 1.0.8
 description: Receive and respond to Google Chat direct messages
 license: MIT
 depends_on: []
@@ -30,7 +30,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-google-chat@0.0.32"
+        - package: "@alfe.ai/openclaw-google-chat@0.0.33"
 
 config_schema: []
 
