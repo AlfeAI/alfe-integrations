@@ -234,10 +234,20 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                # `maxTokens` is load-bearing: OpenClaw only sends `max_tokens`
+                # when the model declares it (`if (clampedMaxTokens)`), so a bare
+                # entry lets DeepSeek apply its own small server-side default and
+                # tool-heavy turns terminate with `stopReason=length` — surfaced
+                # to the user as "Agent couldn't generate a response".
+                # DeepSeek v4 documents 1M context / 384K max output.
                 - id: deepseek-v4-flash
                   name: "DeepSeek V4 Flash"
+                  contextWindow: 1000000
+                  maxTokens: 64000
                 - id: deepseek-v4-pro
                   name: "DeepSeek V4 Pro"
+                  contextWindow: 1000000
+                  maxTokens: 64000
                 - id: deepseek-chat
                   name: "DeepSeek Chat"
                 - id: deepseek-reasoner
