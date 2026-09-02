@@ -1,0 +1,64 @@
+id: maestro
+name: "Maestro Testing"
+version: 1.0.0
+description: Install Maestro CLI and let your agent inspect, interact with, and test mobile or web apps through Maestro's official MCP server.
+icon: ./assets/icon.svg
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Inspect and interact with connected Android and iOS devices
+  - Author and run Maestro YAML flows
+  - Submit app tests to Maestro Cloud from managed agents
+  - Capture screenshots and inspect view hierarchies
+
+installs:
+  runtimes:
+    openclaw:
+      skills:
+        - path: skills/maestro-testing
+
+hooks:
+  post_install: hooks/install.sh
+  post_activate: hooks/configure.sh
+  health_check: hooks/health.sh
+  pre_uninstall: hooks/uninstall.sh
+
+mcp_servers:
+  - id: maestro
+    command: /bin/bash
+    args:
+      - "-c"
+      - 'exec "$HOME/.alfe/tools/maestro/bin/alfe-maestro-mcp"'
+    env:
+      MAESTRO_CLOUD_API_KEY: "{{config.maestro_cloud_api_key}}"
+
+config_schema:
+  - key: maestro_cloud_api_key
+    type: secret
+    label: "Maestro Cloud API key (optional)"
+    description: "Required on managed agents, which run tests on Maestro Cloud instead of a local emulator. Leave empty only when this machine already has a usable local device and you plan to use the CLI directly."
+    required: false
+    editable: agent
+  - key: maestro_cloud_project_id
+    type: string
+    label: "Default Maestro Cloud project ID (optional)"
+    description: "The agent passes this project ID to cloud runs. It is required when the API key can access more than one project."
+    required: false
+    editable: agent
+
+capabilities:
+  - maestro.devices
+  - maestro.interact
+  - maestro.flows
+  - maestro.cloud
