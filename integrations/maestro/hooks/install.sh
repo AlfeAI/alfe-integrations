@@ -300,24 +300,76 @@ atomic_symlink() {
   mv -f "${next_link}" "${link_path}"
 }
 
-mkdir -p "${TOOLS_ROOT}" "${VERSIONS_ROOT}" "${JRE_ROOT}" "${BIN_ROOT}"
-chmod 0700 "${TOOLS_ROOT}"
-ensure_install_space
+staged_maestro_version() {
+  local maestro_root="$1"
+  local java_home=""
+  local major=""
 
-TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/alfe-maestro.XXXXXX")"
-trap 'rm -rf -- "${TEMP_ROOT}"' EXIT
+  if [ -x "${JRE_ROOT}/current/bin/java" ]; then
+    java_home="${JRE_ROOT}/current"
+  elif [ -x "${JRE_ROOT}/current/Contents/Home/bin/java" ]; then
+    java_home="${JRE_ROOT}/current/Contents/Home"
+  elif [ -n "${JAVA_HOME:-}" ] && [ -x "${JAVA_HOME}/bin/java" ]; then
+    major="$(java_major "${JAVA_HOME}/bin/java" || true)"
+    if [ -n "${major}" ] && [ "${major}" -ge 17 ] 2>/dev/null; then
+      java_home="${JAVA_HOME}"
+    fi
+  fi
 
-if ! system_java_17; then
-  install_temurin "${TEMP_ROOT}"
-  atomic_symlink "${JRE_ROOT}/${TEMURIN_VERSION}" "${JRE_ROOT}/current"
+  if [ -n "${java_home}" ]; then
+    MAESTRO_CLI_NO_ANALYTICS=1 \
+      MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true \
+      JAVA_HOME="${java_home}" PATH="${java_home}/bin:${PATH}" \
+      "${maestro_root}/bin/maestro" --version 2>/dev/null
+  else
+    env -u JAVA_HOME \
+      MAESTRO_CLI_NO_ANALYTICS=1 \
+      MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true \
+      "${maestro_root}/bin/maestro" --version 2>/dev/null
+  fi
+}
+
+validate_staged_maestro() {
+  local installed_version=""
+
+  if ! installed_version="$(staged_maestro_version "${MAESTRO_VERSION_DIR}")"; then
+    echo "maestro: staged Maestro CLI or Java 17+ is unavailable" >&2
+    return 1
+  fi
+  if [ "${installed_version}" != "${MAESTRO_VERSION}" ]; then
+    echo "maestro: expected staged Maestro ${MAESTRO_VERSION}, got ${installed_version:-unknown}" >&2
+    return 1
+  fi
+}
+
+activate_maestro_version() {
+  # Keep the existing current target usable until every fallible staging step
+  # has succeeded. The symlink replacement is the final commit point.
+  validate_staged_maestro || return 1
+  write_launchers
+  "${ALFE_INTEGRATION_DIR}/hooks/configure.sh"
+  atomic_symlink "${MAESTRO_VERSION_DIR}" "${TOOLS_ROOT}/current"
+}
+
+main() {
+  mkdir -p "${TOOLS_ROOT}" "${VERSIONS_ROOT}" "${JRE_ROOT}" "${BIN_ROOT}"
+  chmod 0700 "${TOOLS_ROOT}"
+  ensure_install_space
+
+  TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/alfe-maestro.XXXXXX")"
+  trap 'rm -rf -- "${TEMP_ROOT}"' EXIT
+
+  if ! system_java_17; then
+    install_temurin "${TEMP_ROOT}"
+    atomic_symlink "${JRE_ROOT}/${TEMURIN_VERSION}" "${JRE_ROOT}/current"
+  fi
+
+  install_maestro "${TEMP_ROOT}"
+  activate_maestro_version
+
+  echo "maestro: Maestro CLI ${MAESTRO_VERSION} is ready at ${BIN_ROOT}/alfe-maestro"
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  main "$@"
 fi
-
-install_maestro "${TEMP_ROOT}"
-atomic_symlink "${MAESTRO_VERSION_DIR}" "${TOOLS_ROOT}/current"
-write_launchers
-
-INSTALLED_VERSION="$("${BIN_ROOT}/alfe-maestro" --version 2>/dev/null)"
-[ "${INSTALLED_VERSION}" = "${MAESTRO_VERSION}" ] || fail "expected Maestro ${MAESTRO_VERSION}, got ${INSTALLED_VERSION:-unknown}"
-"${ALFE_INTEGRATION_DIR}/hooks/configure.sh"
-
-echo "maestro: Maestro CLI ${MAESTRO_VERSION} is ready at ${BIN_ROOT}/alfe-maestro"
