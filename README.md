@@ -40,7 +40,11 @@ Run YAML validation in this repository:
 
 ```bash
 ./scripts/validate-manifests.sh
+./scripts/test-maestro-install-transaction.sh
 ```
+
+The Maestro transaction test injects a staged-version failure and verifies that
+the previously active `current` target remains usable.
 
 The authoritative cross-repository contract test is
 `services/integrations/src/__tests__/registry-cross-validation.test.ts` in the
