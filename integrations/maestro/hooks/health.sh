@@ -3,8 +3,10 @@ set -euo pipefail
 
 MAESTRO="${HOME}/.alfe/tools/maestro/bin/alfe-maestro"
 MCP_LAUNCHER="${HOME}/.alfe/tools/maestro/bin/alfe-maestro-mcp"
+EXPECTED_MAESTRO_VERSION="2.10.0"
 VERSION_TIMEOUT_SECONDS=12
 MCP_STARTUP_SECONDS=4
+MCP_RESPONSE_TIMEOUT_SECONDS=4
 GROUP_STOP_SECONDS=3
 
 PROBE_ROOT=""
@@ -34,6 +36,7 @@ stop_active_group() {
 
 cleanup() {
   exec 3>&- 2>/dev/null || true
+  exec 4>&- 2>/dev/null || true
   stop_active_group
   if [ -n "${PROBE_ROOT}" ]; then
     rm -rf -- "${PROBE_ROOT}"
@@ -76,18 +79,51 @@ if ! wait "${ACTIVE_PID}" 2>/dev/null; then
 fi
 stop_active_group
 VERSION="$(cat "${VERSION_OUTPUT}")"
+[ "${VERSION}" = "${EXPECTED_MAESTRO_VERSION}" ] || {
+  echo "unhealthy: expected Maestro ${EXPECTED_MAESTRO_VERSION}, got ${VERSION:-unknown}"
+  exit 1
+}
 
 PROBE_INPUT="${PROBE_ROOT}/stdin"
-mkfifo "${PROBE_INPUT}"
+PROBE_OUTPUT="${PROBE_ROOT}/stdout"
+mkfifo "${PROBE_INPUT}" "${PROBE_OUTPUT}"
 exec 3<> "${PROBE_INPUT}"
+exec 4<> "${PROBE_OUTPUT}"
 set -m
-"${MCP_LAUNCHER}" --no-viewer < "${PROBE_INPUT}" > "${PROBE_ROOT}/stdout" 2> "${PROBE_ROOT}/stderr" &
+"${MCP_LAUNCHER}" --no-viewer < "${PROBE_INPUT}" > "${PROBE_OUTPUT}" 2> "${PROBE_ROOT}/stderr" &
 ACTIVE_PID="$!"
 set +m
 sleep "${MCP_STARTUP_SECONDS}"
 
 if ! kill -0 "${ACTIVE_PID}" 2>/dev/null || ! group_alive; then
   echo "unhealthy: Maestro MCP server did not remain running"
+  exit 1
+fi
+
+printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"alfe-health","version":"1.0.0"}}}' >&3
+if ! IFS= read -r -t "${MCP_RESPONSE_TIMEOUT_SECONDS}" MCP_RESPONSE <&4; then
+  echo "unhealthy: Maestro MCP server did not answer initialize within ${MCP_RESPONSE_TIMEOUT_SECONDS}s"
+  exit 1
+fi
+
+MCP_RESPONSE_COMPACT="$(printf '%s' "${MCP_RESPONSE}" | tr -d '[:space:]')"
+for REQUIRED_FIELD in \
+  '"jsonrpc":"2.0"' \
+  '"id":1' \
+  '"result":' \
+  '"protocolVersion":"2024-11-05"'
+do
+  case "${MCP_RESPONSE_COMPACT}" in
+    *"${REQUIRED_FIELD}"*) ;;
+    *)
+      echo "unhealthy: Maestro MCP server returned an invalid initialize response"
+      exit 1
+      ;;
+  esac
+done
+
+if ! kill -0 "${ACTIVE_PID}" 2>/dev/null || ! group_alive; then
+  echo "unhealthy: Maestro MCP server exited after initialize"
   exit 1
 fi
 

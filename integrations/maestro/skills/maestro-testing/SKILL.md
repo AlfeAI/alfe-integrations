@@ -56,12 +56,15 @@ MAESTRO="$HOME/.alfe/tools/maestro/bin/alfe-maestro"
 "$MAESTRO" check-syntax .maestro/
 "$MAESTRO" list-devices
 "$MAESTRO" --device "<device-id>" hierarchy
-run_id="$(date -u +%Y%m%dT%H%M%SZ)"
-mkdir -p ".maestro/results/$run_id"
+mkdir -p ".maestro/results"
+run_dir="$(mktemp -d ".maestro/results/maestro.XXXXXX")"
+run_id="${run_dir##*/}"
 "$MAESTRO" --device "<device-id>" test \
-  --test-output-dir=".maestro/results/$run_id" \
+  --test-output-dir="results/$run_id" \
+  --debug-output="$run_dir" \
+  --flatten-debug-output \
   --format junit \
-  --output ".maestro/results/$run_id/report.xml" \
+  --output "$run_dir/report.xml" \
   .maestro/
 ```
 
@@ -69,6 +72,8 @@ mkdir -p ".maestro/results/$run_id"
 inspection, and `check-syntax` plus `test --help` cover local authoring. Re-run
 `hierarchy` after every UI-changing flow while exploring. The explicit output
 directory keeps reports, screenshots, logs, and command metadata with the run.
+`--test-output-dir` is relative to the `.maestro/` workspace; the debug and
+JUnit paths are relative to the current working directory.
 
 An installation without `maestro_cloud_api_key` deliberately does not register
 the MCP server, because the integration runtime will not spawn a child with an
