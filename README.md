@@ -54,13 +54,16 @@ and empty driven-package config schemas.
 
 ## Releasing a change
 
-1. Pin only package versions that are already published. Verify every changed
-   runtime pin with `npm view <package>@<version> version` before committing.
+1. Author runtime pins alongside the matching Alfe package changesets, including
+   versions not yet published, as required by the main repository's
+   `DEVELOPING.md`. Record the paired application PR and expected versions.
 2. Bump the capability's semantic version when runtime or manifest behavior
    changes.
 3. Merge this repository first.
 4. Update the main repository's submodule pointer to that commit.
-5. Publish/sync the registry for each target stage. A newly published package
+5. Before publishing/syncing the registry for any target stage, verify every
+   changed runtime pin with `npm view <package>@<version> version`. Never sync a
+   pin until its package and runtime dependencies are published. A newly published package
    defaults to hidden until an operator deliberately makes it public.
 
 ## License
