@@ -1,6 +1,6 @@
 id: google
 name: "Google Workspace"
-version: 1.0.8
+version: 1.0.9
 description: Connect your agent to Google Workspace — Chat, Drive, Gmail, Calendar, Sheets, Docs and more
 license: MIT
 depends_on: []
@@ -60,6 +60,7 @@ installs:
 hooks:
   post_install: hooks/post-install.sh
   post_activate: hooks/post_activate.mjs
+  post_uninstall: hooks/post_uninstall.mjs
   health_check: hooks/health.sh
 
 config_schema: []
