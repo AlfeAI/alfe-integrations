@@ -4,6 +4,8 @@ This optional OpenClaw capability uses Alfe's existing per-agent Chrome and
 human Browser tab. It is not an official LinkedIn OAuth integration and does not
 grant LinkedIn API permissions. Browser automation may trigger account checks
 or restrictions; upstream page changes may break individual operations.
+The initial runtime supports Linux and macOS; other platforms fail closed
+because driver-process cleanup must be verified before releasing browser control.
 
 ## Setup
 
