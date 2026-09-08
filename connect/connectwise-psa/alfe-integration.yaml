@@ -1,0 +1,41 @@
+id: connectwise-psa
+name: "ConnectWise PSA"
+version: 1.0.0
+description: Manage PSA companies, contacts, service tickets, and ticket notes using a scoped API-member connection
+icon: ./assets/icon.svg
+license: UNLICENSED
+min_gateway_version: 1.0.0
+requires_connection: [connectwise-psa]
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Discover accessible PSA accounts and select an exact connection
+  - Find companies, contacts, service boards, priorities, and members
+  - Read, create, and update service tickets; read and add notes
+
+installs:
+  runtimes:
+    openclaw: {}
+    hermes: {}
+
+mcp_servers:
+  - id: connectwise-psa
+    command: npx
+    args: ["-y", "@alfe.ai/connectwise-psa-mcp@0.1.0"]
+    # Runtime resolves the selected Connection on every call. No provider
+    # secrets belong in command arguments, environment variables, or files.
+    requires_credentials: connectwise-psa
+
+config_schema: []
+
+capabilities:
+  - connectwise.psa.companies
+  - connectwise.psa.contacts
+  - connectwise.psa.tickets

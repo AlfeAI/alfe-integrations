@@ -1,0 +1,41 @@
+id: connectwise-screenconnect
+name: "ConnectWise ScreenConnect"
+version: 1.0.0
+description: Manage remote-support sessions through the official RESTful API Manager extension using a scoped connection
+icon: ./assets/icon.svg
+license: UNLICENSED
+min_gateway_version: 1.0.0
+requires_connection: [connectwise-screenconnect]
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Discover accessible ScreenConnect instances and select an exact connection
+  - Find and inspect sessions; create Support and Meeting sessions
+  - Rename sessions, replace custom properties, add notes, and send messages
+  - Queue explicitly confirmed commands and toolbox items on selected sessions
+
+installs:
+  runtimes:
+    openclaw: {}
+    hermes: {}
+
+mcp_servers:
+  - id: connectwise-screenconnect
+    command: npx
+    args: ["-y", "@alfe.ai/connectwise-screenconnect-mcp@0.1.0"]
+    # Runtime resolves the selected Connection on every call. No provider
+    # secrets belong in command arguments, environment variables, or files.
+    requires_credentials: connectwise-screenconnect
+
+config_schema: []
+
+capabilities:
+  - connectwise.screenconnect.sessions
+  - connectwise.screenconnect.remote-actions
