@@ -60,6 +60,7 @@ installs:
 hooks:
   post_install: hooks/post-install.sh
   post_activate: hooks/post_activate.mjs
+  post_uninstall: hooks/post_uninstall.mjs
   health_check: hooks/health.sh
 
 config_schema: []
