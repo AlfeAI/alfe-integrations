@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.45
+version: 1.1.46
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -34,11 +34,13 @@ installs:
     openclaw:
       plugins:
         - package: "@alfe.ai/openclaw@0.4.15"
-        - package: "@alfe.ai/openclaw-metrics@0.0.37"
+        # openclaw-metrics was a no-op after activity tracking moved to chat
+        # service events. Its final publish is legacy-activate-only, so retire
+        # it before the OpenClaw 2 rollout rather than keep dead runtime code.
         - package: "@alfe.ai/openclaw-identity@0.1.34"
         - package: "@alfe.ai/openclaw-search@0.0.45"
         - package: "@alfe.ai/openclaw-secrets@0.2.31"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.28"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.29"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
@@ -48,7 +50,7 @@ installs:
         # Folded in from the legacy `console` integration (PR 12 follow-up to
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
-        - package: "@alfe.ai/openclaw-console@0.0.13"
+        - package: "@alfe.ai/openclaw-console@0.0.14"
         # Scoped org/team/project knowledge resources: search + read + propose/
         # edit shared DOCUMENTS + profile (facts primitive removed 2026-07-06 —
         # one home per fact; agents find the right doc and edit it, quick capture
