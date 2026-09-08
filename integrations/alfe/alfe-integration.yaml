@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.43
+version: 1.1.44
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -74,12 +74,12 @@ installs:
         # Reads `browser.ssrfPolicy` from the config block below; derives its
         # per-stage relay URL from the agent's apiUrl (no hardcoded URL).
         #
-        # 0.0.20 pulls the browser takeover fixes: pasted text, special keys,
-        # popup-close recovery and visible/retryable viewer-open failures.
+        # 0.1.0 additionally exposes the shared, turn-gated browser operation
+        # helper used by optional local browser-session integrations.
         # Author the pin with the matching Alfe changeset. Registry sync must
-        # wait until @alfe.ai/openclaw-remote@0.0.20 and its browser dependency
+        # wait until @alfe.ai/openclaw-remote@0.1.0 and its browser dependency
         # have been published, or installation fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.0.20"
+        - package: "@alfe.ai/openclaw-remote@0.1.0"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
