@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.46
+version: 1.1.48
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -205,6 +205,108 @@ installs:
                   name: "o3 Mini"
                 - id: o4-mini
                   name: "o4 Mini"
+                # AWS-managed Sydney models still use the Alfe loopback proxy.
+                # The server registry/boundary policy owns routing and access;
+                # these are transport capabilities, never an authorization list.
+                # AWS model cards: GPT-OSS 128K, Qwen Coder 256K context, 16K output.
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-120b.html
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-20b.html
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-qwen-qwen3-coder-30b-a3b-instruct.html
+                # Keep exact IDs/maxTokens: unknown proxy models otherwise inherit
+                # a 200K output budget that the private adapter correctly rejects.
+                # Strict schemas / prompt caching are unavailable on this route.
+                - id: "openai.gpt-oss-120b-1:0"
+                  name: "GPT-OSS 120B (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 131072
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    maxTokensField: "max_tokens"
+                - id: "openai.gpt-oss-20b-1:0"
+                  name: "GPT-OSS 20B (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 131072
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    maxTokensField: "max_tokens"
+                - id: "qwen.qwen3-coder-30b-a3b-v1:0"
+                  name: "Qwen3 Coder 30B (AWS Sydney)"
+                  reasoning: false
+                  input: [text]
+                  contextWindow: 262144
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: false
+                    maxTokensField: "max_tokens"
+                # These exact AWS IDs must remain under the loopback provider;
+                # publisher aliases select different, non-private model routes.
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-zai-glm-5.html
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-moonshot-ai-kimi-k2-5.html
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-deepseek-deepseek-v3-2.html
+                # Conservatively interpret the cards' rounded K limits. GLM's
+                # output is additionally capped below AWS's 128K by our adapter.
+                # Kimi vision and structured outputs are not exposed here.
+                # Preserve assistant reasoning during tool replay: OpenClaw's
+                # publisher-name heuristics do not recognize these AWS IDs.
+                - id: "zai.glm-5"
+                  name: "GLM 5 (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 200000
+                  maxTokens: 16000
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    # Native reasoning only; Converse's effort field is unverified.
+                    supportsReasoningEffort: false
+                    requiresReasoningContentOnAssistantMessages: true
+                    maxTokensField: "max_tokens"
+                - id: "moonshotai.kimi-k2.5"
+                  name: "Kimi K2.5 (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 256000
+                  maxTokens: 16000
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    requiresReasoningContentOnAssistantMessages: true
+                    maxTokensField: "max_tokens"
+                - id: "deepseek.v3.2"
+                  name: "DeepSeek V3.2 (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 164000
+                  maxTokens: 8000
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    requiresReasoningContentOnAssistantMessages: true
+                    maxTokensField: "max_tokens"
             google:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
