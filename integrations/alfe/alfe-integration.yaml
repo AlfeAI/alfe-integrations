@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.45
+version: 1.1.46
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -203,6 +203,55 @@ installs:
                   name: "o3 Mini"
                 - id: o4-mini
                   name: "o4 Mini"
+                # AWS-managed Sydney models still use the Alfe loopback proxy.
+                # The server registry/boundary policy owns routing and access;
+                # these are transport capabilities, never an authorization list.
+                # AWS model cards: GPT-OSS 128K, Qwen Coder 256K context, 16K output.
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-120b.html
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-20b.html
+                # https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-qwen-qwen3-coder-30b-a3b-instruct.html
+                # Keep exact IDs/maxTokens: unknown proxy models otherwise inherit
+                # a 200K output budget that the private adapter correctly rejects.
+                # Strict schemas / prompt caching are unavailable on this route.
+                - id: "openai.gpt-oss-120b-1:0"
+                  name: "GPT-OSS 120B (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 131072
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    maxTokensField: "max_tokens"
+                - id: "openai.gpt-oss-20b-1:0"
+                  name: "GPT-OSS 20B (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 131072
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    maxTokensField: "max_tokens"
+                - id: "qwen.qwen3-coder-30b-a3b-v1:0"
+                  name: "Qwen3 Coder 30B (AWS Sydney)"
+                  reasoning: false
+                  input: [text]
+                  contextWindow: 262144
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: false
+                    maxTokensField: "max_tokens"
             google:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
