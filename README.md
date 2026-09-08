@@ -56,15 +56,18 @@ and empty driven-package config schemas.
 
 1. For a companion runtime-source change, pre-pin the package versions its
    changesets will publish, as required by the main Alfe `DEVELOPING.md`.
-   Standalone pin updates must target published versions. Before registry
-   rollout, verify every changed pin with `npm view <package>@<version> version`.
+   Record the paired application PR and expected versions. Standalone pin
+   updates must target published versions.
 2. Bump the capability's semantic version when runtime or manifest behavior
    changes, including affected transitive agent-client dependencies.
 3. Merge this repository first.
 4. Update the main repository's submodule pointer to the merged `main` commit,
    never a feature-branch commit that a squash merge will leave unreachable.
 5. Publish runtime packages through the main repository's release pipeline
-   before registry rollout. Publish/sync the registry for each target stage.
+   before registry rollout. Before publishing/syncing the registry for any
+   target stage, verify every changed pin with
+   `npm view <package>@<version> version`. Never sync a pin until its package
+   and runtime dependencies are published.
    A new entry defaults to hidden until an operator verifies the complete
    product journey and deliberately makes it public.
 
