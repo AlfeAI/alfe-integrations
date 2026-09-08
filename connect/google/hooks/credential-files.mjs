@@ -4,7 +4,12 @@ import { join } from 'node:path';
 
 const EMAIL = /^[A-Za-z0-9.!#$%&'*+=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/u;
 const FILES = new Set(['client_secret.json', 'credentials.json', 'services.json']);
+// A failed prune may retain several earlier rosters. Check both reads AND the
+// write-ahead union against this cap; never persist a ledger we cannot reload.
+const MAX_OWNED_FILES = 4096;
 const digest = (text) => createHash('sha256').update(text).digest('hex');
+const entryKey = (entry) => `${entry.directory}/${entry.file}`;
+const matchesDigest = (entry, hash) => entry.sha256 === hash || entry.previousSha256 === hash;
 
 function directory(path) {
   if (!existsSync(path)) mkdirSync(path, { mode: 0o700 });
@@ -79,19 +84,21 @@ function context(home) {
   let owned = [];
   if (regularFile(path)) {
     const raw = JSON.parse(readFileSync(path, 'utf8'));
-    if (raw.version !== 1 || !Array.isArray(raw.files) || raw.files.length > 384) {
+    if (raw.version !== 1 || !Array.isArray(raw.files) || raw.files.length > MAX_OWNED_FILES) {
       throw new Error('Invalid Google credential ownership ledger');
     }
     const keys = new Set();
     owned = raw.files.map((entry) => {
       if (!entry || typeof entry.directory !== 'string' || !/^gws-[A-Za-z0-9!#$%&'*+=?^_`{|}~-]+$/u.test(entry.directory)
-        || entry.directory.length > 324 || !FILES.has(entry.file) || !/^[a-f0-9]{64}$/u.test(entry.sha256)) {
+        || entry.directory.length > 324 || !FILES.has(entry.file) || !/^[a-f0-9]{64}$/u.test(entry.sha256)
+        || (entry.previousSha256 !== undefined && (typeof entry.previousSha256 !== 'string' || !/^[a-f0-9]{64}$/u.test(entry.previousSha256)))) {
         throw new Error('Invalid Google credential ownership entry');
       }
-      const key = `${entry.directory}/${entry.file}`;
+      const key = entryKey(entry);
       if (keys.has(key)) throw new Error('Duplicate Google credential ownership entry');
       keys.add(key);
-      return { directory: entry.directory, file: entry.file, sha256: entry.sha256 };
+      return { directory: entry.directory, file: entry.file, sha256: entry.sha256,
+        ...(entry.previousSha256 === undefined ? {} : { previousSha256: entry.previousSha256 }) };
     });
   }
   return { config, path, owned };
@@ -101,13 +108,13 @@ function context(home) {
 function prune(ctx, keep) {
   let preserved = 0;
   for (const entry of ctx.owned) {
-    if (keep.has(`${entry.directory}/${entry.file}`)) continue;
+    if (keep.has(entryKey(entry))) continue;
     const parent = join(ctx.config, entry.directory);
     if (!existsSync(parent)) continue;
     directory(parent);
     const path = join(parent, entry.file);
     if (!regularFile(path)) continue;
-    if (digest(readFileSync(path)) === entry.sha256) unlinkSync(path);
+    if (matchesDigest(entry, digest(readFileSync(path)))) unlinkSync(path);
     else preserved += 1;
   }
   return preserved;
@@ -117,6 +124,7 @@ export function syncCredentialFiles(home, response) {
   const snapshot = credentialSnapshot(response);
   const ctx = context(home);
   const next = [];
+  const writes = [];
   const keep = new Set();
   // Validate all destinations before writing, including a symlink in a later account.
   for (const account of snapshot) {
@@ -126,11 +134,30 @@ export function syncCredentialFiles(home, response) {
   for (const account of snapshot) {
     for (const [file, value] of Object.entries(account.files)) {
       const text = `${JSON.stringify(value, null, 2)}\n`;
-      writeAtomic(join(ctx.config, account.name, file), text);
       next.push({ directory: account.name, file, sha256: digest(text) });
+      writes.push({ path: join(ctx.config, account.name, file), text });
       keep.add(`${account.name}/${file}`);
     }
   }
+  const pending = new Map(ctx.owned.map((entry) => [entryKey(entry), entry]));
+  for (const entry of next) {
+    const prior = pending.get(entryKey(entry));
+    const path = join(ctx.config, entry.directory, entry.file);
+    // A retry may observe either side of the previous interrupted replacement.
+    // Retain ONLY a digest already recorded as ours and actually still on disk,
+    // plus the planned new content. Never adopt an arbitrary current file hash.
+    const current = prior && regularFile(path) ? digest(readFileSync(path)) : undefined;
+    const previousSha256 = current && current !== entry.sha256 && matchesDigest(prior, current)
+      ? current : undefined;
+    pending.set(entryKey(entry), { ...entry, ...(previousSha256 ? { previousSha256 } : {}) });
+  }
+  if (pending.size > MAX_OWNED_FILES) throw new Error('Google credential ownership ledger capacity exceeded');
+  const transition = [...pending.values()];
+  // Write ahead of EVERY credential replacement. A crash or failed prune leaves
+  // both prior-owned and newly written credentials recoverable by the next run.
+  writeAtomic(ctx.path, `${JSON.stringify({ version: 1, files: transition }, null, 2)}\n`);
+  ctx.owned = transition;
+  for (const write of writes) writeAtomic(write.path, write.text);
   const preserved = prune(ctx, keep);
   writeAtomic(ctx.path, `${JSON.stringify({ version: 1, files: next }, null, 2)}\n`);
   return { accounts: snapshot.length, preserved };
