@@ -1,0 +1,42 @@
+id: linkedin
+name: "LinkedIn (Browser Session)"
+version: 1.0.0
+description: Use your agent's shared browser to sign in to LinkedIn, read messages, and prepare confirmed messages. This is browser automation, not an official LinkedIn OAuth connection.
+icon: ./assets/icon.svg
+license: MIT
+depends_on: [alfe, headless-browser]
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Complete LinkedIn login yourself in the agent's Browser tab
+  - Read and search inbox conversations on demand; opening messages may mark them read
+  - Prepare a message for an exact LinkedIn profile and send only after confirmation
+  - Preserve the same signed-in browser when you hand control back to the agent
+  - Browser automation can trigger LinkedIn challenges or account restrictions
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-linkedin@0.1.0"
+
+hooks:
+  post_install: hooks/install.sh
+  health_check: hooks/health.sh
+
+# No requires_connection: browser login is not an OAuth ConnectionEntity.
+# No stock MCP process: it would own a separate browser outside human takeover.
+config_schema: []
+
+capabilities:
+  - linkedin.browser_session
+  - linkedin.messages.read
+  - linkedin.messages.prepare
+  - linkedin.messages.send_confirmed
