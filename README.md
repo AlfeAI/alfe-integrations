@@ -54,17 +54,22 @@ and empty driven-package config schemas.
 
 ## Releasing a change
 
-1. Author runtime pins alongside the matching Alfe package changesets, including
-   versions not yet published, as required by the main repository's
-   `DEVELOPING.md`. Record the paired application PR and expected versions.
+1. For a companion runtime-source change, pre-pin the package versions its
+   changesets will publish, as required by the main Alfe `DEVELOPING.md`.
+   Record the paired application PR and expected versions. Standalone pin
+   updates must target published versions.
 2. Bump the capability's semantic version when runtime or manifest behavior
-   changes.
+   changes, including affected transitive agent-client dependencies.
 3. Merge this repository first.
-4. Update the main repository's submodule pointer to that commit.
-5. Before publishing/syncing the registry for any target stage, verify every
-   changed runtime pin with `npm view <package>@<version> version`. Never sync a
-   pin until its package and runtime dependencies are published. A newly published package
-   defaults to hidden until an operator deliberately makes it public.
+4. Update the main repository's submodule pointer to the merged `main` commit,
+   never a feature-branch commit that a squash merge will leave unreachable.
+5. Publish runtime packages through the main repository's release pipeline
+   before registry rollout. Before publishing/syncing the registry for any
+   target stage, verify every changed pin with
+   `npm view <package>@<version> version`. Never sync a pin until its package
+   and runtime dependencies are published.
+   A new entry defaults to hidden until an operator verifies the complete
+   product journey and deliberately makes it public.
 
 ## License
 

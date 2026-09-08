@@ -1,0 +1,41 @@
+id: connectwise-automate
+name: "ConnectWise Automate"
+version: 1.0.0
+description: Read Automate clients, locations, computers, scripts, and monitoring history using an integrator connection
+icon: ./assets/icon.svg
+license: UNLICENSED
+min_gateway_version: 1.0.0
+requires_connection: [connectwise-automate]
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - Discover accessible Automate accounts and select an exact connection
+  - Read client, location, computer, and script inventories
+  - Inspect computer monitors, script history, and monitoring results
+  - Mint and refresh bearer tokens without copying credentials to agent configuration
+
+installs:
+  runtimes:
+    openclaw: {}
+    hermes: {}
+
+mcp_servers:
+  - id: connectwise-automate
+    command: npx
+    args: ["-y", "@alfe.ai/connectwise-automate-mcp@0.1.0"]
+    # Runtime resolves the selected Connection on every call. No provider
+    # secrets belong in command arguments, environment variables, or files.
+    requires_credentials: connectwise-automate
+
+config_schema: []
+
+capabilities:
+  - connectwise.automate.inventory
+  - connectwise.automate.monitoring
