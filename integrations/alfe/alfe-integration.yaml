@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.47
+version: 1.1.48
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -293,6 +293,90 @@ installs:
                     maxTokensField: "max_tokens"
                 - id: "deepseek.v3.2"
                   name: "DeepSeek V3.2 (AWS Sydney)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 164000
+                  maxTokens: 8000
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    requiresReasoningContentOnAssistantMessages: true
+                    maxTokensField: "max_tokens"
+                # Standard Fly-connected aliases use the AWS Lambda/Bedrock route.
+                # They do not confer AWS-only chat, memory, files or agent hosting.
+                # Native IDs above remain distinct for existing strict policies.
+                - id: "alfe-bedrock-openai.gpt-oss-120b-1:0"
+                  name: "GPT-OSS 120B (AWS-hosted Sydney; Fly-connected)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 131072
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    maxTokensField: "max_tokens"
+                - id: "alfe-bedrock-openai.gpt-oss-20b-1:0"
+                  name: "GPT-OSS 20B (AWS-hosted Sydney; Fly-connected)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 131072
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    maxTokensField: "max_tokens"
+                - id: "alfe-bedrock-qwen.qwen3-coder-30b-a3b-v1:0"
+                  name: "Qwen3 Coder 30B (AWS-hosted Sydney; Fly-connected)"
+                  reasoning: false
+                  input: [text]
+                  contextWindow: 262144
+                  maxTokens: 16384
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: false
+                    maxTokensField: "max_tokens"
+                - id: "alfe-bedrock-zai.glm-5"
+                  name: "GLM 5 (AWS-hosted Sydney; Fly-connected)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 200000
+                  maxTokens: 16000
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: false
+                    requiresReasoningContentOnAssistantMessages: true
+                    maxTokensField: "max_tokens"
+                - id: "alfe-bedrock-moonshotai.kimi-k2.5"
+                  name: "Kimi K2.5 (AWS-hosted Sydney; Fly-connected)"
+                  reasoning: true
+                  input: [text]
+                  contextWindow: 256000
+                  maxTokens: 16000
+                  compat:
+                    supportsStore: false
+                    supportsDeveloperRole: false
+                    supportsStrictMode: false
+                    supportsPromptCacheKey: false
+                    supportsReasoningEffort: true
+                    requiresReasoningContentOnAssistantMessages: true
+                    maxTokensField: "max_tokens"
+                - id: "alfe-bedrock-deepseek.v3.2"
+                  name: "DeepSeek V3.2 (AWS-hosted Sydney; Fly-connected)"
                   reasoning: true
                   input: [text]
                   contextWindow: 164000
