@@ -1,6 +1,6 @@
 id: connectwise-psa
 name: "ConnectWise PSA"
-version: 1.0.0
+version: 1.0.1
 description: Manage PSA companies, contacts, service tickets, and ticket notes using a scoped API-member connection
 icon: ./assets/icon.svg
 license: UNLICENSED
@@ -28,7 +28,7 @@ installs:
 mcp_servers:
   - id: connectwise-psa
     command: npx
-    args: ["-y", "@alfe.ai/connectwise-psa-mcp@0.1.0"]
+    args: ["-y", "@alfe.ai/connectwise-psa-mcp@0.1.1"]
     # Runtime resolves the selected Connection on every call. No provider
     # secrets belong in command arguments, environment variables, or files.
     requires_credentials: connectwise-psa
