@@ -1,0 +1,8 @@
+{
+  "name": "alfe-telegram-integration",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@alfe.ai/openclaw-telegram": "0.0.6"
+  }
+}
