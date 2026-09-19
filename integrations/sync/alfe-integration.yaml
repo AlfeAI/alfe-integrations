@@ -49,7 +49,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-sync@0.3.16"
+        - package: "@alfe.ai/openclaw-sync@0.3.17"
       skills:
         - path: skills/alfe-sync
       config:
