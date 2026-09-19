@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.50
+version: 1.1.51
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -33,7 +33,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.16"
+        - package: "@alfe.ai/openclaw@0.5.0"
         # openclaw-metrics was a no-op after activity tracking moved to chat
         # service events. Its final publish is legacy-activate-only, so retire
         # it before the OpenClaw 2 rollout rather than keep dead runtime code.
