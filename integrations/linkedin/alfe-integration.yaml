@@ -1,6 +1,6 @@
 id: linkedin
 name: "LinkedIn (Browser Session)"
-version: 1.0.0
+version: 1.0.2
 description: Use your agent's shared browser to sign in to LinkedIn, read messages, and prepare confirmed messages. This is browser automation, not an official LinkedIn OAuth connection.
 icon: ./assets/icon.svg
 license: MIT
@@ -25,7 +25,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-linkedin@0.1.1"
+        - package: "@alfe.ai/openclaw-linkedin@0.2.1"
 
 hooks:
   post_install: hooks/install.sh
