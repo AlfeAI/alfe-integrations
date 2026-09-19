@@ -10,7 +10,7 @@ because driver-process cleanup must be verified before releasing browser control
 ## Setup
 
 1. Release the paired Alfe changesets before syncing this manifest. The core
-   Alfe capability must provide `@alfe.ai/openclaw-remote@0.1.0` or newer.
+   Alfe capability must provide `@alfe.ai/openclaw-remote@0.1.1` or newer.
 2. Install this capability, which depends on Alfe and Headless Browser.
 3. Ask the agent to start LinkedIn login. Open its Browser tab, take control,
    complete sign-in and any challenge yourself, then choose **Done, hand back**.
