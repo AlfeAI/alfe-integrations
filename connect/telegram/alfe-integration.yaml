@@ -1,6 +1,6 @@
 id: telegram
 name: "Telegram (local user session)"
-version: 1.0.3
+version: 1.0.4
 description: Monitor explicitly subscribed Telegram chats through a user session held only on the agent machine
 license: MIT
 depends_on: []
@@ -20,6 +20,7 @@ icon: ./assets/icon.svg
 pricing:
   type: free
 features:
+  - Guided phone verification with automatic local setup and no terminal commands
   - Telegram user login and session stay only on the agent machine
   - Discover private chats, groups, and channels visible to that user
   - Explicitly subscribe and unsubscribe individual chats
@@ -30,9 +31,16 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-telegram@0.0.6"
+        - package: "@alfe.ai/openclaw-telegram@0.0.7"
 
 config_schema: []
+
+commands:
+  - name: telegram.login
+    handler: ./commands/login.js
+    method: handle
+    timeout_ms: 10000
+    description: Private guided Telegram login on this agent; called by the authenticated Connections setup flow
 
 capabilities:
   - telegram.dialogs
