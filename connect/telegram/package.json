@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@alfe.ai/openclaw-telegram": "0.0.7"
+    "@alfe.ai/openclaw-telegram": "0.0.8"
   }
 }
