@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.54
+version: 1.1.55
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -40,7 +40,7 @@ installs:
         - package: "@alfe.ai/openclaw-identity@0.1.37"
         - package: "@alfe.ai/openclaw-search@0.0.46"
         - package: "@alfe.ai/openclaw-secrets@0.2.34"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.30"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.31"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
