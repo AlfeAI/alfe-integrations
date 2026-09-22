@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.55
+version: 1.1.56
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -171,6 +171,8 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: gpt-6-astra
+                  name: "GPT-6 Astra"
                 - id: gpt-4o
                   name: "GPT-4o"
                 - id: gpt-4o-mini
@@ -396,8 +398,16 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: gemini-3.8-flash
+                  name: "Gemini 3.8 Flash"
+                - id: gemini-3.7-flash
+                  name: "Gemini 3.7 Flash"
+                - id: gemini-3.6-flash
+                  name: "Gemini 3.6 Flash"
                 - id: gemini-3.5-flash
                   name: "Gemini 3.5 Flash"
+                - id: gemini-3.5-flash-lite
+                  name: "Gemini 3.5 Flash Lite"
                 - id: gemini-3.1-pro-preview
                   name: "Gemini 3.1 Pro"
                 - id: gemini-3.1-flash-lite
@@ -408,8 +418,6 @@ installs:
                   name: "Gemini 2.5 Flash"
                 - id: gemini-2.5-flash-lite
                   name: "Gemini 2.5 Flash Lite"
-                - id: gemini-2.0-flash
-                  name: "Gemini 2.0 Flash"
             deepseek:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -420,19 +428,23 @@ installs:
                 # entry lets DeepSeek apply its own small server-side default and
                 # tool-heavy turns terminate with `stopReason=length` — surfaced
                 # to the user as "Agent couldn't generate a response".
-                # DeepSeek v4 documents 1M context / 384K max output.
-                - id: deepseek-v4-flash
-                  name: "DeepSeek V4 Flash"
+                # DeepSeek v4 / v4.1 document 1M context / 384K max output.
+                # `deepseek-flash` is the un-versioned V4.1 Flash id (2026-09-10);
+                # `deepseek-v4-flash` is a temporary alias that routes to it.
+                # deepseek-chat / deepseek-reasoner were hard-retired upstream
+                # 2026-07-24 and removed here.
+                - id: deepseek-flash
+                  name: "DeepSeek V4.1 Flash"
                   contextWindow: 1000000
                   maxTokens: 64000
                 - id: deepseek-v4-pro
                   name: "DeepSeek V4 Pro"
                   contextWindow: 1000000
                   maxTokens: 64000
-                - id: deepseek-chat
-                  name: "DeepSeek Chat"
-                - id: deepseek-reasoner
-                  name: "DeepSeek Reasoner"
+                - id: deepseek-v4-flash
+                  name: "DeepSeek V4 Flash"
+                  contextWindow: 1000000
+                  maxTokens: 64000
             minimax:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -467,25 +479,25 @@ installs:
                   name: "Ministral 8B"
                 - id: ministral-3b-latest
                   name: "Ministral 3B"
-                - id: magistral-medium-latest
-                  name: "Magistral Medium"
-                - id: magistral-small-latest
-                  name: "Magistral Small"
-                - id: devstral-medium-latest
-                  name: "Devstral Medium"
+                # magistral-*/devstral-medium removed 2026-09-22 — retired upstream
+                # (Mistral folded both families into Medium 3.5 / Small 4).
             xai:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                # grok-4 / grok-4.1-fast removed 2026-09-22 — retired upstream
+                # 2026-05-15 (requests redirect to grok-4.3 at grok-4.3 rates).
+                - id: grok-4.7
+                  name: "Grok 4.7"
+                - id: grok-4.6
+                  name: "Grok 4.6"
                 - id: grok-4.5
                   name: "Grok 4.5"
                 - id: grok-4.3
                   name: "Grok 4.3"
-                - id: grok-4
-                  name: "Grok 4"
-                - id: grok-4.1-fast
-                  name: "Grok 4.1 Fast"
+                - id: grok-build-0.1
+                  name: "Grok Build 0.1"
             zhipu:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -493,6 +505,12 @@ installs:
               models:
                 # Zhipu model ids MUST be dotted (glm-5.2) — hyphenated ids
                 # (glm-5-2) 400 upstream with "模型不存在 / model does not exist".
+                - id: glm-5.3
+                  name: "GLM 5.3"
+                - id: glm-5.3-flash
+                  name: "GLM 5.3 Flash"
+                - id: glm-5.3-flashx
+                  name: "GLM 5.3 FlashX"
                 - id: glm-5.2
                   name: "GLM 5.2"
                 - id: glm-5.1
@@ -521,6 +539,10 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: qwen3.8-max
+                  name: "Qwen 3.8 Max"
+                - id: qwen3.8-flash
+                  name: "Qwen 3.8 Flash"
                 - id: qwen3.7-max
                   name: "Qwen 3.7 Max"
                 - id: qwen3.7-plus
