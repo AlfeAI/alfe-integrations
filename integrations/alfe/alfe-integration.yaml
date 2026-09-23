@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.56
+version: 1.1.57
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -138,6 +138,10 @@ installs:
               # with "requires a positive maxTokens value"). The OpenAI-style
               # providers below don't need it — max_tokens is optional there.
               models:
+                - id: claude-opus-5-5
+                  name: "Claude Opus 5.5"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-opus-5
                   name: "Claude Opus 5"
                   contextWindow: 1000000
