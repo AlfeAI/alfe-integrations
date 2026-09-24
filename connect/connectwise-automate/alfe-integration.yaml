@@ -1,6 +1,6 @@
 id: connectwise-automate
 name: "ConnectWise Automate"
-version: 1.0.0
+version: 1.0.2
 description: Read Automate clients, locations, computers, scripts, and monitoring history using an integrator connection
 icon: ./assets/icon.svg
 license: UNLICENSED
@@ -29,7 +29,7 @@ installs:
 mcp_servers:
   - id: connectwise-automate
     command: npx
-    args: ["-y", "@alfe.ai/connectwise-automate-mcp@0.1.0"]
+    args: ["-y", "@alfe.ai/connectwise-automate-mcp@0.1.2"]
     # Runtime resolves the selected Connection on every call. No provider
     # secrets belong in command arguments, environment variables, or files.
     requires_credentials: connectwise-automate
