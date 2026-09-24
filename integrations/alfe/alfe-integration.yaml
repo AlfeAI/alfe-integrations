@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.58
+version: 1.1.59
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -44,7 +44,7 @@ installs:
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.9.23"
+        - package: "@alfe.ai/openclaw-chat@0.9.24"
         # Folded in from the legacy `webhooks` integration (PR 11).
         - package: "@alfe.ai/openclaw-webhooks@0.0.26"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
@@ -94,6 +94,17 @@ installs:
             dangerouslyAllowPrivateNetwork: true
         session:
           dmScope: "per-channel-peer"
+        # OpenClaw (default on) injects an "[OpenClaw exec completion]" turn
+        # into the ORIGINATING chat whenever a backgrounded exec exits, and
+        # tells the model to relay the output. On 2026.9.5 customers saw the
+        # agent's "this is internal system context" answers to those turns
+        # land in their chat as replies to their own questions. Off: the
+        # model polls background jobs with the `process` tool instead.
+        # Known key with the same schema on every pinned runtime
+        # (2026.6.11, 2026.8.1, 2026.9.5), so the batch apply cannot reject it.
+        tools:
+          exec:
+            notifyOnExit: false
         # Structured thinking for reasoning-capable models (claude-*).
         # OpenClaw has NO per-dispatch thinking parameter — the chat
         # relay's `thinking:'low'` RPC field can't reach the run; the
