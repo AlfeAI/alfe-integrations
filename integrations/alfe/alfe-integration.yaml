@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.58
+version: 1.1.59
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -79,9 +79,11 @@ installs:
         # 0.1.0 additionally exposes the shared, turn-gated browser operation
         # helper used by optional local browser-session integrations.
         # Author the pin with the matching Alfe changeset. Registry sync must
-        # wait until @alfe.ai/openclaw-remote@0.1.1 and its browser dependency
+        # wait until @alfe.ai/openclaw-remote@0.1.2 and its browser dependency
         # have been published, or installation fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.1.1"
+        # 0.1.2 pulls @alfe.ai/browser 0.3.1: takeover input is dispatched in
+        # order, so the first key after a click is no longer dropped.
+        - package: "@alfe.ai/openclaw-remote@0.1.2"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
