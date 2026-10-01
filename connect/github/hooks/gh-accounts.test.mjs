@@ -498,3 +498,15 @@ test('a renamed account whose logout fails stays owned, so a later run or uninst
   removeGithubAccounts({ home: root, exec: cli.exec, listLogins: cli.listLogins });
   assert.equal(cli.users.has('newname'), false);
 });
+
+test('GitHub App bot logins (e.g. github-actions[bot]) are valid roster logins', () => {
+  const root = home();
+  const cli = new FakeCli();
+  const bot = { ...account('github-actions'), login: 'github-actions[bot]' };
+  cli.renamed.set(bot.accessToken, 'github-actions[bot]');
+  const result = sync(root, cli, [bot]);
+  assert.equal(result.loggedIn, 1);
+  assert.deepEqual(ledger(root).accounts.map((entry) => entry.login), ['github-actions[bot]']);
+  assert.deepEqual(parseHostsLogins('github.com:\n    users:\n        github-actions[bot]:\n            oauth_token: x\n'), ['github-actions[bot]']);
+  assert.throws(() => sync(home(), new FakeCli(), [{ ...bot, login: 'x[admin]' }]), RosterError);
+});

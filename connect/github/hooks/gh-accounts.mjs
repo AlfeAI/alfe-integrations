@@ -26,7 +26,9 @@ export const NETWORK_TIMEOUT_MS = 10_000;
 export const HOOK_BUDGET_MS = 25_000;
 // GitHub logins: alphanumerics and hyphens, at most 39 characters. Legacy
 // accounts may contain doubled or trailing hyphens, so do not tighten further.
-const LOGIN = /^[A-Za-z0-9][A-Za-z0-9-]{0,38}$/u;
+// GitHub App bot identities are `<slug>[bot]` (gh logs an Actions token in as
+// `github-actions[bot]`); brackets are safe because gh is never run via a shell.
+export const LOGIN = /^[A-Za-z0-9][A-Za-z0-9-]{0,38}(?:\[bot\])?$/u;
 const TOKEN = /^[\x21-\x7e]{1,1024}$/u;
 const SHA256 = /^[a-f0-9]{64}$/u;
 const GH_HELPER = /^!.+ auth git-credential$/u;
@@ -145,7 +147,7 @@ function gitHelperValues(exec) {
 }
 
 const sameValues = (a, b) => HELPER_KEYS.every((key) => JSON.stringify(a?.[key] ?? []) === JSON.stringify(b?.[key] ?? []));
-const looksLikeGhHelper = (values) => HELPER_KEYS.every((key) => {
+export const looksLikeGhHelper = (values) => HELPER_KEYS.every((key) => {
   const list = values?.[key] ?? [];
   return list.length === 2 && list[0] === '' && GH_HELPER.test(list[1]);
 });
@@ -251,6 +253,7 @@ export function parseHostsLogins(text) {
     if (indent(line) === 0) break;
     block.push(line);
   }
+  if (block.some((line) => /^\s+users:\s*\{\}\s*$/u.test(line))) return [];
   const usersAt = block.findIndex((line) => /^\s+users:\s*$/u.test(line));
   if (usersAt === -1) {
     // Pre-multi-account layout: one `user:` per host.

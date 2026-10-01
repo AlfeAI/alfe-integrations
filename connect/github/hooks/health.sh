@@ -39,7 +39,7 @@ logins="$(node -e '
     const ledger = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
     if (ledger.version !== 1 || !Array.isArray(ledger.accounts)) throw new Error();
     const logins = ledger.accounts.map((entry) => entry && entry.login);
-    if (!logins.every((login) => typeof login === "string" && /^[A-Za-z0-9][A-Za-z0-9-]{0,38}$/.test(login))) throw new Error();
+    if (!logins.every((login) => typeof login === "string" && /^[A-Za-z0-9][A-Za-z0-9-]{0,38}(?:\[bot\])?$/.test(login))) throw new Error();
     process.stdout.write(logins.join("\n"));
   } catch { process.stdout.write("invalid"); }
 ' "$LEDGER")"

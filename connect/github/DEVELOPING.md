@@ -123,7 +123,30 @@ integration's `connectionAuthorityVersion`, which re-runs `post_activate`;
 removing the last connection uninstalls the integration and runs
 `post_uninstall`. Cleanup does not revoke tokens at GitHub.
 
-Run `node --test connect/github/hooks/*.test.mjs`,
-`shellcheck connect/github/hooks/*.sh` and `./scripts/validate-manifests.sh`
-after hook changes. Bump the capability version when hook behavior changes so
-existing agents receive the new hook.
+## How to test
+
+- Unit (any OS, no network): `node --test '**/hooks/*.test.mjs'`,
+  `shellcheck connect/github/hooks/*.sh` and `./scripts/validate-manifests.sh`.
+  `gh-accounts.test.mjs` drives sync/uninstall through a fake gh;
+  `health.test.mjs` and `post-activate.test.mjs` run the real scripts with a
+  stub gh on PATH and stub `@alfe.ai/*` packages (exit-code contract).
+- Real gh (`*.e2e.test.mjs`, skipped unless `GH_HOOKS_E2E=1`):
+  `gh-contract.e2e.test.mjs` pins every gh behaviour the fake assumes
+  (missing-token wording, login makes the account active, `setup-git` keys and
+  shape, non-interactive switch/logout, hosts.yml layout).
+  `hooks-flow.e2e.test.mjs` installs the published shared packages the way the
+  daemon does, serves the roster from a local mock of the agent API
+  (`ALFE_API_KEY`/`ALFE_API_URL`), and runs post_activate, health and
+  post_uninstall end to end, proving git's credential helper returns the token.
+  Both need `GH_E2E_TOKEN` (and `GH_E2E_REPOSITORY` for the flow) and run in
+  throwaway HOMEs. They only run on Linux unless `GH_HOOKS_E2E_ALLOW_KEYRING=1`:
+  elsewhere gh uses the OS keyring, which is shared with your real gh.
+- CI (`.github/workflows/ci.yml`): `unit` runs the unit suite and manifest
+  validation; `github-hooks-e2e` (ubuntu-24.04, like managed VMs) removes the
+  runner's gh, runs post-install.sh for real (fresh, idempotent re-run, and
+  with `/tmp` at mode 700), then the e2e tests with the workflow
+  `GITHUB_TOKEN`, which gh logs in as `github-actions[bot]` (bot logins
+  `<slug>[bot]` are therefore valid roster logins).
+
+Bump the capability version when hook behavior changes so existing agents
+receive the new hook.
