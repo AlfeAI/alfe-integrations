@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.50
+version: 1.1.62
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -33,22 +33,24 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.4.16"
-        - package: "@alfe.ai/openclaw-metrics@0.0.37"
-        - package: "@alfe.ai/openclaw-identity@0.1.35"
-        - package: "@alfe.ai/openclaw-search@0.0.46"
-        - package: "@alfe.ai/openclaw-secrets@0.2.32"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.30"
+        - package: "@alfe.ai/openclaw@0.5.1"
+        # openclaw-metrics was a no-op after activity tracking moved to chat
+        # service events. Its final publish is legacy-activate-only, so retire
+        # it before the OpenClaw 2 rollout rather than keep dead runtime code.
+        - package: "@alfe.ai/openclaw-identity@0.1.38"
+        - package: "@alfe.ai/openclaw-search@0.0.48"
+        - package: "@alfe.ai/openclaw-secrets@0.2.35"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.32"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.9.20"
+        - package: "@alfe.ai/openclaw-chat@0.9.25"
         # Folded in from the legacy `webhooks` integration (PR 11).
-        - package: "@alfe.ai/openclaw-webhooks@0.0.25"
+        - package: "@alfe.ai/openclaw-webhooks@0.0.27"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
-        - package: "@alfe.ai/openclaw-console@0.0.14"
+        - package: "@alfe.ai/openclaw-console@0.0.15"
         # Scoped org/team/project knowledge resources: search + read + propose/
         # edit shared DOCUMENTS + profile (facts primitive removed 2026-07-06 —
         # one home per fact; agents find the right doc and edit it, quick capture
@@ -57,14 +59,14 @@ installs:
         # 0.0.8 = the propose-change build (0.0.7 predates it). NOTE: pinned
         # ahead of publish at the user's request — must be live on npm before any
         # agent reconcile picks this up.
-        - package: "@alfe.ai/openclaw-knowledge@0.0.27"
+        - package: "@alfe.ai/openclaw-knowledge@0.0.30"
         # Voice tools are a platform-baseline capability: EVERY agent gets
         # `voice_tts` / `voice_stt` (and the telephony placeholder tools),
         # not just agents with a phone number. The `voice` channel
         # integration therefore no longer re-declares this plugin — it owns
         # only the Twilio/telephony concern. Single owner avoids the
         # bare-name install dedup silently ignoring a divergent second pin.
-        - package: "@alfe.ai/openclaw-voice@0.2.7"
+        - package: "@alfe.ai/openclaw-voice@0.2.9"
         # Interactive remote-control relay. A CORE capability (like chat /
         # console / webhooks / voice above) so EVERY agent gets the relay
         # connection + web terminal — the terminal needs no browser at all.
@@ -77,9 +79,11 @@ installs:
         # 0.1.0 additionally exposes the shared, turn-gated browser operation
         # helper used by optional local browser-session integrations.
         # Author the pin with the matching Alfe changeset. Registry sync must
-        # wait until @alfe.ai/openclaw-remote@0.1.1 and its browser dependency
+        # wait until @alfe.ai/openclaw-remote@0.1.3 and its browser dependency
         # have been published, or installation fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.1.1"
+        # 0.1.2 pulls @alfe.ai/browser 0.3.1: takeover input is dispatched in
+        # order, so the first key after a click is no longer dropped.
+        - package: "@alfe.ai/openclaw-remote@0.1.3"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
@@ -92,6 +96,17 @@ installs:
             dangerouslyAllowPrivateNetwork: true
         session:
           dmScope: "per-channel-peer"
+        # OpenClaw (default on) injects an "[OpenClaw exec completion]" turn
+        # into the ORIGINATING chat whenever a backgrounded exec exits, and
+        # tells the model to relay the output. On 2026.9.5 customers saw the
+        # agent's "this is internal system context" answers to those turns
+        # land in their chat as replies to their own questions. Off: the
+        # model polls background jobs with the `process` tool instead.
+        # Known key with the same schema on every pinned runtime
+        # (2026.6.11, 2026.8.1, 2026.9.5), so the batch apply cannot reject it.
+        tools:
+          exec:
+            notifyOnExit: false
         # Structured thinking for reasoning-capable models (claude-*).
         # OpenClaw has NO per-dispatch thinking parameter — the chat
         # relay's `thinking:'low'` RPC field can't reach the run; the
@@ -136,6 +151,10 @@ installs:
               # with "requires a positive maxTokens value"). The OpenAI-style
               # providers below don't need it — max_tokens is optional there.
               models:
+                - id: claude-opus-5-5
+                  name: "Claude Opus 5.5"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-opus-5
                   name: "Claude Opus 5"
                   contextWindow: 1000000
@@ -169,6 +188,8 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: gpt-6-astra
+                  name: "GPT-6 Astra"
                 - id: gpt-4o
                   name: "GPT-4o"
                 - id: gpt-4o-mini
@@ -394,8 +415,16 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: gemini-3.8-flash
+                  name: "Gemini 3.8 Flash"
+                - id: gemini-3.7-flash
+                  name: "Gemini 3.7 Flash"
+                - id: gemini-3.6-flash
+                  name: "Gemini 3.6 Flash"
                 - id: gemini-3.5-flash
                   name: "Gemini 3.5 Flash"
+                - id: gemini-3.5-flash-lite
+                  name: "Gemini 3.5 Flash Lite"
                 - id: gemini-3.1-pro-preview
                   name: "Gemini 3.1 Pro"
                 - id: gemini-3.1-flash-lite
@@ -406,8 +435,6 @@ installs:
                   name: "Gemini 2.5 Flash"
                 - id: gemini-2.5-flash-lite
                   name: "Gemini 2.5 Flash Lite"
-                - id: gemini-2.0-flash
-                  name: "Gemini 2.0 Flash"
             deepseek:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -418,19 +445,23 @@ installs:
                 # entry lets DeepSeek apply its own small server-side default and
                 # tool-heavy turns terminate with `stopReason=length` — surfaced
                 # to the user as "Agent couldn't generate a response".
-                # DeepSeek v4 documents 1M context / 384K max output.
-                - id: deepseek-v4-flash
-                  name: "DeepSeek V4 Flash"
+                # DeepSeek v4 / v4.1 document 1M context / 384K max output.
+                # `deepseek-flash` is the un-versioned V4.1 Flash id (2026-09-10);
+                # `deepseek-v4-flash` is a temporary alias that routes to it.
+                # deepseek-chat / deepseek-reasoner were hard-retired upstream
+                # 2026-07-24 and removed here.
+                - id: deepseek-flash
+                  name: "DeepSeek V4.1 Flash"
                   contextWindow: 1000000
                   maxTokens: 64000
                 - id: deepseek-v4-pro
                   name: "DeepSeek V4 Pro"
                   contextWindow: 1000000
                   maxTokens: 64000
-                - id: deepseek-chat
-                  name: "DeepSeek Chat"
-                - id: deepseek-reasoner
-                  name: "DeepSeek Reasoner"
+                - id: deepseek-v4-flash
+                  name: "DeepSeek V4 Flash"
+                  contextWindow: 1000000
+                  maxTokens: 64000
             minimax:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -465,25 +496,25 @@ installs:
                   name: "Ministral 8B"
                 - id: ministral-3b-latest
                   name: "Ministral 3B"
-                - id: magistral-medium-latest
-                  name: "Magistral Medium"
-                - id: magistral-small-latest
-                  name: "Magistral Small"
-                - id: devstral-medium-latest
-                  name: "Devstral Medium"
+                # magistral-*/devstral-medium removed 2026-09-22 — retired upstream
+                # (Mistral folded both families into Medium 3.5 / Small 4).
             xai:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                # grok-4 / grok-4.1-fast removed 2026-09-22 — retired upstream
+                # 2026-05-15 (requests redirect to grok-4.3 at grok-4.3 rates).
+                - id: grok-4.7
+                  name: "Grok 4.7"
+                - id: grok-4.6
+                  name: "Grok 4.6"
                 - id: grok-4.5
                   name: "Grok 4.5"
                 - id: grok-4.3
                   name: "Grok 4.3"
-                - id: grok-4
-                  name: "Grok 4"
-                - id: grok-4.1-fast
-                  name: "Grok 4.1 Fast"
+                - id: grok-build-0.1
+                  name: "Grok Build 0.1"
             zhipu:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
@@ -491,6 +522,12 @@ installs:
               models:
                 # Zhipu model ids MUST be dotted (glm-5.2) — hyphenated ids
                 # (glm-5-2) 400 upstream with "模型不存在 / model does not exist".
+                - id: glm-5.3
+                  name: "GLM 5.3"
+                - id: glm-5.3-flash
+                  name: "GLM 5.3 Flash"
+                - id: glm-5.3-flashx
+                  name: "GLM 5.3 FlashX"
                 - id: glm-5.2
                   name: "GLM 5.2"
                 - id: glm-5.1
@@ -519,6 +556,10 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: qwen3.8-max
+                  name: "Qwen 3.8 Max"
+                - id: qwen3.8-flash
+                  name: "Qwen 3.8 Flash"
                 - id: qwen3.7-max
                   name: "Qwen 3.7 Max"
                 - id: qwen3.7-plus
