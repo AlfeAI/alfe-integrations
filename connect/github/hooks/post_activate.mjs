@@ -55,5 +55,9 @@ if (process.exitCode !== 1) {
 }
 
 // An abandoned (timed-out) fetch may still hold a socket open; never let it
-// keep the hook alive past the daemon's kill.
-process.exit(process.exitCode ?? 0);
+// keep the hook alive past the daemon's kill. Drain stdout/stderr first:
+// process.exit() can drop queued writes when the daemon captures them via pipes.
+const code = process.exitCode ?? 0;
+// Backstop: a broken pipe may never call back, so still exit within 1 s.
+setTimeout(() => process.exit(code), 1_000);
+process.stdout.write('', () => process.stderr.write('', () => process.exit(code)));
