@@ -19,7 +19,8 @@ if ! command -v gh >/dev/null 2>&1; then
   exit 0
 fi
 
-version="$(gh --version 2>/dev/null | sed -n 's/^gh version \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -n 1)"
+# A broken gh must not abort the script (set -e + pipefail): empty means unknown.
+version="$({ gh --version 2>/dev/null || true; } | sed -n 's/^gh version \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -n 1 || true)"
 if [ -z "$version" ] || [ "$(printf '%s\n%s\n' "$MIN_VERSION" "$version" | sort -V | head -n 1)" != "$MIN_VERSION" ]; then
   echo "WARNING: gh ${version:-unknown version} is older than $MIN_VERSION; shell git credentials are not managed"
   exit 0

@@ -390,6 +390,9 @@ test('hosts.yml parser reads gh multi-account layouts and rejects surprises', ()
   assert.deepEqual(parseHostsLogins(gh), ['alice', 'bob']);
   assert.deepEqual(parseHostsLogins('github.com:\n    oauth_token: x\n    user: legacy\n'), ['legacy']);
   assert.deepEqual(parseHostsLogins('{}\n'), []);
+  // YAML quotes keys that would otherwise not be strings, e.g. all-digit logins.
+  assert.deepEqual(parseHostsLogins('github.com:\n    users:\n        "12345":\n            oauth_token: x\n        \'0042\': {}\n        plain:\n'), ['12345', '0042', 'plain']);
+  assert.deepEqual(parseHostsLogins('github.com:\n    oauth_token: x\n    user: "12345"\n'), ['12345']);
   assert.throws(() => parseHostsLogins('github.com:\n    users:\n        - alice\n'));
 });
 
@@ -480,4 +483,18 @@ test('malformed or symlinked ledger refuses to act', () => {
   mkdirSync(join(linked, '.alfe'), { recursive: true });
   symlinkSync(target, join(linked, '.alfe', 'github-cli'));
   assert.throws(() => sync(linked, new FakeCli(), [account('primary')]), /real directory/u);
+});
+
+test('a renamed account whose logout fails stays owned, so a later run or uninstall removes it', () => {
+  const root = home();
+  const cli = new FakeCli();
+  cli.renamed.set(token('oldname'), 'newname');
+  cli.failOn = (file, args) => args[1] === 'logout' && args.includes('newname');
+  const result = sync(root, cli, [account('oldname')]);
+  assert.ok(result.warnings.some((warning) => /renamed/u.test(warning)));
+  assert.equal(cli.users.has('newname'), true);
+  assert.deepEqual(ledger(root).accounts.map((entry) => entry.login), ['newname']);
+  cli.failOn = undefined;
+  removeGithubAccounts({ home: root, exec: cli.exec, listLogins: cli.listLogins });
+  assert.equal(cli.users.has('newname'), false);
 });

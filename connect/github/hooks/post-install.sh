@@ -13,10 +13,18 @@ KEYRING="$KEYRING_DIR/githubcli-archive-keyring.gpg"
 SOURCES="/etc/apt/sources.list.d/github-cli.list"
 STAGED_KEYRING="$KEYRING.$$.tmp"
 STAGED_SOURCES="$SOURCES.$$.tmp"
-trap 'rm -f "$STAGED_KEYRING" "$STAGED_SOURCES"' EXIT
+# Preserve the script's own exit status: cleanup must never turn the
+# always-exit-0 contract into a failure.
+cleanup() {
+  local status=$?
+  rm -f "$STAGED_KEYRING" "$STAGED_SOURCES" 2>/dev/null || true
+  exit "$status"
+}
+trap cleanup EXIT
 
 gh_version() {
-  gh --version 2>/dev/null | sed -n 's/^gh version \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -n 1
+  # A broken gh must not abort the script (set -e + pipefail): empty means unknown.
+  { gh --version 2>/dev/null || true; } | sed -n 's/^gh version \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -n 1 || true
 }
 
 version_ok() {

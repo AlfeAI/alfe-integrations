@@ -47,15 +47,19 @@ stored credentials). Print only `GithubCliError` messages, which are built
 from redacted text. On Linux, pass `--insecure-storage`: managed VMs have no
 Secret Service, so storage must be deterministic.
 
-Time budget: hooks are killed at 30 s (`HOOK_TIMEOUT_MS`). Sync uses a 25 s
-overall deadline, 5 s timeouts for local gh/git calls and 10 s for
+Time budget: hooks are killed at 30 s (`HOOK_TIMEOUT_MS`), measured from
+spawn. `post_activate` anchors one 25 s budget at process start
+(`performance.timeOrigin`), bounds the roster fetch with `Promise.race`
+(10 s, a timeout exits 1 like any fetch failure; the client takes no signal),
+passes what remains to sync, and ends with `process.exit` so an abandoned
+request cannot keep the hook alive. Sync uses 5 s timeouts for local gh/git calls and 10 s for
 `gh auth login` (network), and never starts a step that could outlive the
 deadline; it stops with a WARNING and the next activation continues.
 
 GitHub logins are case-insensitive; gh keys accounts by the API's spelling.
 List gh's accounts from its local `hosts.yml` (`GH_CONFIG_DIR`, else
-`$XDG_CONFIG_HOME/gh`, else `~/.config/gh`; an unrecognised layout is an error,
-never a guess), match roster, ledger and gh logins case-insensitively, and
+`$XDG_CONFIG_HOME/gh`, else `~/.config/gh`; accept YAML-quoted keys such as
+all-digit logins; an unrecognised layout is an error, never a guess), match roster, ledger and gh logins case-insensitively, and
 record gh's spelling in the ledger so health and uninstall match exactly.
 
 Ownership lives in `~/.alfe/github-cli/owned-accounts.json` (versioned, 0600,

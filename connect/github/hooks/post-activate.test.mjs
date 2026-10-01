@@ -22,7 +22,7 @@ function pkg(root, name, source) {
   writeFileSync(join(dir, 'index.js'), source);
 }
 
-function run(hook, { roster, fetchFails = false, ghLoginFails = false } = {}) {
+function run(hook, { roster, fetchFails = false, fetchHangs = false, ghLoginFails = false } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'alfe-github-hook-'));
   roots.push(root);
   const hooks = join(root, 'integration', 'hooks');
@@ -32,6 +32,10 @@ function run(hook, { roster, fetchFails = false, ghLoginFails = false } = {}) {
   pkg(root, 'agent-api-client', `export class AgentApiClient {
   async getGithubAccounts() {
     if (process.env.FAKE_FETCH_FAILS) throw new Error('HTTP 503');
+    if (process.env.FAKE_FETCH_HANGS) {
+      setInterval(() => {}, 1000); // an open socket keeping the loop alive
+      return new Promise(() => {});
+    }
     return JSON.parse(process.env.FAKE_ROSTER);
   }
 }\n`);
@@ -52,11 +56,13 @@ exit 1
   mkdirSync(home);
   return spawnSync(process.execPath, [join(hooks, hook)], {
     encoding: 'utf8',
+    timeout: 25_000,
     env: {
       HOME: home,
       PATH: bin,
       FAKE_ROSTER: JSON.stringify(roster ?? { accounts: [] }),
       ...(fetchFails ? { FAKE_FETCH_FAILS: '1' } : {}),
+      ...(fetchHangs ? { FAKE_FETCH_HANGS: '1' } : {}),
       ...(ghLoginFails ? { FAKE_GH_LOGIN_FAILS: '1' } : {}),
     },
   });
@@ -81,4 +87,13 @@ test('gh-side failure warns (redacted) and exits 0', () => {
 test('post_uninstall exits 0 even when cleanup cannot run', () => {
   const result = run('post_uninstall.mjs');
   assert.equal(result.status, 0, result.stderr);
+});
+
+test('a hanging roster fetch is bounded: exits 1 well inside the daemon 30 s kill', () => {
+  const startedAt = Date.now();
+  const result = run('post_activate.mjs', { fetchHangs: true });
+  const elapsed = Date.now() - startedAt;
+  assert.equal(result.status, 1, `${String(result.signal)} ${result.stderr}`);
+  assert.match(result.stderr, /roster unavailable/u);
+  assert.ok(elapsed < 15_000, `took ${elapsed} ms`);
 });

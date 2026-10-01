@@ -254,7 +254,7 @@ export function parseHostsLogins(text) {
   const usersAt = block.findIndex((line) => /^\s+users:\s*$/u.test(line));
   if (usersAt === -1) {
     // Pre-multi-account layout: one `user:` per host.
-    const single = block.map((line) => /^\s+user:\s*(\S+)\s*$/u.exec(line)?.[1]).find(Boolean);
+    const single = block.map((line) => /^\s+user:\s*(\S+)\s*$/u.exec(line)?.[1]?.replace(/^(["'])(.*)\1$/u, '$2')).find(Boolean);
     if (single && !LOGIN.test(single)) throw new GithubCliError('Unrecognised gh hosts.yml layout');
     return single ? [single] : [];
   }
@@ -266,9 +266,12 @@ export function parseHostsLogins(text) {
     if (depth <= base) break;
     child ??= depth;
     if (depth > child) continue;
-    const match = /^\s+([^\s:]+):(?:\s*\{\})?\s*$/u.exec(line);
-    if (depth !== child || !match || !LOGIN.test(match[1])) throw new GithubCliError('Unrecognised gh hosts.yml layout');
-    logins.push(match[1]);
+    // YAML quotes keys that would otherwise parse as non-strings (e.g. an
+    // all-digit login is written as "12345":).
+    const match = /^\s+(?:"([^"\\]+)"|'([^']+)'|([^\s:'"]+)):(?:\s*\{\})?\s*$/u.exec(line);
+    const login = match && (match[1] ?? match[2] ?? match[3]);
+    if (depth !== child || !login || !LOGIN.test(login)) throw new GithubCliError('Unrecognised gh hosts.yml layout');
+    logins.push(login);
   }
   return logins;
 }
@@ -409,7 +412,7 @@ export function syncGithubAccounts({
         final.set(lower(entry.login), { login: s.key(account.login), sha256: entry.sha256 });
         loggedIn += 1;
       } else if (!failure) {
-        warnings.push(releaseRenamed({ s, exec, ctx, transition, preexisting, account, entry, tokens }));
+        warnings.push(releaseRenamed({ s, exec, ctx, transition, final, preexisting, account, entry, tokens }));
       }
       if (failure) warnings.push(safeMessage(failure));
     } catch (error) {
@@ -476,14 +479,24 @@ export function syncGithubAccounts({
  * so no unowned credential survives, recording it first so a crash in between
  * still leaves it owned. A pre-existing (user) account is never touched.
  */
-function releaseRenamed({ s, exec, ctx, transition, preexisting, account, entry, tokens }) {
+function releaseRenamed({ s, exec, ctx, transition, final, preexisting, account, entry, tokens }) {
   const advice = `gh stored the token for ${account.login} under a different login (renamed GitHub account?); reconnect it in Alfe`;
   for (const key of s.list()) {
     if (preexisting.has(lower(key)) || s.digest(key) !== entry.sha256) continue;
-    transition.set(lower(key), { login: key, sha256: entry.sha256 });
+    // Owned in BOTH the write-ahead and the final ledger until the logout
+    // succeeds: if it throws, the account stays owned and the next run or
+    // uninstall removes it.
+    const owned = { login: key, sha256: entry.sha256 };
+    transition.set(lower(key), owned);
+    final.set(lower(key), owned);
     persist(ctx, [...transition.values()], ctx.gitHelper);
-    run(exec, 'gh', ['auth', 'logout', '--hostname', HOST, '--user', key], { secrets: tokens });
+    try {
+      run(exec, 'gh', ['auth', 'logout', '--hostname', HOST, '--user', key], { secrets: tokens });
+    } catch (error) {
+      return `${advice}; could not remove the unexpected gh account ${key} (kept as owned for the next run or uninstall): ${safeMessage(error)}`;
+    }
     transition.delete(lower(key));
+    final.delete(lower(key));
     return `${advice}; removed the unexpected gh account ${key}`;
   }
   return advice;
