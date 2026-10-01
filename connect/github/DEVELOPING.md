@@ -125,7 +125,7 @@ removing the last connection uninstalls the integration and runs
 
 ## How to test
 
-- Unit (any OS, no network): `node --test '**/hooks/*.test.mjs'`,
+- Unit (any OS, no network): `node --test "**/hooks/*.test.mjs"`,
   `shellcheck connect/github/hooks/*.sh` and `./scripts/validate-manifests.sh`.
   `gh-accounts.test.mjs` drives sync/uninstall through a fake gh;
   `health.test.mjs` and `post-activate.test.mjs` run the real scripts with a
