@@ -40,7 +40,7 @@ installs:
         - package: "@alfe.ai/openclaw-identity@0.1.37"
         - package: "@alfe.ai/openclaw-search@0.0.47"
         - package: "@alfe.ai/openclaw-secrets@0.2.34"
-        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.32"
+        - package: "@alfe.ai/openclaw-mcp-bundler@0.0.31"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
@@ -91,15 +91,16 @@ installs:
         # submodule.
         - path: skills/webhook-handler
       config:
-        # OpenClaw (every pinned runtime: 2026.6.11 → 2026.9.x) only lets
-        # BUNDLED plugins register conversation hooks (`before_prompt_build`,
-        # `agent_end`, …). Our npm-installed plugins are "non-bundled", so
-        # without this grant the runtime silently drops their hooks: identity
-        # context and knowledge injection never reach the prompt (seen on
-        # Ravi, 2026-10-04: "typed hook ... blocked because non-bundled
-        # plugins must set plugins.entries.<id>.hooks.allowConversationAccess=true").
-        # Dotted ids are applied via read-merge-write on `plugins.entries`
-        # with `--merge`, so each plugin's other entry fields are preserved.
+        # OpenClaw only lets BUNDLED plugins register conversation hooks
+        # (`agent_end` on every pinned runtime; `before_prompt_build` too from
+        # 2026.8.1). Our npm-installed plugins are "non-bundled", so without
+        # this grant the runtime silently drops their hooks: identity context
+        # and knowledge injection never reach the prompt (2026-10-04: "typed
+        # hook ... blocked because non-bundled plugins must set
+        # plugins.entries.<id>.hooks.allowConversationAccess=true").
+        # Applied as a `--merge` patch on `plugins.entries`, so the entry's
+        # other fields survive on apply. This manifest is the sole owner of
+        # these two entries: removing it drops the whole entry.
         plugins:
           entries:
             "@alfe.ai/openclaw-identity":
