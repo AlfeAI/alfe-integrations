@@ -1,0 +1,62 @@
+id: email
+name: "Email"
+version: 1.0.0
+description: Receive email in the agent's connected Gmail or Outlook mailbox and reply in the same thread
+license: MIT
+depends_on: []
+min_gateway_version: 1.0.0
+
+# Connect providers whose credentials this channel adapter resolves.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [google, microsoft]
+# Channel type — drives Channel-driven activation in getDesiredState.
+# Locked enum from packages/integration-manifest.
+channel_type: email
+
+supported_agents: [openclaw]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+icon: ./assets/icon.svg
+pricing:
+  type: free
+features:
+  - Email threads in a connected Gmail or Outlook mailbox
+  - Replies stay in the original thread
+  - Per-agent mailbox identity
+
+installs:
+  runtimes:
+    openclaw:
+      plugins:
+        - package: "@alfe.ai/openclaw-email@0.1.0"
+      config:
+        plugins:
+          entries:
+            "@alfe.ai/openclaw-email":
+              config:
+                channelId: "{{config.channelId}}"
+                connectionId: "{{config.connectionId}}"
+
+# Channel-driven activation (services/integrations desired-state
+# `channelDrivenConfig`) injects the activating Channel's id and its parent
+# Connection's id into these keys. They are never user-entered, so they are
+# hidden from the dashboard; the plugin refuses to start without them.
+config_schema:
+  - key: channelId
+    type: string
+    label: "Channel ID"
+    description: "Alfe Channel this mailbox is bound to (set automatically)"
+    required: true
+    hidden: true
+  - key: connectionId
+    type: string
+    label: "Connection ID"
+    description: "Connect connection that owns the mailbox (set automatically)"
+    required: true
+    hidden: true
+
+capabilities:
+  - email.messages
+  - email.threads
