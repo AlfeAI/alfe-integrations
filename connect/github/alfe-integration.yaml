@@ -1,6 +1,6 @@
 id: github
 name: "GitHub"
-version: 1.0.10
+version: 1.0.11
 description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more (multi-account)
 license: MIT
 min_gateway_version: 1.0.0
@@ -25,6 +25,7 @@ features:
   - Repository management (create, list, search)
   - Issues and pull requests (create, comment, review)
   - Code search and file operations
+  - Shell git and GitHub CLI (`gh`) access — connected accounts are logged into `gh`; shell `git` uses the active account (most specific scope, then most recently connected) — switch with `gh auth switch --hostname github.com --user <login>`
 
 installs:
   runtimes:
@@ -32,6 +33,17 @@ installs:
     # Hermes runs the same runtime-agnostic stdio MCP server declared in
     # the top-level `mcp_servers` block — no plugin/skill/config to apply.
     hermes: {}
+
+# Shell access: post_install installs the GitHub CLI (best effort, Debian/
+# Ubuntu as root); post_activate logs every connected account into `gh` and
+# configures git's credential helper, recording what it owns under
+# ~/.alfe/github-cli/; post_uninstall removes only those contributions.
+# Hooks run once per integration, gated on supported_agents (openclaw, hermes).
+hooks:
+  post_install: hooks/post-install.sh
+  post_activate: hooks/post_activate.mjs
+  post_uninstall: hooks/post_uninstall.mjs
+  health_check: hooks/health.sh
 
 mcp_servers:
   - id: github

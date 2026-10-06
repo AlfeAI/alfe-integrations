@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Manifests + hook unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Node 24 matches the managed-VM runtime (OpenClaw 2026.9.x requires it).
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # validate-manifests.sh is self-contained: it parses every
+      # alfe-integration.yaml with Ruby's YAML (preinstalled on the runner).
+      - name: Validate manifests
+        run: |
+          ruby --version
+          ./scripts/validate-manifests.sh
+
+      # Every hook test in the repo. *.e2e.test.mjs files skip themselves
+      # unless GH_HOOKS_E2E=1 (see the github-hooks-e2e job).
+      - name: Hook unit tests
+        run: node --test '**/hooks/*.test.mjs'
+
+  github-hooks-e2e:
+    name: GitHub hooks e2e (real gh, apt, git)
+    runs-on: ubuntu-24.04 # same OS as managed agent VMs
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # Runner images ship gh from cli.github.com; remove it (and its apt
+      # source/keyring) so post-install.sh's apt path is really exercised.
+      - name: Remove preinstalled gh
+        run: |
+          sudo apt-get remove -y gh || true
+          for f in /etc/apt/sources.list.d/*; do
+            if sudo grep -qs 'cli.github.com' "$f"; then sudo rm -f "$f"; fi
+          done
+          sudo rm -f /etc/apt/keyrings/githubcli-archive-keyring.gpg /usr/share/keyrings/githubcli-archive-keyring.gpg
+          hash -r
+          if command -v gh; then echo "gh is still installed"; exit 1; fi
+
+      - name: post-install.sh installs gh from the official apt repo
+        run: |
+          sudo bash connect/github/hooks/post-install.sh | tee install.log
+          grep -q 'Installing GitHub CLI from the official apt repository' install.log
+          version="$(gh --version | sed -n 's/^gh version \([0-9.]*\).*/\1/p')"
+          echo "installed gh $version"
+          [ "$(printf '%s\n%s\n' 2.40.0 "$version" | sort -V | head -n 1)" = 2.40.0 ]
+
+      - name: post-install.sh is idempotent
+        run: |
+          sudo bash connect/github/hooks/post-install.sh | tee rerun.log
+          if grep -q 'Installing GitHub CLI' rerun.log; then echo "re-run reinstalled gh"; exit 1; fi
+          grep -q 'gh CLI version' rerun.log
+
+      # Prod failure mode: /tmp at mode 700 breaks apt's _apt sandbox.
+      - name: post-install.sh works with /tmp mode 700
+        run: |
+          sudo apt-get remove -y gh
+          hash -r
+          sudo chmod 700 /tmp
+          sudo bash connect/github/hooks/post-install.sh | tee tmp700.log
+          sudo chmod 1777 /tmp
+          grep -q "disabling apt's sandbox user" tmp700.log
+          gh --version
+
+      - name: Restore /tmp
+        if: always()
+        run: sudo chmod 1777 /tmp
+
+      # Real gh contract checks, then the full hook lifecycle (post_activate,
+      # health, post_uninstall) against a local mock of the Alfe agent API,
+      # with the published @alfe.ai packages installed the way the daemon does.
+      # Runs in throwaway HOMEs; GITHUB_TOKEN is masked and never printed.
+      - name: Real-gh contract + hook lifecycle tests
+        env:
+          GH_HOOKS_E2E: '1'
+          GH_E2E_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_E2E_REPOSITORY: ${{ github.repository }}
+        run: node --test connect/github/hooks/gh-contract.e2e.test.mjs connect/github/hooks/hooks-flow.e2e.test.mjs

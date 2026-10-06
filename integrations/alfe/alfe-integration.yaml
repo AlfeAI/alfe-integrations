@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.59
+version: 1.1.63
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -37,14 +37,14 @@ installs:
         # openclaw-metrics was a no-op after activity tracking moved to chat
         # service events. Its final publish is legacy-activate-only, so retire
         # it before the OpenClaw 2 rollout rather than keep dead runtime code.
-        - package: "@alfe.ai/openclaw-identity@0.1.37"
+        - package: "@alfe.ai/openclaw-identity@0.2.0"
         - package: "@alfe.ai/openclaw-search@0.0.47"
         - package: "@alfe.ai/openclaw-secrets@0.2.34"
         - package: "@alfe.ai/openclaw-mcp-bundler@0.0.32"
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.9.23"
+        - package: "@alfe.ai/openclaw-chat@0.9.24"
         # Folded in from the legacy `webhooks` integration (PR 11).
         - package: "@alfe.ai/openclaw-webhooks@0.0.26"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
@@ -79,9 +79,11 @@ installs:
         # 0.1.0 additionally exposes the shared, turn-gated browser operation
         # helper used by optional local browser-session integrations.
         # Author the pin with the matching Alfe changeset. Registry sync must
-        # wait until @alfe.ai/openclaw-remote@0.1.1 and its browser dependency
+        # wait until @alfe.ai/openclaw-remote@0.1.2 and its browser dependency
         # have been published, or installation fails "version not found".
-        - package: "@alfe.ai/openclaw-remote@0.1.1"
+        # 0.1.2 pulls @alfe.ai/browser 0.3.1: takeover input is dispatched in
+        # order, so the first key after a click is no longer dropped.
+        - package: "@alfe.ai/openclaw-remote@0.1.2"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
@@ -89,11 +91,40 @@ installs:
         # submodule.
         - path: skills/webhook-handler
       config:
+        # OpenClaw only lets BUNDLED plugins register conversation hooks
+        # (`agent_end` on every pinned runtime; `before_prompt_build` too from
+        # 2026.8.1). Our npm-installed plugins are "non-bundled", so without
+        # this grant the runtime silently drops their hooks: identity context
+        # and knowledge injection never reach the prompt (2026-10-04: "typed
+        # hook ... blocked because non-bundled plugins must set
+        # plugins.entries.<id>.hooks.allowConversationAccess=true").
+        # Applied as a `--merge` patch on `plugins.entries`, so the entry's
+        # other fields survive on apply. This manifest is the sole owner of
+        # these two entries: removing it drops the whole entry.
+        plugins:
+          entries:
+            "@alfe.ai/openclaw-identity":
+              hooks:
+                allowConversationAccess: true
+            "@alfe.ai/openclaw-knowledge":
+              hooks:
+                allowConversationAccess: true
         browser:
           ssrfPolicy:
             dangerouslyAllowPrivateNetwork: true
         session:
           dmScope: "per-channel-peer"
+        # OpenClaw (default on) injects an "[OpenClaw exec completion]" turn
+        # into the ORIGINATING chat whenever a backgrounded exec exits, and
+        # tells the model to relay the output. On 2026.9.5 customers saw the
+        # agent's "this is internal system context" answers to those turns
+        # land in their chat as replies to their own questions. Off: the
+        # model polls background jobs with the `process` tool instead.
+        # Known key with the same schema on every pinned runtime
+        # (2026.6.11, 2026.8.1, 2026.9.5), so the batch apply cannot reject it.
+        tools:
+          exec:
+            notifyOnExit: false
         # Structured thinking for reasoning-capable models (claude-*).
         # OpenClaw has NO per-dispatch thinking parameter — the chat
         # relay's `thinking:'low'` RPC field can't reach the run; the
