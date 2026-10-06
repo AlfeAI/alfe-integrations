@@ -1,0 +1,54 @@
+id: aws
+name: "AWS"
+version: 1.0.0
+description: Give your agent the AWS CLI with one profile per connected AWS account and role, using short-lived credentials
+license: MIT
+min_gateway_version: 1.0.0
+
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [aws]
+
+supported_agents: [openclaw, hermes]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+pricing:
+  type: free
+
+features:
+  - AWS CLI v2 installed on the agent host from the signature-verified official release
+  - "One named AWS profile per connected account and selected role: run `aws --profile <name> ...`"
+  - Short-lived STS credentials minted on demand through Alfe; long-lived access keys never leave Alfe
+  - Credentials refresh automatically; no keys are stored in ~/.aws
+  - Your own ~/.aws profiles are never modified
+
+installs:
+  runtimes:
+    openclaw:
+      skills:
+        - path: skills/aws
+    # Hermes shares the same shell and ~/.aws/config; its applier currently
+    # treats Alfe skill directories as a no-op (see DEVELOPING.md).
+    hermes:
+      skills:
+        - path: skills/aws
+
+# Shell access: post_install installs AWS CLI v2 (best effort, Linux as
+# root); post_activate writes one credential_process profile per identity
+# into an alfe-managed block of ~/.aws/config, recording what it owns under
+# ~/.alfe/aws-cli/; post_uninstall removes only those contributions.
+# Hooks run once per integration, gated on supported_agents (openclaw, hermes).
+hooks:
+  post_install: hooks/post-install.sh
+  post_activate: hooks/post_activate.mjs
+  post_uninstall: hooks/post_uninstall.mjs
+  health_check: hooks/health.sh
+
+config_schema: []
+
+capabilities:
+  - aws.cli
+  - aws.profiles
