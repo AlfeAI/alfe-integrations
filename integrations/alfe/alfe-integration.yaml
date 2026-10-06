@@ -91,6 +91,24 @@ installs:
         # submodule.
         - path: skills/webhook-handler
       config:
+        # OpenClaw only lets BUNDLED plugins register conversation hooks
+        # (`agent_end` on every pinned runtime; `before_prompt_build` too from
+        # 2026.8.1). Our npm-installed plugins are "non-bundled", so without
+        # this grant the runtime silently drops their hooks: identity context
+        # and knowledge injection never reach the prompt (2026-10-04: "typed
+        # hook ... blocked because non-bundled plugins must set
+        # plugins.entries.<id>.hooks.allowConversationAccess=true").
+        # Applied as a `--merge` patch on `plugins.entries`, so the entry's
+        # other fields survive on apply. This manifest is the sole owner of
+        # these two entries: removing it drops the whole entry.
+        plugins:
+          entries:
+            "@alfe.ai/openclaw-identity":
+              hooks:
+                allowConversationAccess: true
+            "@alfe.ai/openclaw-knowledge":
+              hooks:
+                allowConversationAccess: true
         browser:
           ssrfPolicy:
             dangerouslyAllowPrivateNetwork: true
