@@ -328,7 +328,14 @@ function pruneCache(home, pairs) {
     try {
       const stat = lstatSync(file);
       if (stat.isFile() || stat.isSymbolicLink()) { unlinkSync(file); pruned += 1; }
-    } catch { /* already gone */ }
+    } catch (error) {
+      // Only "already gone" is fine. Anything else must abort the sync BEFORE the
+      // ledger drops this pair, so the next activation still sees it as stale and
+      // retries; otherwise the cached STS credentials would linger until expiry.
+      if (error?.code !== 'ENOENT') {
+        throw new AwsHookError(`Could not remove cached AWS credentials for profile ${pair.profile} (${error?.code ?? 'error'})`);
+      }
+    }
   }
   return pruned;
 }

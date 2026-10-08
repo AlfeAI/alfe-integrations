@@ -85,7 +85,7 @@ test('writes the managed block with the ABSOLUTE alfe path and exits 0', () => {
   assert.equal(result.status, 0, result.stderr);
   const text = env.configText();
   assert.ok(text.startsWith(BLOCK_BEGIN));
-  assert.match(text, new RegExp(`credential_process = ${join(env.bin, 'alfe').replace(/[.+]/gu, '\\$&')} aws credentials --connection con_one --profile prod-admin\\n`, 'u'));
+  assert.match(text, new RegExp(`credential_process = ${join(env.bin, 'alfe').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')} aws credentials --connection con_one --profile prod-admin\\n`, 'u'));
   assert.doesNotMatch(text, /\[default\]/u);
   assert.match(result.stdout, /Configured 2 AWS profile\(s\)/u);
 });

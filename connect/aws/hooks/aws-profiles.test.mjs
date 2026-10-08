@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, test } from 'node:test';
@@ -230,6 +230,28 @@ test('removed profiles have their cached STS credentials pruned; kept ones stay'
   // Moving a profile to another connection prunes the old (connection, profile) entry.
   sync(h, [entry('b', { connectionId: 'con_two' })]);
   assert.equal(existsSync(fileB), false);
+});
+
+test('a cache entry that cannot be removed aborts the sync and stays stale so the next sync retries', { skip: process.getuid?.() === 0 && 'root ignores directory permissions' }, () => {
+  const h = home();
+  sync(h, [entry('a'), entry('b')]);
+  const cache = join(h, '.alfe', 'aws-cli', 'cache');
+  mkdirSync(cache, { recursive: true });
+  const fileA = join(cache, cacheFileName('con_one', 'a'));
+  writeFileSync(fileA, '{}');
+  chmodSync(cache, 0o500);
+  try {
+    assert.throws(() => sync(h, [entry('b')]), AwsHookError);
+    // The write-ahead ledger still lists the stale pair, so it is retried.
+    assert.ok(readLedger(h).some((p) => p.profile === 'a'));
+    assert.equal(existsSync(fileA), true);
+  } finally {
+    chmodSync(cache, 0o700);
+  }
+  const result = sync(h, [entry('b')]);
+  assert.equal(result.pruned, 1);
+  assert.equal(existsSync(fileA), false);
+  assert.ok(!readLedger(h).some((p) => p.profile === 'a'));
 });
 
 test('cacheFileName is sha256(connectionId + NUL + profile) + .json (CLI contract)', () => {
