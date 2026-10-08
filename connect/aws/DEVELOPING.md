@@ -22,19 +22,70 @@ in `services/connect`; see its DEVELOPING.md.
 
 ## Exit-code contract
 
-- `post_activate` exits 1 ONLY when the roster cannot be fetched or fails
-  validation, so reconciliation retries; nothing is changed in that case.
-- A host that cannot use the profiles yet is a WARNING with exit 0 and no
-  write: `alfe` not on PATH, an alfe path that needs shell quoting, an alfe
-  CLI whose `alfe aws --help` fails (it predates `alfe aws`, so every profile
-  would run an unknown command), or a shared `@alfe.ai/agent-api-client`
-  without `getAwsProfiles()`.
+- `post_activate` exits 1, changing nothing, when:
+  - the host cannot run the profiles yet: `alfe` not on PATH, an alfe path
+    that needs shell quoting, an alfe CLI whose `alfe aws --help` fails (it
+    predates `alfe aws`, so every profile would run an unknown command), or
+    a shared `@alfe.ai/agent-api-client` without `getAwsProfiles()`; or
+  - the roster cannot be fetched or fails validation.
+
+  Each of these is an `ERROR:` line. The failed activation is what makes the
+  daemon try again (see "Rollout and recovery"); a WARNING with exit 0 would
+  leave the integration `active` with no profiles until the next connection
+  change.
 - Local file problems (malformed managed block, unreadable ownership record,
   non-regular `~/.aws/config`) are a WARNING with exit 0 and no write; health
   reports them.
 - `post_uninstall` and `post_install` always exit 0.
-- `health.sh` fails only on a missing or broken AWS CLI (it is the whole
-  integration), a malformed managed block, or an unreadable ownership record.
+- `health.sh` fails on a missing or broken AWS CLI (it is the whole
+  integration), an `alfe` that is missing, unusable unquoted, or fails
+  `alfe aws --help`, a malformed managed block, or an unreadable ownership
+  record.
+
+## Rollout and recovery
+
+The hooks call the `alfe aws` CLI (through `credential_process`) and
+`AgentApiClient.getAwsProfiles()`, both shipped in `@alfe.ai/*` packages that
+reach an agent separately from the integration. A host that activates `aws`
+before it has both must recover on its own once it does. The daemon only
+re-runs `post_activate` when it re-activates the integration: from `error`
+(this path), on a `connectionAuthorityVersion` change, or on install or
+reinstall. Nothing re-runs it for an `active` integration whose host improved.
+So the hook fails instead of warning:
+
+1. `post_activate` exits 1. `IntegrationManager.activate()` sets the local
+   status to `error` (`POST_ACTIVATE_FAILED`) and the daemon reports
+   `actualStatus: error`.
+2. On every later DESIRED_STATE, `ReconciliationEngine` sees an intact
+   install in `error` and re-activates it, at most
+   `MAX_ERROR_ACTIVATE_ATTEMPTS` (3) times. The counter is in memory, so
+   every daemon restart starts a fresh budget. Before each re-activation the
+   manager refreshes the shared `@alfe.ai/*` hook packages to npm `latest`
+   (once per daemon process), which fixes a stale `agent-api-client`.
+3. A CLI upgrade (`daemon.update`) installs the new CLI and exits so systemd
+   restarts the daemon. The new daemon reconnects, the gateway sends
+   DESIRED_STATE after `SERVICE_REGISTER`, the budget is fresh, and the
+   re-activation runs `post_activate` with the new `alfe`: the profiles are
+   written and the integration becomes `active`.
+4. If an account-authority refresh failed (`connectionAuthorityPendingVersion`
+   set), the retry runs on every DESIRED_STATE, outside that budget.
+5. A manual Reinstall from the dashboard also re-runs the hook.
+
+While the probe fails, `health.sh` fails with the same ERROR, so the
+dashboard health shows why there are no profiles. Hook output is not copied
+into the integration status (it can carry secrets); the status reads
+`post_activate hook failed (exit 1)` and the reason is in the daemon log.
+
+Rollout order:
+
+1. Publish the `@alfe.ai/cli` release with `alfe aws` and the
+   `@alfe.ai/agent-api-client` release with `getAwsProfiles()` (changesets),
+   and deploy `services/connect` (the roster and `aws-session` routes).
+2. Merge this integration in the submodule, bump the gitlink in the alfe
+   repo, and publish it to each stage's registry.
+3. New VMs install the CLI at `latest`, so they activate cleanly. An existing
+   VM on an older CLI stays in `error` until its CLI is upgraded; the
+   upgrade's daemon restart then heals it as above, with no Reinstall.
 
 ## Install (`hooks/post-install.sh`)
 
@@ -61,9 +112,11 @@ with the binary in `/usr/local/bin`.
 
 ## Profile sync (`hooks/post_activate.mjs`, `hooks/aws-profiles.mjs`)
 
-1. Resolve the absolute `alfe` path from PATH (like `command -v`) and probe
-   `alfe aws --help`. The absolute path is written into every profile because
-   the runtime's shell PATH may differ from the daemon's.
+1. `checkAlfeCli()`: resolve the absolute `alfe` path from PATH (like
+   `command -v`), require it to be usable unquoted, and probe
+   `alfe aws --help`; any failure exits 1. The absolute path is written into
+   every profile because the runtime's shell PATH may differ from the
+   daemon's.
 2. Fetch `AgentApiClient.getAwsProfiles()` within the hook budget: one 25 s
    budget anchored at process start, the fetch bounded to 10 s with
    `Promise.race` (the client takes no signal), stdout/stderr drained, then
@@ -71,7 +124,7 @@ with the binary in `/usr/local/bin`.
    daemon's 30 s kill.
 3. Validate the WHOLE roster before any mutation, with the contract's
    validators: profile `^[a-z0-9][a-z0-9_-]{0,62}$` and not `default`, region
-   `^[a-z]{2}(-gov)?-[a-z]+-\d$`, role ARN, 12-digit account ID, connection ID
+   `^(?!cn-)[a-z]{2}-[a-z]+-\d$` (commercial `aws` partition only), role ARN, 12-digit account ID, connection ID
    `^[A-Za-z0-9_-]{1,128}$`, and no `\r`/`\n` in any string of any entry. One
    invalid entry rejects the roster.
 4. Dedup by profile, first wins (Connect orders by most specific scope, then
@@ -106,7 +159,8 @@ have their CLI cache entry deleted. Health uses the record to flag hand edits.
 ## Health (`hooks/health.sh`)
 
 Local only: no `aws sts get-caller-identity`, no Alfe API call. `aws
---version` must work (older than 2.15 is a WARNING). The block, when present,
+--version` must work (older than 2.15 is a WARNING), and `checkAlfeCli()`
+must pass (`alfe aws --help` runs locally). The block, when present,
 must parse back exactly as the hook writes it; managed profiles missing from
 the ownership record and a missing `credential_process` executable are
 WARNINGs.
@@ -132,7 +186,10 @@ Removing the last AWS connection uninstalls the integration and runs
   `shellcheck connect/aws/hooks/*.sh` and `./scripts/validate-manifests.sh`.
   `aws-profiles.test.mjs` covers the module; `post-activate.test.mjs` runs the
   real entrypoints with stub `@alfe.ai/*` packages and a fake `alfe` on PATH;
-  `health.test.mjs` runs `health.sh` and `post-install.sh` with a fake `aws`.
+  `health.test.mjs` runs `health.sh` and `post-install.sh` with a fake `aws`
+  and a fake `alfe`. The recovery path (fail on an old CLI, succeed after the
+  upgrade) is covered at the hook level; the daemon side is
+  `packages/gateway/src/reconciliation.ts` and its tests.
 - `hooks-flow.e2e.test.mjs` (skipped unless `AWS_HOOKS_E2E=1`, needs AWS CLI
   v2 on PATH) installs the published shared packages the way the daemon does
   (falling back to a route-5 contract stub while the published client lacks

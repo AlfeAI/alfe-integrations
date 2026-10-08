@@ -45,7 +45,7 @@ const mode = (path) => lstatSync(path).mode & 0o777;
 // ── Roster validation ───────────────────────────────────────────
 
 test('validateRoster accepts the contract shape (array or {accounts}) and keeps only what it needs', () => {
-  const { profiles, warnings } = validateRoster([entry('prod-admin'), entry('direct', { roleArn: null, region: 'us-gov-west-1' })]);
+  const { profiles, warnings } = validateRoster([entry('prod-admin'), entry('direct', { roleArn: null, region: 'eu-west-2' })]);
   assert.deepEqual(warnings, []);
   assert.deepEqual(profiles.map((p) => p.profile), ['prod-admin', 'direct']);
   assert.equal(profiles[1].roleArn, null);
@@ -77,6 +77,12 @@ test('validateRoster rejects the WHOLE roster on any invalid entry', () => {
     Array.from({ length: 257 }, (_, i) => entry(`p${i}`)),
   ];
   for (const roster of bad) assert.throws(() => validateRoster(roster), RosterError, JSON.stringify(roster)?.slice(0, 80));
+});
+
+test('validateRoster rejects GovCloud and China regions (commercial aws partition only)', () => {
+  for (const region of ['us-gov-west-1', 'cn-north-1', 'cn-northwest-1']) {
+    assert.throws(() => validateRoster([entry('p', { region })]), RosterError, region);
+  }
 });
 
 test('newline injection is rejected in every field, including free text', () => {

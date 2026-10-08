@@ -4,8 +4,8 @@ import { resolveConfig } from '@alfe.ai/config';
 import { AgentApiClient } from '@alfe.ai/agent-api-client';
 import { homedir } from 'node:os';
 import {
-  AwsHookError, FETCH_TIMEOUT_MS, HOOK_BUDGET_MS, RosterError, SAFE_PATH,
-  probeAlfeAws, resolveExecutable, syncAwsProfiles, validateRoster,
+  AwsHookError, FETCH_TIMEOUT_MS, HOOK_BUDGET_MS, PROBE_TIMEOUT_MS, RosterError,
+  checkAlfeCli, syncAwsProfiles, validateRoster,
 } from './aws-profiles.mjs';
 
 // The daemon kills hooks at 30 s, measured from spawn. Count node startup, the
@@ -13,25 +13,27 @@ import {
 const started = performance.timeOrigin;
 const remaining = () => HOOK_BUDGET_MS - (Date.now() - started);
 
-// Exit codes: 1 ONLY when the authoritative roster cannot be fetched or is
-// invalid, so reconciliation retries (and nothing is changed). A host that
-// cannot use the profiles yet (no `alfe aws` CLI) or a local config problem
-// is a WARNING with exit 0.
+// Exit codes (see ../DEVELOPING.md "Exit-code contract"): 1 when the host
+// cannot run the profiles yet (no usable `alfe aws` CLI, or a shared
+// agent-api-client without getAwsProfiles()) or the roster cannot be fetched
+// or is invalid. Nothing is changed in those cases, and the failed activation
+// leaves the integration in `error`, which the daemon re-activates on a later
+// DESIRED_STATE (fresh budget after every daemon restart, including the one a
+// CLI upgrade performs). A local config problem is a WARNING with exit 0.
 async function main() {
-  const alfePath = resolveExecutable('alfe');
-  if (!alfePath || !SAFE_PATH.test(alfePath)) {
-    console.warn(`WARNING: ${alfePath ? 'the alfe CLI path cannot be used in credential_process' : 'the alfe CLI was not found on PATH'}; AWS profiles were not configured.`);
+  const cli = checkAlfeCli({ timeout: Math.max(1_000, Math.min(PROBE_TIMEOUT_MS, remaining() - FETCH_TIMEOUT_MS)) });
+  if (!cli.ok) {
+    console.error(`ERROR: ${cli.message}; AWS profiles were not configured. They are written on the next activation after this is fixed.`);
+    process.exitCode = 1;
     return;
   }
-  if (!probeAlfeAws(alfePath, Math.max(1_000, Math.min(8_000, remaining() - FETCH_TIMEOUT_MS)))) {
-    console.warn('WARNING: the installed alfe CLI does not support `alfe aws` yet; AWS profiles were not configured. Upgrade @alfe.ai/cli and the next activation writes them.');
-    return;
-  }
+  const { alfePath } = cli;
 
   const config = resolveConfig();
   const client = new AgentApiClient({ apiKey: config.apiKey, apiUrl: config.apiUrl });
   if (typeof client.getAwsProfiles !== 'function') {
-    console.warn('WARNING: the installed @alfe.ai/agent-api-client has no getAwsProfiles(); AWS profiles were not configured.');
+    console.error('ERROR: the installed @alfe.ai/agent-api-client has no getAwsProfiles(); AWS profiles were not configured. The daemon refreshes the shared packages before the next activation.');
+    process.exitCode = 1;
     return;
   }
 

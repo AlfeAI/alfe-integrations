@@ -27,12 +27,18 @@ const profile = (name, extra = {}) => ({
   ...extra,
 });
 
+const fakeAlfe = (cli) => `#!/bin/sh
+if [ "$1" = "aws" ]; then ${cli === 'new' ? 'echo "Usage: alfe aws"; exit 0' : 'echo "error: unknown command \'aws\'" >&2; exit 1'}; fi
+exit 1
+`;
+
 /**
  * @param {object} options
  * @param {'new'|'old'|'missing'} [options.cli] fake alfe: supports `alfe aws`, predates it, or absent.
+ * @param {string} [options.binName] PATH directory name (a space makes the alfe path unusable unquoted).
  * @param {boolean} [options.legacyClient] agent-api-client without getAwsProfiles().
  */
-function setup({ roster = [], cli = 'new', fetchFails = false, fetchHangs = false, legacyClient = false, config } = {}) {
+function setup({ roster = [], cli = 'new', binName = 'bin', fetchFails = false, fetchHangs = false, legacyClient = false, config } = {}) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'alfe-aws-hook-')));
   roots.push(root);
   const hooks = join(root, 'integration', 'hooks');
@@ -49,14 +55,10 @@ function setup({ roster = [], cli = 'new', fetchFails = false, fetchHangs = fals
     return JSON.parse(process.env.FAKE_ROSTER);
   }
 }\n`);
-  const bin = join(root, 'bin');
+  const bin = join(root, binName);
   mkdirSync(bin);
-  if (cli !== 'missing') {
-    writeFileSync(join(bin, 'alfe'), `#!/bin/sh
-if [ "$1" = "aws" ]; then ${cli === 'new' ? 'echo "Usage: alfe aws"; exit 0' : 'echo "error: unknown command \'aws\'" >&2; exit 1'}; fi
-exit 1
-`, { mode: 0o755 });
-  }
+  const installCli = (kind) => writeFileSync(join(bin, 'alfe'), fakeAlfe(kind), { mode: 0o755 });
+  if (cli !== 'missing') installCli(cli);
   const home = join(root, 'home');
   mkdirSync(home);
   if (config !== undefined) {
@@ -74,7 +76,7 @@ exit 1
       ...(fetchHangs ? { FAKE_FETCH_HANGS: '1' } : {}),
     },
   });
-  return { root, home, bin, run, configText: () => readFileSync(join(home, '.aws', 'config'), 'utf8') };
+  return { root, home, bin, run, installCli, configText: () => readFileSync(join(home, '.aws', 'config'), 'utf8') };
 }
 
 test('writes the managed block with the ABSOLUTE alfe path and exits 0', () => {
@@ -88,21 +90,38 @@ test('writes the managed block with the ABSOLUTE alfe path and exits 0', () => {
   assert.match(result.stdout, /Configured 2 AWS profile\(s\)/u);
 });
 
-test('an alfe CLI without `alfe aws` writes NO block and exits 0 with a WARNING (no fetch)', () => {
-  for (const cli of ['old', 'missing']) {
-    const env = setup({ roster: [profile('a')], cli, fetchFails: true });
+test('a host that cannot run `alfe aws` exits 1 with an ERROR, writes NO block and never fetches', () => {
+  for (const options of [{ cli: 'old' }, { cli: 'missing' }, { binName: 'my bin' }]) {
+    const env = setup({ roster: [profile('a')], fetchFails: true, ...options });
     const result = env.run('post_activate.mjs');
-    assert.equal(result.status, 0, `${cli}: ${result.stderr}`);
-    assert.match(result.stderr, /WARNING: .*AWS profiles were not configured/u);
-    assert.equal(existsSync(join(env.home, '.aws')), false);
+    const label = JSON.stringify(options);
+    assert.equal(result.status, 1, `${label}: ${result.stderr}`);
+    assert.match(result.stderr, /ERROR: .*AWS profiles were not configured/u, label);
+    // The fetch would fail with "roster unavailable": the probe runs first.
+    assert.doesNotMatch(result.stderr, /roster unavailable/u, label);
+    assert.equal(existsSync(join(env.home, '.aws')), false, label);
+    assert.equal(existsSync(join(env.home, '.alfe')), false, label);
   }
 });
 
-test('an agent-api-client without getAwsProfiles() warns and exits 0', () => {
-  const env = setup({ legacyClient: true });
+test('the re-activation after a CLI upgrade writes the profiles (the rollout recovery path)', () => {
+  // Activation before the CLI upgrade fails; the daemon keeps the integration
+  // in `error` and re-runs post_activate on a later DESIRED_STATE.
+  const env = setup({ roster: [profile('prod-admin')], cli: 'old' });
+  assert.equal(env.run('post_activate.mjs').status, 1);
+  assert.equal(existsSync(join(env.home, '.aws')), false);
+  env.installCli('new');
   const result = env.run('post_activate.mjs');
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stderr, /no getAwsProfiles/u);
+  assert.match(env.configText(), /\[profile prod-admin\]\n/u);
+});
+
+test('an agent-api-client without getAwsProfiles() exits 1 with an ERROR and writes nothing', () => {
+  const env = setup({ legacyClient: true, roster: [profile('a')] });
+  const result = env.run('post_activate.mjs');
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /ERROR: .*no getAwsProfiles/u);
+  assert.equal(existsSync(join(env.home, '.aws')), false);
 });
 
 test('roster fetch failure or invalid roster exits 1 WITHOUT mutating anything', () => {

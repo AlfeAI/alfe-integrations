@@ -19,7 +19,7 @@ export const BLOCK_END = '# <<< alfe managed <<<';
 
 // Validators shared with services/connect and the CLI (wire contract).
 export const PROFILE = /^[a-z0-9][a-z0-9_-]{0,62}$/u;
-export const REGION = /^[a-z]{2}(-gov)?-[a-z]+-\d$/u;
+export const REGION = /^(?!cn-)[a-z]{2}-[a-z]+-\d$/u;
 export const ROLE_ARN = /^arn:aws:iam::\d{12}:role\/[\w+=,.@/-]{1,512}$/u;
 export const ACCOUNT_ID = /^\d{12}$/u;
 export const CONNECTION_ID = /^[A-Za-z0-9_-]{1,128}$/u;
@@ -116,6 +116,24 @@ export function resolveExecutable(name, env = process.env) {
 export function probeAlfeAws(alfePath, timeout = PROBE_TIMEOUT_MS) {
   const result = spawnSync(alfePath, ['aws', '--help'], { stdio: 'ignore', timeout, windowsHide: true });
   return !result.error && result.status === 0;
+}
+
+/**
+ * Can this host run the profiles' credential_process? Needs an `alfe` on PATH,
+ * at a path usable unquoted in ~/.aws/config, whose CLI has `alfe aws`. Local
+ * only. Shared by post_activate (exit 1, so the daemon re-activates later) and
+ * health (unhealthy until the CLI is upgraded). Messages are safe to print.
+ */
+export function checkAlfeCli({ env = process.env, timeout = PROBE_TIMEOUT_MS } = {}) {
+  const alfePath = resolveExecutable('alfe', env);
+  if (!alfePath) return { ok: false, message: 'the alfe CLI was not found on PATH' };
+  if (!SAFE_PATH.test(alfePath)) {
+    return { ok: false, message: 'the alfe CLI path contains characters that cannot be used unquoted in credential_process' };
+  }
+  if (!probeAlfeAws(alfePath, timeout)) {
+    return { ok: false, message: 'the installed alfe CLI does not support `alfe aws`; upgrade @alfe.ai/cli' };
+  }
+  return { ok: true, alfePath };
 }
 
 // ── Config file parsing ─────────────────────────────────────────

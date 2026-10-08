@@ -3,8 +3,10 @@
 # network blip cannot mark the integration errored.
 #
 # Fails when the AWS CLI is missing or broken (it is the whole integration),
-# when the alfe managed block in ~/.aws/config is malformed, or when the
-# ownership record is unreadable. Everything else is a WARNING with exit 0.
+# when the alfe CLI that every profile's credential_process runs is missing or
+# predates `alfe aws` (probed locally with `alfe aws --help`), when the alfe
+# managed block in ~/.aws/config is malformed, or when the ownership record is
+# unreadable. Everything else is a WARNING with exit 0.
 set -euo pipefail
 
 MIN_VERSION="2.15.0"
@@ -29,8 +31,10 @@ fi
 node --input-type=module -e '
   const { pathToFileURL } = await import("node:url");
   const { homedir } = await import("node:os");
-  const { checkHealth } = await import(pathToFileURL(process.argv[1]).href);
+  const { checkAlfeCli, checkHealth } = await import(pathToFileURL(process.argv[1]).href);
+  const cli = checkAlfeCli();
+  if (!cli.ok) console.log("ERROR: " + cli.message + "; AWS profiles cannot work until it does");
   const result = checkHealth({ home: homedir() });
   for (const message of result.messages) console.log(message);
-  process.exitCode = result.ok ? 0 : 1;
+  process.exitCode = cli.ok && result.ok ? 0 : 1;
 ' "$HOOK_DIR/aws-profiles.mjs"

@@ -15,7 +15,7 @@ afterEach(() => { for (const path of roots.splice(0)) rmSync(path, { recursive: 
  * Fake aws: only `--version`. Every other call is logged and fails, so the
  * test proves health is local (no `sts get-caller-identity`).
  */
-function setup({ version = '2.31.5', installed = true, config, ledger, script = 'health.sh', uname }) {
+function setup({ version = '2.31.5', installed = true, alfe = 'new', config, ledger, script = 'health.sh', uname }) {
   const root = mkdtempSync(join(tmpdir(), 'alfe-aws-health-'));
   roots.push(root);
   const bin = join(root, 'bin');
@@ -25,6 +25,10 @@ function setup({ version = '2.31.5', installed = true, config, ledger, script = 
     if (found) writeFileSync(join(bin, tool), `#!/bin/sh\nexec "${found}" "$@"\n`, { mode: 0o755 });
   }
   writeFileSync(join(bin, 'uname'), `#!/bin/sh\n${uname ? `echo "${uname}"` : 'exec /usr/bin/uname "$@"'}\n`, { mode: 0o755 });
+  // Fake alfe on PATH: `alfe aws --help` succeeds ('new'), fails ('old'), or no alfe ('missing').
+  if (alfe !== 'missing') {
+    writeFileSync(join(bin, 'alfe'), `#!/bin/sh\nif [ "$1" = "aws" ]; then exit ${alfe === 'new' ? 0 : 1}; fi\nexit 1\n`, { mode: 0o755 });
+  }
   if (installed) {
     writeFileSync(join(bin, 'aws'), `#!/bin/sh
 echo "$*" >> "${join(root, 'calls.log')}"
@@ -54,6 +58,16 @@ test('missing or broken aws fails health (the CLI is the integration)', () => {
     const result = setup(options);
     assert.equal(result.status, 1, result.stdout + result.stderr);
     assert.match(result.stdout, /ERROR: /u);
+  }
+});
+
+test('an alfe CLI without `alfe aws` (or no alfe) fails health with an ERROR, even with valid profiles', () => {
+  for (const alfe of ['old', 'missing']) {
+    const result = setup({ alfe, config: `[default]\n${block(process.execPath, 'a')}`, ledger: owned('a') });
+    assert.equal(result.status, 1, `${alfe}: ${result.stdout}${result.stderr}`);
+    assert.match(result.stdout, /ERROR: .*AWS profiles cannot work until it does/u, alfe);
+    // The block checks still run and report.
+    assert.match(result.stdout, /1 Alfe-managed AWS profile\(s\): a/u, alfe);
   }
 });
 

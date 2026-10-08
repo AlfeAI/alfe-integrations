@@ -21,9 +21,24 @@ the profile that matches the account and access level the task needs. If
 several could fit, ask the user which one to use. Use `alfe aws profiles --json`
 when you need to parse the list.
 
+`alfe aws profiles` lists what Alfe has connected, not what this machine has
+configured. A profile is skipped here when its name is already used by one of
+the user's own profiles in `~/.aws/config` or `~/.aws/credentials`. Confirm a
+profile exists locally before you use it:
+
+```bash
+aws configure list-profiles
+```
+
+If a profile from `alfe aws profiles` is missing from that list, do not use
+it and do not rename or edit the user's profiles. Tell the user the name
+collides with one of their own AWS profiles.
+
 If there are no profiles, the user has not finished connecting AWS. Ask them
-to open **Connections → AWS** in the Alfe dashboard and select at least one
-role (or keep the account's own access).
+to open **Connections → Add new connection → AWS** in the Alfe dashboard, or,
+for an account that is already connected, use **Manage roles** on its row in
+**Connections** to select at least one role (or keep the account's own
+access).
 
 ## 2. Always pass `--profile`
 
@@ -68,7 +83,8 @@ other profiles at random. Tell the user:
 - which profile (account and role) you used,
 - the exact action that was denied (for example `ec2:DescribeInstances`), and
 - what to grant: add that permission to the role's policy, or connect a
-  role with a broader access level in **Connections → AWS → Manage roles**.
+  role with a broader access level with **Manage roles** on the AWS
+  connection's row in **Connections**.
 
 ## 6. Never print credentials
 
