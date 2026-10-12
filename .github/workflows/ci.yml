@@ -35,7 +35,7 @@ jobs:
           ./scripts/validate-manifests.sh
 
       # Every hook test in the repo. *.e2e.test.mjs files skip themselves
-      # unless GH_HOOKS_E2E=1 (see the github-hooks-e2e job).
+      # unless GH_HOOKS_E2E=1 / AWS_HOOKS_E2E=1 (see the *-hooks-e2e jobs).
       - name: Hook unit tests
         run: node --test '**/hooks/*.test.mjs'
 
@@ -103,3 +103,82 @@ jobs:
           GH_E2E_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_E2E_REPOSITORY: ${{ github.repository }}
         run: node --test connect/github/hooks/gh-contract.e2e.test.mjs connect/github/hooks/hooks-flow.e2e.test.mjs
+
+  aws-hooks-e2e:
+    name: AWS hooks e2e (real AWS CLI install + credential_process)
+    runs-on: ubuntu-24.04 # same OS as managed agent VMs
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # Runner images ship AWS CLI v2 in /usr/local; remove it so
+      # post-install.sh's download + signature-verify path is really exercised.
+      - name: Remove preinstalled AWS CLI
+        run: |
+          sudo rm -rf /usr/local/aws-cli /usr/local/bin/aws /usr/local/bin/aws_completer
+          hash -r
+          if command -v aws; then echo "aws is still installed"; exit 1; fi
+
+      # A key that did not sign the release must be refused: nothing installed.
+      - name: post-install.sh refuses an archive not signed by the pinned key
+        run: |
+          work="$(mktemp -d)"
+          cp -R connect/aws "$work/aws"
+          export GNUPGHOME="$work/gnupg"
+          mkdir -m 700 "$GNUPGHOME"
+          gpg --batch --pinentry-mode loopback --passphrase '' --quick-gen-key 'Not AWS <not-aws@example.com>' default default never
+          gpg --batch --armor --export not-aws@example.com > "$work/aws/assets/aws-cli-public-key.asc"
+          sudo bash "$work/aws/hooks/post-install.sh" | tee wrongkey.log
+          grep -q 'signature verification failed' wrongkey.log
+          grep -q 'WARNING: AWS CLI installation failed' wrongkey.log
+          hash -r
+          if command -v aws; then echo "aws was installed from an unverified archive"; exit 1; fi
+
+      - name: post-install.sh installs AWS CLI v2 (signature-verified)
+        run: |
+          sudo bash connect/aws/hooks/post-install.sh | tee install.log
+          grep -q 'Installing AWS CLI v2' install.log
+          grep -q 'AWS CLI signature verified' install.log
+          hash -r
+          [ "$(command -v aws)" = /usr/local/bin/aws ]
+          version="$(aws --version | sed -n 's/^aws-cli\/\([0-9.]*\).*/\1/p')"
+          echo "installed aws $version"
+          [ "$(printf '%s\n%s\n' 2.15.0 "$version" | sort -V | head -n 1)" = 2.15.0 ]
+
+      - name: post-install.sh is idempotent
+        run: |
+          sudo bash connect/aws/hooks/post-install.sh | tee rerun.log
+          if grep -q 'Installing AWS CLI' rerun.log; then echo "re-run reinstalled aws"; exit 1; fi
+          grep -q 'AWS CLI version' rerun.log
+
+      # Prod failure mode: /tmp at mode 700 (breaks apt's sandbox; the
+      # installer must not depend on a world-writable /tmp either).
+      - name: post-install.sh works with /tmp mode 700
+        run: |
+          sudo rm -rf /usr/local/aws-cli /usr/local/bin/aws /usr/local/bin/aws_completer
+          hash -r
+          sudo chmod 700 /tmp
+          sudo bash connect/aws/hooks/post-install.sh | tee tmp700.log
+          sudo chmod 1777 /tmp
+          grep -q 'AWS CLI signature verified' tmp700.log
+          aws --version
+
+      - name: Restore /tmp
+        if: always()
+        run: sudo chmod 1777 /tmp
+
+      # Full hook lifecycle (post_activate, health, post_uninstall) against a
+      # local mock of the Alfe agent API with a stub `alfe` whose
+      # `aws credentials` prints static fake credentials; asserts
+      # `aws configure list-profiles` and `aws configure export-credentials`
+      # (credential_process, no network) in a throwaway HOME.
+      - name: Hook lifecycle e2e
+        env:
+          AWS_HOOKS_E2E: '1'
+        run: node --test connect/aws/hooks/hooks-flow.e2e.test.mjs
