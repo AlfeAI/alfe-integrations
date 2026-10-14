@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.65
+version: 1.1.66
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -44,7 +44,7 @@ installs:
         # Folded in from the legacy `chat` integration (PR 11 of
         # channels-and-credential-driven-integrations). The chat plugin
         # is now a platform-baseline capability and ships with `alfe`.
-        - package: "@alfe.ai/openclaw-chat@0.9.24"
+        - package: "@alfe.ai/openclaw-chat@0.9.26"
         # Folded in from the legacy `webhooks` integration (PR 11).
         - package: "@alfe.ai/openclaw-webhooks@0.0.26"
         # Folded in from the legacy `console` integration (PR 12 follow-up to
@@ -139,10 +139,26 @@ installs:
         #     reasoning into the reply text instead — never use it here.
         # `low` bounds the token cost; `/think off|high` and `/reasoning`
         # per-session overrides still win.
+        #
+        # Agents run as long as they need (decision 2026-10-14): a turn ends
+        # on completion, user Stop, out-of-credits, or liveness loss — never
+        # on elapsed time. OpenClaw's own per-run cap defaults to 48 h; lift
+        # it to "effectively unlimited". NOT `0`: `0` means no-limit on
+        # 2026.8.x+ but is schema-INVALID on 2026.6.11 (`.positive()`), and an
+        # invalid value makes the whole config unloadable. 2147000 s equals
+        # OpenClaw's own NO_TIMEOUT_MS (2147e6 ms), stays under Node's 2^31-1
+        # ms timer ceiling, and is a positive int on every pinned runtime
+        # (2026.6.11, 2026.8.1, 2026.9.5, 2026.9.7, 2026.10.3 verified in dist).
+        #
+        # The per-command exec cap (`tools.exec`, default 1800 s) is NOT set
+        # here: the key is `timeoutSec` on 2026.6.11 but `timeoutSeconds` on
+        # 2026.8.x+, both under `.strict()` schemas, so no single key is valid
+        # fleet-wide — and `0` is rejected (`.positive()`) on all of them.
         agents:
           defaults:
             thinkingDefault: "low"
             reasoningDefault: "stream"
+            timeoutSeconds: 2147000
         # Folded in from the legacy `console` integration (PR 12). The
         # console plugin maintains an outbound WS to the console service
         # and multiplexes browser sessions over it — no gateway data-
