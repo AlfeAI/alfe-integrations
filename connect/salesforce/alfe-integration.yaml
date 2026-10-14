@@ -1,6 +1,6 @@
 id: salesforce
 name: "Salesforce"
-version: 1.0.11
+version: 1.0.12
 description: Connect your agent to Salesforce — query and manage CRM records (accounts, contacts, opportunities, leads, cases, and custom objects) via SOQL and the REST API
 license: MIT
 min_gateway_version: 1.0.0
@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [salesforce]
 
-supported_agents: [openclaw, hermes]
+supported_agents: [openclaw, hermes, claude-code]
 
 author:
   name: Alfe
@@ -31,6 +31,9 @@ installs:
     # Hermes runs the same runtime-agnostic stdio MCP server declared in
     # the top-level `mcp_servers` block — no plugin/skill/config to apply.
     hermes: {}
+    # Claude Code receives the same server through ClaudeCodeMcpSync
+    # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
+    claude-code: {}
 
 mcp_servers:
   - id: salesforce

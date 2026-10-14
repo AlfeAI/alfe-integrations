@@ -29,3 +29,45 @@ authority changes; the daemon owns that lifecycle.
 Run `node --test connect/google/hooks/credential-files.test.mjs` and
 `./scripts/validate-manifests.sh` after hook changes. Bump the capability version
 when hook behavior changes so existing agents receive the new hook.
+
+## Claude Code (2026-10-14)
+
+Claude Code agents get no plugin. They run `gws` through Bash, select an
+account with `GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-<sanitized-email>`
+(the directories this hook writes), and learn both from
+`skills/gws-shared/SKILL.md`. That skill deliberately takes the upstream
+`gws-shared` name: every upstream `gws-*` skill tells the agent to read
+`../gws-shared/SKILL.md` first, and the upstream copy teaches `gws auth login`,
+which must never run on an Alfe agent. Keep the skill's rules in step with
+`packages/openclaw-google/src/boundary.ts` (destructive method list, blocked
+`auth`, workspace-confined `--upload`/`--output`). On Claude Code these rules
+are instructions, not enforcement.
+
+Only managed claude-code agents have Bash. The manifest schema cannot express
+a hosting requirement, so a self-hosted claude-code agent can install Google
+but cannot use it; the skill tells the agent to say so.
+
+Do not list ClawHub slugs that are ambiguous (409, several publishers) or
+missing (404) in the `claude-code` section: the claude-code applier never
+guesses a publisher. Check a slug with
+`curl -s -o /dev/null -w "%{http_code}" "https://clawhub.ai/api/v1/download?slug=<slug>"`.
+
+### Accepted risk on Claude Code (2026-10-14)
+
+On OpenClaw the `@alfe.ai/openclaw-google` plugin enforces the boundary in
+code: it blocks `gws auth`, requires an exact confirmation for destructive
+methods, confines `--upload`/`--output` to the workspace, and never exposes the
+credential directories to the model. On Claude Code that boundary is
+instructions only (`skills/gws-shared/SKILL.md`). The agent runs with Bash on
+its own managed VM, so it can technically read `~/.config/gws-*`, call
+destructive methods without asking, or write outside the workspace. We accept
+this because the VM, the tokens and the connected accounts all belong to the
+same agent owner, and it is the same trust model as an OpenClaw agent with
+exec.
+
+Mitigations and follow-ups:
+
+- `gws auth` will be denied by the claude-code host's permission deny rules
+  (Phase 3b), not just by the skill text.
+- ClawHub `gws-*` skills are unpinned and float to ClawHub's latest version,
+  the same as on OpenClaw. Version pinning is a follow-up.
