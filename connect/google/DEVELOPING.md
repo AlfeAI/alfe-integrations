@@ -29,3 +29,25 @@ authority changes; the daemon owns that lifecycle.
 Run `node --test connect/google/hooks/credential-files.test.mjs` and
 `./scripts/validate-manifests.sh` after hook changes. Bump the capability version
 when hook behavior changes so existing agents receive the new hook.
+
+## Claude Code (2026-10-14)
+
+Claude Code agents get no plugin. They run `gws` through Bash, select an
+account with `GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-<sanitized-email>`
+(the directories this hook writes), and learn both from
+`skills/gws-shared/SKILL.md`. That skill deliberately takes the upstream
+`gws-shared` name: every upstream `gws-*` skill tells the agent to read
+`../gws-shared/SKILL.md` first, and the upstream copy teaches `gws auth login`,
+which must never run on an Alfe agent. Keep the skill's rules in step with
+`packages/openclaw-google/src/boundary.ts` (destructive method list, blocked
+`auth`, workspace-confined `--upload`/`--output`). On Claude Code these rules
+are instructions, not enforcement.
+
+Only managed claude-code agents have Bash. The manifest schema cannot express
+a hosting requirement, so a self-hosted claude-code agent can install Google
+but cannot use it; the skill tells the agent to say so.
+
+Do not list ClawHub slugs that are ambiguous (409, several publishers) or
+missing (404) in the `claude-code` section: the claude-code applier never
+guesses a publisher. Check a slug with
+`curl -s -o /dev/null -w "%{http_code}" "https://clawhub.ai/api/v1/download?slug=<slug>"`.
