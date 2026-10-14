@@ -205,6 +205,10 @@ installs:
                   name: "Claude Opus 4.6"
                   contextWindow: 1000000
                   maxTokens: 128000
+                - id: claude-sonnet-5-5
+                  name: "Claude Sonnet 5.5"
+                  contextWindow: 1000000
+                  maxTokens: 128000
                 - id: claude-sonnet-5
                   name: "Claude Sonnet 5"
                   contextWindow: 1000000
@@ -213,6 +217,22 @@ installs:
                   name: "Claude Sonnet 4.6"
                   contextWindow: 1000000
                   maxTokens: 128000
+                # OpenClaw 2026.9.5's Claude request contracts don't recognise
+                # haiku-5-x: @openclaw/ai would send no thinking config at all
+                # (the agent's thinking level is ignored and Haiku runs at its
+                # default effort, with no reasoning stream), and would pass a
+                # caller temperature through, which Haiku 5.5 rejects with a
+                # 400. `canonicalModelId` is the seam OpenClaw itself uses for
+                # unreleased Claude generations (non-Sonnet → claude-opus-5):
+                # adaptive thinking + effort from the thinking level, sampling
+                # params stripped. Drop it once the pinned runtime knows
+                # claude-haiku-5-5.
+                - id: claude-haiku-5-5
+                  name: "Claude Haiku 5.5"
+                  contextWindow: 1000000
+                  maxTokens: 128000
+                  params:
+                    canonicalModelId: "claude-opus-5"
                 - id: claude-haiku-4-5
                   name: "Claude Haiku 4.5"
                   contextWindow: 200000
@@ -224,6 +244,12 @@ installs:
               models:
                 - id: gpt-6-astra
                   name: "GPT-6 Astra"
+                - id: gpt-6.1-sol
+                  name: "GPT-6.1 Sol"
+                - id: gpt-6-sol
+                  name: "GPT-6 Sol"
+                - id: gpt-6-luna
+                  name: "GPT-6 Luna"
                 - id: gpt-4o
                   name: "GPT-4o"
                 - id: gpt-4o-mini
@@ -451,12 +477,8 @@ installs:
               models:
                 - id: gemini-3.8-flash
                   name: "Gemini 3.8 Flash"
-                - id: gemini-3.7-flash
-                  name: "Gemini 3.7 Flash"
                 - id: gemini-3.6-flash
                   name: "Gemini 3.6 Flash"
-                - id: gemini-3.5-flash
-                  name: "Gemini 3.5 Flash"
                 - id: gemini-3.5-flash-lite
                   name: "Gemini 3.5 Flash Lite"
                 - id: gemini-3.1-pro-preview
@@ -509,15 +531,13 @@ installs:
                   name: "MiniMax M2.7 High Speed"
                 - id: MiniMax-M2.5
                   name: "MiniMax M2.5"
-                - id: MiniMax-M2.1
-                  name: "MiniMax M2.1"
-                - id: MiniMax-M2
-                  name: "MiniMax M2"
             mistral:
               baseUrl: "http://127.0.0.1:18193/v1"
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: mistral-large-4
+                  name: "Mistral Large 4"
                 - id: mistral-large-latest
                   name: "Mistral Large"
                 - id: mistral-medium-latest
