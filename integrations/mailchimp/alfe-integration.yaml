@@ -1,12 +1,12 @@
 id: mailchimp
 name: "Mailchimp Transactional"
-version: 1.0.0
+version: 1.0.1
 description: Send and inspect transactional email via the Mailchimp Transactional (Mandrill) MCP (BYOK API key).
 icon: ./assets/icon.svg
 license: MIT
 min_gateway_version: 1.0.0
 
-supported_agents: [openclaw, hermes]
+supported_agents: [openclaw, hermes, claude-code]
 
 author:
   name: Alfe
@@ -28,6 +28,9 @@ installs:
     # Hermes runs the same runtime-agnostic stdio MCP server declared in
     # the top-level `mcp_servers` block — no plugin/skill/config to apply.
     hermes: {}
+    # Claude Code receives the same server through ClaudeCodeMcpSync
+    # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
+    claude-code: {}
 
 mcp_servers:
   - id: mailchimp

@@ -1,6 +1,6 @@
 id: microsoft
 name: "Microsoft 365"
-version: 1.2.9
+version: 1.2.10
 description: Connect your agent to Microsoft 365 — Outlook Mail, Calendar, OneDrive, and more
 license: MIT
 depends_on: []
@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [microsoft]
 
-supported_agents: [openclaw, hermes]
+supported_agents: [openclaw, hermes, claude-code]
 
 author:
   name: Alfe
@@ -33,6 +33,9 @@ installs:
     # Hermes runs the same runtime-agnostic stdio MCP server declared in
     # the top-level `mcp_servers` block — no plugin/skill/config to apply.
     hermes: {}
+    # Claude Code receives the same server through ClaudeCodeMcpSync
+    # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
+    claude-code: {}
 
 mcp_servers:
   - id: microsoft

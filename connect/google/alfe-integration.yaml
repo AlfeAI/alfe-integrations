@@ -1,6 +1,6 @@
 id: google
 name: "Google Workspace"
-version: 1.0.13
+version: 1.0.14
 description: Connect your agent to Google Workspace — Chat, Drive, Gmail, Calendar, Sheets, Docs and more
 license: MIT
 depends_on: []
@@ -10,7 +10,12 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [google]
 
-supported_agents: [openclaw]
+# claude-code: Claude Code drives `gws` through its Bash tool, which only
+# MANAGED claude-code agents have (self-hosted claude-code agents run a
+# Bash-free tool allow-list). The manifest schema has no hosting field, so a
+# self-hosted claude-code agent can install this but cannot use it; the
+# alfe-google-workspace skill tells the agent to say so.
+supported_agents: [openclaw, claude-code]
 
 author:
   name: Alfe
@@ -56,6 +61,33 @@ installs:
         - clawhub: gws-calendar-agenda
         - clawhub: gws-drive-upload
         - clawhub: gws-drive-search
+    # No plugin on Claude Code (openclaw-google is an OpenClaw plugin). The
+    # agent runs `gws` itself; `skills/gws-shared` is Alfe's replacement for
+    # the upstream gws-shared skill (every gws-* skill reads
+    # ../gws-shared/SKILL.md first). It carries the account selection and the
+    # openclaw-google safety boundary (no `gws auth`, confirm destructive
+    # methods, workspace-confined file paths) as instructions. The upstream
+    # gws-shared and gws-calendar-agenda slugs are ambiguous on ClawHub (409)
+    # and gws-drive-search does not exist (404), so they are not listed here.
+    claude-code:
+      skills:
+        - path: skills/gws-shared
+        - clawhub: gws-chat
+        - clawhub: gws-drive
+        - clawhub: gws-gmail
+        - clawhub: gws-calendar
+        - clawhub: gws-sheets
+        - clawhub: gws-docs
+        - clawhub: gws-slides
+        - clawhub: gws-tasks
+        - clawhub: gws-people
+        - clawhub: gws-forms
+        - clawhub: gws-keep
+        - clawhub: gws-chat-send
+        - clawhub: gws-gmail-send
+        - clawhub: gws-gmail-triage
+        - clawhub: gws-sheets-read
+        - clawhub: gws-drive-upload
 
 hooks:
   post_install: hooks/post-install.sh

@@ -1,6 +1,6 @@
 id: github
 name: "GitHub"
-version: 1.0.13
+version: 1.0.14
 description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more (multi-account)
 license: MIT
 min_gateway_version: 1.0.0
@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [github]
 
-supported_agents: [openclaw, hermes]
+supported_agents: [openclaw, hermes, claude-code]
 
 author:
   name: Alfe
@@ -33,12 +33,16 @@ installs:
     # Hermes runs the same runtime-agnostic stdio MCP server declared in
     # the top-level `mcp_servers` block — no plugin/skill/config to apply.
     hermes: {}
+    # Claude Code receives the same server through ClaudeCodeMcpSync
+    # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
+    claude-code: {}
 
 # Shell access: post_install installs the GitHub CLI (best effort, Debian/
 # Ubuntu as root); post_activate logs every connected account into `gh` and
 # configures git's credential helper, recording what it owns under
 # ~/.alfe/github-cli/; post_uninstall removes only those contributions.
-# Hooks run once per integration, gated on supported_agents (openclaw, hermes).
+# Hooks run once per integration, gated on supported_agents (openclaw, hermes,
+# claude-code).
 hooks:
   post_install: hooks/post-install.sh
   post_activate: hooks/post_activate.mjs
