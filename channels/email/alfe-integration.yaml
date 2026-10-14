@@ -1,6 +1,6 @@
 id: email
 name: "Email"
-version: 1.0.1
+version: 1.0.2
 description: Receive email in the agent's connected Gmail or Outlook mailbox and reply in the same thread
 license: MIT
 depends_on: []
@@ -30,7 +30,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-email@0.1.1"
+        - package: "@alfe.ai/openclaw-email@0.1.2"
       config:
         plugins:
           entries:
