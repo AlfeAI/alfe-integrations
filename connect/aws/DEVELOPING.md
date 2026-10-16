@@ -189,12 +189,30 @@ Hermes agent gets the profiles but not the skill text until that lands.
 
 SSO and shared-session profiles mint from the connecting user's AWS session,
 held by Connect, and Connect clamps each credential to at most one hour.
-When that session ends the mint fails with `aws_sso_sign_in_required` (the
-user clicks **Sign in again** on the connection) or `aws_session_expired`
-(the sharer re-runs `alfe aws share`, or runs it with `--watch`). The profile
-stays in `~/.aws/config` meanwhile; nothing on the agent changes until the
-user acts. The skill tells the agent which of the two to ask for, so keep
-the skill text in step with those error codes.
+When that session ends the mint fails with a 403 whose message is what the
+agent sees: `alfe aws credentials` surfaces only the server message
+(`Agent API request failed (403): <message>`), never the code. The messages
+are defined in `services/connect/src/lib/aws/sts.ts`:
+
+- `AwsSsoSignInRequiredError` (`aws_sso_sign_in_required`): "The AWS SSO
+  sign-in for this connection has expired. Ask its owner to sign in again in
+  Alfe." The owner clicks **Sign in again** on the connection.
+- `AwsSessionExpiredError` (`aws_session_expired`): "The shared AWS session
+  for this connection has expired. Ask its owner to run `alfe aws share`
+  again." The sharer re-runs `alfe aws share`, or runs it with `--watch`.
+
+The profile stays in `~/.aws/config` meanwhile; nothing on the agent changes
+until the owner acts. The skill quotes both messages so the agent can tell
+which one to ask for, and names the codes only as a secondary hint. Keep the
+skill text in step with the MESSAGES: changing either string in `sts.ts`
+means updating `skills/aws/SKILL.md` (and bumping the capability version).
+
+The skill also tells the agent that these profiles act as the connection's
+owner, who may not be the person asking: never use them for something the
+requester would not be allowed to do, and say that CloudTrail attributes the
+actions to the owner. `alfe aws profiles` shows `PermissionSet@account` for
+SSO profiles only on CLIs that read `permissionSet`; older CLIs, and every
+shared-session profile, show `(direct)`, so the skill says "may show".
 
 ## Lifecycle
 

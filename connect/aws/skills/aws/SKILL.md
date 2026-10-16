@@ -17,12 +17,14 @@ alfe aws profiles
 ```
 
 This prints each profile with its account ID, role, region and label. For a
-profile from an AWS IAM Identity Center (SSO) sign-in, the role column shows
-the permission set and account as `PermissionSet@account` (for example
-`ReadOnlyAccess@123456789012`). Pick the profile that matches the account and
-access level the task needs. If
-several could fit, ask the user which one to use. Use `alfe aws profiles --json`
-when you need to parse the list.
+profile from an AWS IAM Identity Center (SSO) sign-in, the role column may
+show the permission set and account as `PermissionSet@account` (for example
+`ReadOnlyAccess@123456789012`); an older `alfe` CLI shows `(direct)` there
+instead, the same as for an account's own access and for a shared session.
+The label usually tells you what the profile is. Pick the profile that matches
+the account and access level the task needs. If several could fit, ask the
+user which one to use. Use `alfe aws profiles --json` when you need to parse
+the list.
 
 `alfe aws profiles` lists what Alfe has connected, not what this machine has
 configured. A profile is skipped here when its name is already used by one of
@@ -68,17 +70,33 @@ message to the user: the connection may be revoked, inactive, or the role may
 no longer trust Alfe.
 
 Two kinds of profile depend on the AWS session of the person who connected
-them, and stop working when that session ends:
+them, and stop working when that session ends. The command then fails with
+an `alfe aws credentials` error that carries one of these messages:
 
-- **SSO profiles** (from an IAM Identity Center sign-in). If the error says
-  `aws_sso_sign_in_required`, ask the user to click **Sign in again** on the
-  AWS connection's row in **Connections** in the Alfe dashboard.
+- **SSO profiles** (from an IAM Identity Center sign-in):
+
+  ```
+  Agent API request failed (403): The AWS SSO sign-in for this connection has expired. Ask its owner to sign in again in Alfe.
+  ```
+
+  Ask the connection's owner to click **Sign in again** on the AWS
+  connection's row in **Connections** in the Alfe dashboard.
 - **Shared-session profiles** (shared from someone's computer with
-  `alfe aws share`). If the error says `aws_session_expired`, ask the person
-  who shared it to run `alfe aws share` again on their computer, or to start
-  it with `--watch` so it keeps the session fresh.
+  `alfe aws share`):
 
-Retrying will not help in either case until the user acts. Do not switch to
+  ```
+  Agent API request failed (403): The shared AWS session for this connection has expired. Ask its owner to run `alfe aws share` again.
+  ```
+
+  Ask the person who shared it to run `alfe aws share` again on their
+  computer, or to start it with `--watch` so it keeps the session fresh.
+
+Match on the message text after the status, not on the exact prefix. The
+API also returns the codes `aws_sso_sign_in_required` and
+`aws_session_expired` for these two cases, but you will usually see only the
+message.
+
+Retrying will not help in either case until the owner acts. Do not switch to
 another profile without asking.
 
 ## 4. Know the limits of each profile
@@ -92,7 +110,18 @@ another profile without asking.
 - Role, SSO and shared-session credentials last at most one hour;
   long-running commands may need to be retried after a refresh.
 
-## 5. When AWS denies access
+## 5. Whose access you are using
+
+An SSO or shared-session profile acts with the AWS access of the person who
+signed in or shared it, and that may not be the person asking you for help.
+Before you use one:
+
+- Never use it for something the person asking would not be allowed to do
+  themselves. If you cannot tell, ask them, or ask the profile's owner.
+- Tell the user that AWS CloudTrail records these actions as the
+  connection's owner, not as them or as Alfe.
+
+## 6. When AWS denies access
 
 On `AccessDenied`, `UnauthorizedOperation`, or a similar error, do not try
 other profiles at random. Tell the user:
@@ -103,7 +132,7 @@ other profiles at random. Tell the user:
   role with a broader access level with **Manage roles** on the AWS
   connection's row in **Connections**.
 
-## 6. Never print credentials
+## 7. Never print credentials
 
 Never run `alfe aws credentials` or `aws configure export-credentials`
 yourself, and never echo, log, or paste access keys, secret keys, or
