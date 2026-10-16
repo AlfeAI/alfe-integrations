@@ -2,7 +2,9 @@
 
 The AWS integration has no MCP server. The agent uses the AWS CLI directly,
 with one named profile per connected identity (an account's own access, the
-"Direct" profile, and each role the user selected). Every profile resolves
+"Direct" profile, each role the user selected, each IAM Identity Center
+(SSO) account and permission set pair the user ticked, and a session shared
+from someone's computer with `alfe aws share`). Every profile resolves
 credentials through `credential_process = <alfe> aws credentials --connection
 <id> --profile <p>`, which mints short-lived STS credentials through the Alfe
 agent API (`POST /agent/connect/connections/{id}/aws-session`). The AWS
@@ -125,8 +127,18 @@ with the binary in `/usr/local/bin`.
 3. Validate the WHOLE roster before any mutation, with the contract's
    validators: profile `^[a-z0-9][a-z0-9_-]{0,62}$` and not `default`, region
    `^(?!cn-)[a-z]{2}-[a-z]+-\d$` (commercial `aws` partition only), role ARN, 12-digit account ID, connection ID
-   `^[A-Za-z0-9_-]{1,128}$`, and no `\r`/`\n` in any string of any entry. One
+   `^[A-Za-z0-9_-]{1,128}$`, optional `permissionSet` (`null`, absent, or
+   `^[\w+=,.@-]{1,64}$`), and no `\r`/`\n` in any string of any entry. One
    invalid entry rejects the roster.
+
+   `roleArn: null` does not mean "Direct". SSO profiles have `roleArn: null`
+   and `permissionSet` set; shared-session profiles have `roleArn: null` and
+   no permission set. The hooks never branch on either field: every profile
+   renders the same three lines, and Connect decides at mint time how to
+   produce credentials for it. `permissionSet` is display data for
+   `alfe aws profiles` and is never written to `~/.aws/config`. It is
+   optional so a roster from a Connect deployment that predates SSO still
+   validates.
 4. Dedup by profile, first wins (Connect orders by most specific scope, then
    most recent), with a WARNING naming both connections.
 
@@ -146,7 +158,7 @@ with the binary in `/usr/local/bin`.
   `~/.aws/config` as `[profile x]` or `[x]`, or in `~/.aws/credentials` as
   `[x]`) is skipped with a WARNING. Its credentials file keys would otherwise
   override our `credential_process`.
-- Labels and display names are never written to the file.
+- Labels, display names and permission sets are never written to the file.
 
 ### Ownership record and cache
 
@@ -172,6 +184,17 @@ hermes). Both runtimes run shell commands as the same user, so both see
 `~/.aws/config` and `alfe`. The `skills/aws` skill is declared for both;
 the Hermes applier currently treats Alfe skill directories as a no-op, so a
 Hermes agent gets the profiles but not the skill text until that lands.
+
+## Profiles tied to a person's AWS session
+
+SSO and shared-session profiles mint from the connecting user's AWS session,
+held by Connect, and Connect clamps each credential to at most one hour.
+When that session ends the mint fails with `aws_sso_sign_in_required` (the
+user clicks **Sign in again** on the connection) or `aws_session_expired`
+(the sharer re-runs `alfe aws share`, or runs it with `--watch`). The profile
+stays in `~/.aws/config` meanwhile; nothing on the agent changes until the
+user acts. The skill tells the agent which of the two to ask for, so keep
+the skill text in step with those error codes.
 
 ## Lifecycle
 

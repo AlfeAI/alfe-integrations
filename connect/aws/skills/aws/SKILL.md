@@ -16,8 +16,11 @@ access keys.
 alfe aws profiles
 ```
 
-This prints each profile with its account ID, role, region and label. Pick
-the profile that matches the account and access level the task needs. If
+This prints each profile with its account ID, role, region and label. For a
+profile from an AWS IAM Identity Center (SSO) sign-in, the role column shows
+the permission set and account as `PermissionSet@account` (for example
+`ReadOnlyAccess@123456789012`). Pick the profile that matches the account and
+access level the task needs. If
 several could fit, ask the user which one to use. Use `alfe aws profiles --json`
 when you need to parse the list.
 
@@ -58,11 +61,25 @@ aws ec2 describe-instances --profile <profile> --region us-west-2
 ## 3. Credentials refresh automatically
 
 Profiles use `credential_process`, which fetches fresh temporary credentials
-through Alfe whenever the cached ones are close to expiry. Do not run
-`aws configure`, `aws sso login`, or try to obtain keys yourself. If a
-command fails with an error from `alfe aws credentials`, report the message
-to the user: the connection may be revoked, inactive, or the role may no
-longer trust Alfe.
+through Alfe whenever the cached ones are close to expiry (about every hour).
+Do not run `aws configure`, `aws sso login`, or try to obtain keys yourself.
+If a command fails with an error from `alfe aws credentials`, report the
+message to the user: the connection may be revoked, inactive, or the role may
+no longer trust Alfe.
+
+Two kinds of profile depend on the AWS session of the person who connected
+them, and stop working when that session ends:
+
+- **SSO profiles** (from an IAM Identity Center sign-in). If the error says
+  `aws_sso_sign_in_required`, ask the user to click **Sign in again** on the
+  AWS connection's row in **Connections** in the Alfe dashboard.
+- **Shared-session profiles** (shared from someone's computer with
+  `alfe aws share`). If the error says `aws_session_expired`, ask the person
+  who shared it to run `alfe aws share` again on their computer, or to start
+  it with `--watch` so it keeps the session fresh.
+
+Retrying will not help in either case until the user acts. Do not switch to
+another profile without asking.
 
 ## 4. Know the limits of each profile
 
@@ -72,8 +89,8 @@ longer trust Alfe.
   STS session token, so it **cannot call IAM APIs** (for example
   `aws iam list-roles` fails). Use a role profile for IAM work, or tell the
   user that the task needs a role.
-- Role sessions last at most one hour; long-running commands may need to be
-  retried after a refresh.
+- Role, SSO and shared-session credentials last at most one hour;
+  long-running commands may need to be retried after a refresh.
 
 ## 5. When AWS denies access
 

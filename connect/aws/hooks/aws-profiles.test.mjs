@@ -85,8 +85,31 @@ test('validateRoster rejects GovCloud and China regions (commercial aws partitio
   }
 });
 
+test('validateRoster accepts SSO profiles (roleArn null + permissionSet) and normalises a missing permissionSet to null', () => {
+  const sso = entry('sso-admin', { roleArn: null, permissionSet: 'AdministratorAccess', accountId: '210987654321', connectionId: 'con_sso' });
+  const { profiles, warnings } = validateRoster([entry('legacy'), entry('explicit-null', { permissionSet: null }), sso]);
+  assert.deepEqual(warnings, []);
+  assert.deepEqual(profiles.map((p) => p.permissionSet), [null, null, 'AdministratorAccess']);
+  assert.deepEqual(profiles[2], {
+    profile: 'sso-admin', region: 'us-east-1', connectionId: 'con_sso', accountId: '210987654321', roleArn: null, permissionSet: 'AdministratorAccess',
+  });
+  for (const name of ['A', 'Read_Only+=,.@-x', 'x'.repeat(64)]) {
+    assert.equal(validateRoster([entry('p', { roleArn: null, permissionSet: name })]).profiles[0].permissionSet, name);
+  }
+});
+
+test('validateRoster rejects the WHOLE roster on an invalid permissionSet', () => {
+  for (const permissionSet of ['', 'x'.repeat(65), 'Admin Access', 'a/b', 'a:b', 'Admin\nx', 'Admin\r', 42, true, {}, ['Admin']]) {
+    assert.throws(
+      () => validateRoster([entry('ok'), entry('sso', { roleArn: null, permissionSet })]),
+      RosterError,
+      JSON.stringify(permissionSet),
+    );
+  }
+});
+
 test('newline injection is rejected in every field, including free text', () => {
-  for (const field of ['profile', 'region', 'connectionId', 'roleArn', 'label', 'displayName', 'accountIdentifier']) {
+  for (const field of ['profile', 'region', 'connectionId', 'roleArn', 'permissionSet', 'label', 'displayName', 'accountIdentifier']) {
     for (const breaker of ['\n', '\r']) {
       const value = field === 'roleArn' ? `arn:aws:iam::123456789012:role/x${breaker}[default]` : `x${breaker}credential_process = /bin/sh`;
       assert.throws(() => validateRoster([entry('ok', { [field]: value })]), RosterError, `${field} ${JSON.stringify(breaker)}`);
@@ -141,6 +164,25 @@ test('creates ~/.aws (0700) and a 0600 config containing only the block; never [
   assert.doesNotMatch(text, /aws_access_key_id|aws_secret_access_key|aws_session_token/u);
   assert.deepEqual(readLedger(h), [{ profile: 'prod-admin', connectionId: 'con_one' }, { profile: 'direct', connectionId: 'con_one' }]);
   assert.equal(mode(join(h, '.alfe', 'aws-cli', 'owned-profiles.json')), 0o600);
+});
+
+test('SSO profiles sync exactly like any other profile; the permission set never reaches ~/.aws/config', () => {
+  const h = home();
+  const roster = [
+    entry('prod-admin'),
+    entry('direct', { roleArn: null }),
+    entry('sso-admin', { roleArn: null, permissionSet: 'AdministratorAccess', connectionId: 'con_sso', accountId: '210987654321' }),
+    entry('sso-read', { roleArn: null, permissionSet: 'ReadOnlyAccess', connectionId: 'con_sso', region: 'eu-west-2' }),
+  ];
+  const result = sync(h, roster);
+  assert.deepEqual(result.written, ['prod-admin', 'direct', 'sso-admin', 'sso-read']);
+  const text = readConfig(h);
+  assert.doesNotMatch(text, /AdministratorAccess|ReadOnlyAccess|permission|sso_/iu);
+  assert.equal(text, renderBlock(validateRoster(roster).profiles, ALFE));
+  assert.deepEqual(parseBlock(splitManagedBlock(text).block).map((p) => [p.profile, p.connectionId]), [
+    ['prod-admin', 'con_one'], ['direct', 'con_one'], ['sso-admin', 'con_sso'], ['sso-read', 'con_sso'],
+  ]);
+  assert.deepEqual(checkHealth({ home: h }).ok, true);
 });
 
 test('rewrites ONLY the managed block; user content before and after is preserved byte-for-byte', () => {
