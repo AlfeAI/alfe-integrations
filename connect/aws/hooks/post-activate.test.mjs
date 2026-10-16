@@ -90,6 +90,16 @@ test('writes the managed block with the ABSOLUTE alfe path and exits 0', () => {
   assert.match(result.stdout, /Configured 2 AWS profile\(s\)/u);
 });
 
+test('an SSO profile (roleArn null + permissionSet) is configured; the permission set is not written', () => {
+  const env = setup({ roster: [profile('prod-admin'), profile('sso-admin', { roleArn: null, permissionSet: 'AdministratorAccess', connectionId: 'con_sso' })] });
+  const result = env.run('post_activate.mjs');
+  assert.equal(result.status, 0, result.stderr);
+  const text = env.configText();
+  assert.match(text, /\[profile sso-admin\]\nregion = us-east-1\ncredential_process = \S+ aws credentials --connection con_sso --profile sso-admin\n/u);
+  assert.doesNotMatch(text, /AdministratorAccess/u);
+  assert.match(result.stdout, /Configured 2 AWS profile\(s\)/u);
+});
+
 test('a host that cannot run `alfe aws` exits 1 with an ERROR, writes NO block and never fetches', () => {
   for (const options of [{ cli: 'old' }, { cli: 'missing' }, { binName: 'my bin' }]) {
     const env = setup({ roster: [profile('a')], fetchFails: true, ...options });

@@ -22,6 +22,8 @@ export const PROFILE = /^[a-z0-9][a-z0-9_-]{0,62}$/u;
 export const REGION = /^(?!cn-)[a-z]{2}-[a-z]+-\d$/u;
 export const ROLE_ARN = /^arn:aws:iam::\d{12}:role\/[\w+=,.@/-]{1,512}$/u;
 export const ACCOUNT_ID = /^\d{12}$/u;
+// IAM Identity Center permission set (role) name; SSO profiles carry it with roleArn null.
+export const PERMISSION_SET = /^[\w+=,.@-]{1,64}$/u;
 export const CONNECTION_ID = /^[A-Za-z0-9_-]{1,128}$/u;
 // The alfe path is written unquoted into credential_process, which the AWS CLI
 // splits shell-style: allow only characters that need no quoting.
@@ -83,6 +85,9 @@ export function validateRoster(response) {
     if (typeof connectionId !== 'string' || !CONNECTION_ID.test(connectionId)) throw new RosterError(`Invalid connectionId for AWS profile ${profile}`);
     if (typeof accountId !== 'string' || !ACCOUNT_ID.test(accountId)) throw new RosterError(`Invalid accountId for AWS profile ${profile}`);
     if (roleArn !== null && (typeof roleArn !== 'string' || !ROLE_ARN.test(roleArn))) throw new RosterError(`Invalid roleArn for AWS profile ${profile}`);
+    // Optional for older Connect deployments. Display-only: never written to ~/.aws/config.
+    const permissionSet = entry.permissionSet ?? null;
+    if (permissionSet !== null && (typeof permissionSet !== 'string' || !PERMISSION_SET.test(permissionSet))) throw new RosterError(`Invalid permissionSet for AWS profile ${profile}`);
     if (entry.label !== undefined && entry.label !== null && typeof entry.label !== 'string') throw new RosterError(`Invalid label for AWS profile ${profile}`);
     const first = seen.get(profile);
     if (first) {
@@ -90,7 +95,7 @@ export function validateRoster(response) {
       continue;
     }
     seen.set(profile, connectionId);
-    profiles.push({ profile, region, connectionId, accountId, roleArn });
+    profiles.push({ profile, region, connectionId, accountId, roleArn, permissionSet });
   }
   return { profiles, warnings };
 }
