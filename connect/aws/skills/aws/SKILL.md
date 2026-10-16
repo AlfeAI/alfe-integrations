@@ -70,8 +70,11 @@ message to the user: the connection may be revoked, inactive, or the role may
 no longer trust Alfe.
 
 Two kinds of profile depend on the AWS session of the person who connected
-them, and stop working when that session ends. The command then fails with
-an `alfe aws credentials` error that carries one of these messages:
+them. When that session ends, Alfe stops issuing new credentials for them.
+Credentials already issued can keep working at AWS until they expire (up to
+12 hours), so a session ending is not an immediate revocation. Once new
+credentials are needed, the command fails with an `alfe aws credentials`
+error that carries one of these messages:
 
 - **SSO profiles** (from an IAM Identity Center sign-in):
 
