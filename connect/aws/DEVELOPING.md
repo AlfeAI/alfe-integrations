@@ -188,8 +188,11 @@ Hermes agent gets the profiles but not the skill text until that lands.
 ## Profiles tied to a person's AWS session
 
 SSO and shared-session profiles mint from the connecting user's AWS session,
-held by Connect, and Connect clamps each credential to at most one hour.
-When that session ends the mint fails with a 403 whose message is what the
+held by Connect. Connect advertises at most one hour per credential, so agents
+refresh about hourly, but credentials already issued stay valid at AWS until
+their own expiry: the permission set's session duration (up to 12 hours) for
+SSO, or the pushed session's expiry (up to 12 hours). An owner's session ending
+stops NEW credentials only. When that session ends the mint fails with a 403 whose message is what the
 agent sees: `alfe aws credentials` surfaces only the server message
 (`Agent API request failed (403): <message>`), never the code. The messages
 are defined in `services/connect/src/lib/aws/sts.ts`:
