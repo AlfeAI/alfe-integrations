@@ -107,8 +107,8 @@ another profile without asking.
   STS session token, so it **cannot call IAM APIs** (for example
   `aws iam list-roles` fails). Use a role profile for IAM work, or tell the
   user that the task needs a role.
-- Role, SSO and shared-session credentials last at most one hour;
-  long-running commands may need to be retried after a refresh.
+- Credentials are refreshed about every hour; long-running commands may
+  need to be retried after a refresh.
 
 ## 5. Whose access you are using
 
