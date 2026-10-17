@@ -81,7 +81,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-memory-cloud@0.0.53"
+        - package: "@alfe.ai/openclaw-memory-cloud@0.0.54"
       config:
         plugins:
           slots:

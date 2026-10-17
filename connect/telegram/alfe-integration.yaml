@@ -31,7 +31,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-telegram@0.0.12"
+        - package: "@alfe.ai/openclaw-telegram@0.0.13"
 
 config_schema: []
 
