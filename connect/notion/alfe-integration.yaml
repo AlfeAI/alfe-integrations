@@ -1,6 +1,6 @@
 id: notion
 name: "Notion"
-version: 1.0.11
+version: 1.0.12
 description: Connect your agent to Notion — pages, databases, comments and more
 license: MIT
 min_gateway_version: 1.0.0
@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [notion]
 
-supported_agents: [openclaw, hermes, claude-code]
+supported_agents: [openclaw, hermes, claude-code, codex]
 
 author:
   name: Alfe
@@ -33,6 +33,9 @@ installs:
     # Claude Code receives the same server through ClaudeCodeMcpSync
     # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
     claude-code: {}
+    # Codex receives the same server through CodexMcpSync
+    # (~/.alfe/runtimes/codex/mcp-servers.json, ALFE_API_KEY injected).
+    codex: {}
 
 mcp_servers:
   - id: notion

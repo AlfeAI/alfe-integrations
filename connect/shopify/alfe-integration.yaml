@@ -1,6 +1,6 @@
 id: shopify
 name: "Shopify"
-version: 1.0.9
+version: 1.0.10
 description: Manage your Shopify store — products, orders (incl. fulfil, refund, cancel), customers, and inventory via the Shopify Admin GraphQL API
 icon: ./assets/icon.svg
 license: MIT
@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [shopify]
 
-supported_agents: [openclaw, hermes, claude-code]
+supported_agents: [openclaw, hermes, claude-code, codex]
 
 author:
   name: Alfe
@@ -36,6 +36,9 @@ installs:
     # Claude Code receives the same server through ClaudeCodeMcpSync
     # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
     claude-code: {}
+    # Codex receives the same server through CodexMcpSync
+    # (~/.alfe/runtimes/codex/mcp-servers.json, ALFE_API_KEY injected).
+    codex: {}
 
 mcp_servers:
   - id: shopify

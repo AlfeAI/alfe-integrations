@@ -1,6 +1,6 @@
 id: ctrader
 name: "cTrader"
-version: 1.3.13
+version: 1.3.14
 description: Trade forex & CFDs on cTrader (full trading) — orders (market/limit/stop/stop-limit, trailing stops), Level 2 depth, live quotes, trade history, PnL, margin, and market data via the cTrader Open API
 icon: ./assets/icon.svg
 license: MIT
@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [ctrader]
 
-supported_agents: [openclaw, hermes, claude-code]
+supported_agents: [openclaw, hermes, claude-code, codex]
 
 author:
   name: Alfe
@@ -37,6 +37,9 @@ installs:
     # Claude Code receives the same server through ClaudeCodeMcpSync
     # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
     claude-code: {}
+    # Codex receives the same server through CodexMcpSync
+    # (~/.alfe/runtimes/codex/mcp-servers.json, ALFE_API_KEY injected).
+    codex: {}
 
 mcp_servers:
   - id: ctrader
