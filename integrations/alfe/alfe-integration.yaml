@@ -33,7 +33,7 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw@0.6.0"
+        - package: "@alfe.ai/openclaw@0.6.1"
         # openclaw-metrics was a no-op after activity tracking moved to chat
         # service events. Its final publish is legacy-activate-only, so retire
         # it before the OpenClaw 2 rollout rather than keep dead runtime code.
