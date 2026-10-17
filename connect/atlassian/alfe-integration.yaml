@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [atlassian]
 
-supported_agents: [openclaw, hermes, claude-code]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -37,6 +37,15 @@ installs:
     # Claude Code receives the same server through ClaudeCodeMcpSync
     # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
     claude-code: {}
+    # Codex receives the same server through CodexMcpSync
+    # (~/.alfe/runtimes/codex/mcp-servers.json, ALFE_API_KEY injected).
+    codex: {}
+    # Gemini CLI receives the same server through TerminalMcpSync
+    # (~/.alfe/runtimes/gemini-cli/mcp-servers.json, ALFE_API_KEY injected).
+    gemini-cli: {}
+    # Grok Build receives the same server through TerminalMcpSync
+    # (~/.alfe/runtimes/grok-build/mcp-servers.json, ALFE_API_KEY injected).
+    grok-build: {}
 
 mcp_servers:
   - id: atlassian
