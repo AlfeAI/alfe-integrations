@@ -1,6 +1,6 @@
 id: aws
 name: "AWS"
-version: 1.0.0
+version: 1.0.2
 description: Give your agent the AWS CLI with one profile per connected AWS account and role, using short-lived credentials
 license: MIT
 min_gateway_version: 1.0.0
