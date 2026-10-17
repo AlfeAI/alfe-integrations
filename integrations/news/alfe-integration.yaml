@@ -1,12 +1,12 @@
 id: news
 name: "News Search"
-version: 1.0.11
+version: 1.0.12
 description: Search news across 500K+ sources (APITube / NewsData) with sentiment.
 icon: ./assets/icon.svg
 license: MIT
 min_gateway_version: 1.0.0
 
-supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -34,6 +34,9 @@ installs:
     # Gemini CLI receives the same server through TerminalMcpSync
     # (~/.alfe/runtimes/gemini-cli/mcp-servers.json, ALFE_API_KEY injected).
     gemini-cli: {}
+    # Grok Build receives the same server through TerminalMcpSync
+    # (~/.alfe/runtimes/grok-build/mcp-servers.json, ALFE_API_KEY injected).
+    grok-build: {}
 
 mcp_servers:
   - id: news

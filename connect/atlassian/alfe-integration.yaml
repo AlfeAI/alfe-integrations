@@ -1,6 +1,6 @@
 id: atlassian
 name: "Atlassian"
-version: 1.0.15
+version: 1.0.16
 description: Connect your agent to Atlassian — Jira and Confluence via MCP server
 license: MIT
 depends_on: []
@@ -10,7 +10,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [atlassian]
 
-supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -43,6 +43,9 @@ installs:
     # Gemini CLI receives the same server through TerminalMcpSync
     # (~/.alfe/runtimes/gemini-cli/mcp-servers.json, ALFE_API_KEY injected).
     gemini-cli: {}
+    # Grok Build receives the same server through TerminalMcpSync
+    # (~/.alfe/runtimes/grok-build/mcp-servers.json, ALFE_API_KEY injected).
+    grok-build: {}
 
 mcp_servers:
   - id: atlassian

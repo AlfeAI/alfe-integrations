@@ -1,6 +1,6 @@
 id: github
 name: "GitHub"
-version: 1.0.14
+version: 1.0.15
 description: Connect your agent to GitHub — manage repositories, issues, pull requests, and more (multi-account)
 license: MIT
 min_gateway_version: 1.0.0
@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [github]
 
-supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -42,13 +42,16 @@ installs:
     # Gemini CLI receives the same server through TerminalMcpSync
     # (~/.alfe/runtimes/gemini-cli/mcp-servers.json, ALFE_API_KEY injected).
     gemini-cli: {}
+    # Grok Build receives the same server through TerminalMcpSync
+    # (~/.alfe/runtimes/grok-build/mcp-servers.json, ALFE_API_KEY injected).
+    grok-build: {}
 
 # Shell access: post_install installs the GitHub CLI (best effort, Debian/
 # Ubuntu as root); post_activate logs every connected account into `gh` and
 # configures git's credential helper, recording what it owns under
 # ~/.alfe/github-cli/; post_uninstall removes only those contributions.
 # Hooks run once per integration, gated on supported_agents (openclaw, hermes,
-# claude-code, codex, gemini-cli).
+# claude-code, codex, gemini-cli, grok-build).
 hooks:
   post_install: hooks/post-install.sh
   post_activate: hooks/post_activate.mjs
