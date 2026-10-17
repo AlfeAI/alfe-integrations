@@ -1,6 +1,6 @@
 id: xero
 name: "Xero Accounting"
-version: 1.0.13
+version: 1.0.14
 description: Connect your agent to Xero — full accounting access via official Xero MCP server
 license: MIT
 min_gateway_version: 1.0.0
@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [xero]
 
-supported_agents: [openclaw, hermes, claude-code]
+supported_agents: [openclaw, hermes, claude-code, codex]
 
 author:
   name: Alfe
@@ -35,6 +35,9 @@ installs:
     # Claude Code receives the same server through ClaudeCodeMcpSync
     # (~/.claude-code/mcp-config.json, ALFE_API_KEY injected).
     claude-code: {}
+    # Codex receives the same server through CodexMcpSync
+    # (~/.alfe/runtimes/codex/mcp-servers.json, ALFE_API_KEY injected).
+    codex: {}
 
 mcp_servers:
   - id: xero
