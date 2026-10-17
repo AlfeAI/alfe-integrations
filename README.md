@@ -61,14 +61,15 @@ and empty driven-package config schemas.
    updates must target published versions.
 2. Bump the capability's semantic version when runtime or manifest behavior
    changes, including affected transitive agent-client dependencies.
-3. Merge this repository first.
-4. Update the main repository's submodule pointer to the merged `main` commit,
-   never a feature-branch commit that a squash merge will leave unreachable.
-5. Publish runtime packages through the main repository's release pipeline
-   before registry rollout. Before publishing/syncing the registry for any
-   target stage, verify every changed pin with
-   `npm view <package>@<version> version`. Never sync a pin until its package
-   and runtime dependencies are published.
+3. For a paired runtime change, merge the main Alfe PR and let its release
+   pipeline publish the projected package versions. Then merge this repository's
+   paired PR. Do not merge a pre-pinned manifest ahead of its package release.
+4. In a follow-up Alfe PR, update the submodule pointer to this repository's
+   merged `main` commit, never a feature-branch commit that a squash merge will
+   leave unreachable.
+5. Before syncing the registry for any target stage, verify every changed pin
+   with `npm view <package>@<version> version` and confirm its runtime
+   dependencies are published on npm. Never sync a pin that cannot install.
    A new entry defaults to hidden until an operator verifies the complete
    product journey and deliberately makes it public.
 

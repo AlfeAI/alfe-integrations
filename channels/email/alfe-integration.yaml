@@ -1,6 +1,6 @@
 id: email
 name: "Email"
-version: 1.0.1
+version: 1.0.3
 description: Receive email in the agent's connected Gmail or Outlook mailbox and reply in the same thread
 license: MIT
 depends_on: []
@@ -30,24 +30,31 @@ installs:
   runtimes:
     openclaw:
       plugins:
-        - package: "@alfe.ai/openclaw-email@0.1.1"
+        - package: "@alfe.ai/openclaw-email@0.2.0"
       config:
         plugins:
           entries:
             "@alfe.ai/openclaw-email":
               config:
                 channelId: "{{config.channelId}}"
+                channelGeneration: "{{config.channelGeneration}}"
                 connectionId: "{{config.connectionId}}"
 
 # Channel-driven activation (services/integrations desired-state
-# `channelDrivenConfig`) injects the activating Channel's id and its parent
-# Connection's id into these keys. They are never user-entered, so they are
-# hidden from the dashboard; the plugin refuses to start without them.
+# `channelDrivenConfig`) injects the activating Channel's id and lifecycle
+# generation plus its parent Connection's id. They are never user-entered, so
+# they are hidden from the dashboard; the plugin refuses to start without them.
 config_schema:
   - key: channelId
     type: string
     label: "Channel ID"
     description: "Alfe Channel this mailbox is bound to (set automatically)"
+    required: true
+    hidden: true
+  - key: channelGeneration
+    type: string
+    label: "Channel generation"
+    description: "Lifecycle generation of the activating Email Channel (set automatically)"
     required: true
     hidden: true
   - key: connectionId
