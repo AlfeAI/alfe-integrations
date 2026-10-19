@@ -1,6 +1,6 @@
 id: shopify
 name: "Shopify"
-version: 1.0.12
+version: 1.0.13
 description: Manage your Shopify store — products, orders (incl. fulfil, refund, cancel), customers, and inventory via the Shopify Admin GraphQL API
 icon: ./assets/icon.svg
 license: MIT
@@ -49,7 +49,7 @@ installs:
 mcp_servers:
   - id: shopify
     command: npx
-    args: ["-y", "@alfe.ai/shopify-mcp@0.2.11"]
+    args: ["-y", "@alfe.ai/shopify-mcp@0.2.16"]
     # The server fetches credentials (offline access token + shop domain) from
     # the Alfe API at startup via @alfe.ai/agent-api-client, so no env
     # interpolation is needed. The `requires_credentials` flag makes the applier
