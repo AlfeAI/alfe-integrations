@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.72
+version: 1.1.73
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -50,7 +50,7 @@ installs:
         # Folded in from the legacy `console` integration (PR 12 follow-up to
         # channels-and-credential-driven-integrations). The console plugin
         # is now a platform-baseline capability and ships with alfe.
-        - package: "@alfe.ai/openclaw-console@0.0.15"
+        - package: "@alfe.ai/openclaw-console@0.0.16"
         # Scoped org/team/project knowledge resources: search + read + propose/
         # edit shared DOCUMENTS + profile (facts primitive removed 2026-07-06 —
         # one home per fact; agents find the right doc and edit it, quick capture
