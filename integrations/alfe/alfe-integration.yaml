@@ -130,11 +130,15 @@ installs:
         # that DeepSeek V4 Pro fumbles into a malformed tool call ("Agent
         # couldn't generate a response"). The mcp-bundler already compacts our
         # MCP catalogue behind alfe_mcp_call, so OpenClaw's own search is
-        # redundant. The key is `boolean | {...}` on every pinned runtime
-        # (2026.6.11, 2026.8.1, 2026.9.5, 2026.9.7 verified in dist). Before
-        # 2026.9.7 unset already resolved to off (bar the Ollama / local-model
-        # lean defaults, which an explicit `false` also suppresses), so older
-        # agents see no change.
+        # redundant. The key is `boolean | {...}` on every runtime we run
+        # (2026.6.11, 2026.8.1, 2026.9.5, 2026.9.7, 2026.9.8 verified in dist);
+        # use the boolean form only (9.7 dropped mode "code" from the object).
+        # Before 2026.9.7 unset already resolved to off (bar the automatic
+        # Tool Search that Ollama / local-model lean defaults turn on, which an
+        # explicit `false` also suppresses), so older agents see no change.
+        # `tools.codeMode` (9.7 default "auto") is deliberately left alone: it
+        # only engages via catalog compat on native provider baseUrls, and Alfe
+        # routes every provider through the local proxy.
         tools:
           toolSearch: false
           exec:
