@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.69
+version: 1.1.70
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -278,8 +278,6 @@ installs:
                   name: "GPT-4.1"
                 - id: gpt-4.1-mini
                   name: "GPT-4.1 Mini"
-                - id: gpt-4.1-nano
-                  name: "GPT-4.1 Nano"
                 - id: gpt-5.4
                   name: "GPT-5.4"
                 - id: gpt-5.4-mini
@@ -298,10 +296,8 @@ installs:
                   name: "GPT-5.6 Terra"
                 - id: gpt-5.6-luna
                   name: "GPT-5.6 Luna"
-                - id: o3-mini
-                  name: "o3 Mini"
-                - id: o4-mini
-                  name: "o4 Mini"
+                # o3-mini / o4-mini / gpt-4.1-nano removed 2026-10-20 — shut down
+                # upstream 2026-10-23.
                 # AWS-managed Sydney models still use the Alfe loopback proxy.
                 # The server registry/boundary policy owns routing and access;
                 # these are transport capabilities, never an authorization list.
@@ -493,6 +489,8 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: gemini-4-argon
+                  name: "Gemini 4 Argon"
                 - id: gemini-3.8-flash
                   name: "Gemini 3.8 Flash"
                 - id: gemini-3.6-flash
@@ -541,6 +539,8 @@ installs:
               apiKey: "alfe-proxy"
               api: "openai-completions"
               models:
+                - id: MiniMax-M3.1-Flash
+                  name: "MiniMax M3.1 Flash"
                 - id: MiniMax-M3
                   name: "MiniMax M3"
                 - id: MiniMax-M2.7
@@ -564,6 +564,8 @@ installs:
                   name: "Mistral Small"
                 - id: codestral-latest
                   name: "Codestral"
+                - id: ministral-14b-latest
+                  name: "Ministral 14B"
                 - id: ministral-8b-latest
                   name: "Ministral 8B"
                 - id: ministral-3b-latest
@@ -583,6 +585,10 @@ installs:
                   name: "Grok 4.6"
                 - id: grok-4.5
                   name: "Grok 4.5"
+                - id: grok-4.20-0309-reasoning
+                  name: "Grok 4.20 Reasoning"
+                - id: grok-4.20-0309-non-reasoning
+                  name: "Grok 4.20 Non-Reasoning"
                 - id: grok-4.3
                   name: "Grok 4.3"
                 - id: grok-build-0.1
@@ -604,6 +610,12 @@ installs:
                   name: "GLM 5.2"
                 - id: glm-5.1
                   name: "GLM 5.1"
+                - id: glm-5
+                  name: "GLM 5"
+                - id: glm-4.7
+                  name: "GLM 4.7"
+                - id: glm-4.7-flashx
+                  name: "GLM 4.7 FlashX"
                 - id: glm-4.6
                   name: "GLM 4.6"
                 - id: glm-4.5
@@ -630,12 +642,16 @@ installs:
               models:
                 - id: qwen3.8-max
                   name: "Qwen 3.8 Max"
+                - id: qwen3.8-27b
+                  name: "Qwen 3.8 27B"
                 - id: qwen3.8-flash
                   name: "Qwen 3.8 Flash"
                 - id: qwen3.7-max
                   name: "Qwen 3.7 Max"
                 - id: qwen3.7-plus
                   name: "Qwen 3.7 Plus"
+                - id: qwen3.6-plus
+                  name: "Qwen 3.6 Plus"
                 - id: qwen3.6-flash
                   name: "Qwen 3.6 Flash"
                 - id: qwen3.5-flash
