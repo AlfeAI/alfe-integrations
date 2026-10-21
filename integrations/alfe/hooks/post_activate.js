@@ -18,9 +18,14 @@
  * `openclaw config get` redacts secret values (__OPENCLAW_REDACTED__).
  * Writes still go through `openclaw config set` to avoid clobbering.
  *
- * The token is NOT pushed to the cloud — it stays on the agent host.
- * The console service uses the gateway tunnel to reach the daemon,
- * which injects this token on the way to OpenClaw.
+ * The token is meant to stay on the agent host: the console service uses
+ * the gateway tunnel to reach the daemon, which injects this token on the
+ * way to OpenClaw. `openclaw.json` is a forced sync ignore from
+ * `@alfe.ai/openclaw-sync` 0.3.27, and the sync service refuses the path
+ * server-side. Earlier plugin versions DID upload `openclaw.json` (this
+ * token included) to the agent's private sync backup; those copies are
+ * erased by the sync secret purge (`scripts/purge-sync-secrets.ts` in the
+ * alfe repo).
  *
  * RACE-HARDENING: this runs at the tail of activation, right after the
  * applier's `openclaw config set --batch-json`. Each `config set` triggers

@@ -66,7 +66,16 @@ has, with hashes and last-sync timestamps.
 The default ignore set (which the user does **not** need to add to
 `.alfesyncignore`) excludes:
 
-- Secrets — `.env`, `.env.*`
+- Secrets, on every runtime — `.env*`, `.envrc`, `.npmrc`, `.netrc`,
+  `.pypirc`, `.git-credentials`, private keys (`*.pem`, `*.key`, `*.p8`,
+  `*.p12`, `*.pfx`, `id_rsa*`, `id_ed25519*`, …), `.ssh/`, `.aws/`,
+  `.docker/config.json`, `.kube/config`, `credentials.json`,
+  `*service-account*.json`, `*.tfstate*`, `mcp-servers.json`, `mcp-config.json`
+- OpenClaw secret state — `openclaw.json` (and every copy of it),
+  `credentials/`, `service-env/`, `identity/`, `devices/`, `secrets/`, auth
+  profiles and `models.json` under `agents/*/agent/`. These never leave the
+  machine, and the sync service refuses them too. Adding `!openclaw.json` (or
+  any other negation) to `.alfesyncignore` cannot change this.
 - VCS / build / package noise — `.git`, `node_modules`, `dist`, `.sst`, `.build`
 - Browser caches from the headless-browser plugin — Chromium HTTP / GPU /
   shader cache directories under `browser/openclaw/user-data/...`
