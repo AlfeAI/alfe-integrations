@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install Google Chrome for OpenClaw's headless browser tool.
+# Install Google Chrome for the agent's headless browser (OpenClaw's browser tool, or the Alfe host's shared browser on terminal runtimes).
 #
 # OpenClaw's browser extension uses bundled playwright-core to drive a system
 # Chrome install via CDP. The integration manifest pins
