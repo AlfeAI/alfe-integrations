@@ -1,13 +1,13 @@
 id: headless-browser
 name: "Headless Browser"
-version: 1.0.3
+version: 1.0.4
 description: Installs and configures Google Chrome for headless Linux servers
 icon: ./assets/icon.svg
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, claude-code, codex]
 
 author:
   name: Alfe
@@ -24,6 +24,12 @@ installs:
           executablePath: "/usr/bin/google-chrome-stable"
           noSandbox: true
           headless: true
+    # Terminal-runtime agents: the persistent Alfe host (@alfe.ai/remote-host)
+    # owns the shared browser and finds /usr/bin/google-chrome-stable itself,
+    # so these runtimes only need the post_install hook to install Chrome.
+    # Other terminal runtimes stay off until their MCP turn binding is verified.
+    claude-code: {}
+    codex: {}
 
 hooks:
   post_install: hooks/install.sh
