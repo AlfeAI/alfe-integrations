@@ -1,6 +1,6 @@
 id: alfe
 name: "Alfe"
-version: 1.1.70
+version: 1.1.71
 description: Core Alfe platform plugin — integration management, LLM proxy routing, chat + webhooks + console
 license: MIT
 depends_on: []
@@ -83,7 +83,10 @@ installs:
         # have been published, or installation fails "version not found".
         # 0.1.2 pulls @alfe.ai/browser 0.3.1: takeover input is dispatched in
         # order, so the first key after a click is no longer dropped.
-        - package: "@alfe.ai/openclaw-remote@0.1.2"
+        # 0.1.10 advertises SURFACES (browser:false when Chrome is missing) so
+        # the relay's presence check can refuse takeovers with no browser, and
+        # maps the takeover API's 409/503 to clear tool errors (alfe PR #580).
+        - package: "@alfe.ai/openclaw-remote@0.1.10"
       skills:
         # Folded in from the legacy `webhooks` integration's
         # `installs.runtimes.openclaw.skills` (PR 11). Lives at
