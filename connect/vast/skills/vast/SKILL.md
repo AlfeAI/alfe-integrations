@@ -70,8 +70,9 @@ The first launch creates the SSH key `~/.ssh/alfe_gpu_ed25519`. Do not delete
 or share it.
 
 Before launching, tell the user the offer, its hourly price and the
-`--max-hours` you chose, so they know the most it can cost
-(price x max hours).
+`--max-hours` you chose, and the rental estimate (price x max hours). Say
+that this is the rental only: Vast also bills data transfer separately, so
+large uploads or downloads cost extra on top.
 
 ## 3. Wait until it is running
 
@@ -107,13 +108,23 @@ scp -i ~/.ssh/alfe_gpu_ed25519 -P <port> -o ... -r ./input root@<host>:/root/
 
 ## 5. Copy results back, then ALWAYS destroy
 
+Copy first:
+
 ```bash
 scp -i ~/.ssh/alfe_gpu_ed25519 -P <port> -o ... -r root@<host>:/root/output ./output
+```
+
+Then check the copy worked (the files exist locally and match the sizes on
+the instance, e.g. compare `ls -l ./output` with
+`ssh ... 'ls -l /root/output'`). Only when the check passes:
+
+```bash
 alfe gpu destroy <instanceId>
 ```
 
-Check the copy worked (files exist and are the expected size) **before**
-destroying: destroy deletes everything on the instance. Then destroy it,
+If the check fails, do NOT destroy: copy again, or tell the user and keep the
+instance until the results are safe (it still ends at its deadline).
+Destroy deletes everything on the instance. Once results are safe, destroy it,
 even if the job failed. Destroy as soon as you no longer need the machine; do
 not keep it "just in case". Tell the user the total spend that `destroy`
 prints.
@@ -123,8 +134,10 @@ prints.
 - The user controls GPU spend with **usage limits in Alfe (Billing > Usage
   limits, service `gpu`)**. A launch that could go over a limit (price x
   `--max-hours` on top of what was already spent) is refused, and a running
-  instance is destroyed when a limit is reached. If no limit is set, the
-  user's Vast balance is the cap.
+  instance is destroyed when a limit is reached. Vast's own balance is NOT a
+  reliable cap (Vast can let accounts run negative and bills storage for
+  stopped instances), so if no `gpu` usage limit is set, suggest the user
+  adds one before you launch anything sizeable.
 - `alfe gpu show` and `alfe gpu ls` show the spend so far. It excludes Vast's
   data transfer charges, which Vast bills separately.
 - Never try to get around a limit (for example by launching many small
