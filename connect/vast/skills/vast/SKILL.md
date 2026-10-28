@@ -114,9 +114,19 @@ Copy first:
 scp -i ~/.ssh/alfe_gpu_ed25519 -P <port> -o ... -r root@<host>:/root/output ./output
 ```
 
-Then check the copy worked (the files exist locally and match the sizes on
-the instance, e.g. compare `ls -l ./output` with
-`ssh ... 'ls -l /root/output'`). Only when the check passes:
+Then check the copy worked, file by file. Compare recursive checksum lists
+from both sides (they must match exactly, same files and same hashes):
+
+```bash
+ssh ... 'cd /root/output && find . -type f -exec sha256sum {} + | sort -k2' > remote.sha
+(cd ./output && find . -type f -exec sha256sum {} + | sort -k2) > local.sha
+diff remote.sha local.sha && echo COPY_OK
+```
+
+On macOS use `shasum -a 256` instead of `sha256sum` on the local side (the
+output format is the same). If you copy again, copy into a fresh, empty local
+directory so stale or partial files from the first attempt cannot hide a
+problem. Only when the check prints `COPY_OK`:
 
 ```bash
 alfe gpu destroy <instanceId>
