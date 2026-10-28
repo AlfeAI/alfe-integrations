@@ -118,10 +118,15 @@ Then check the copy worked, file by file. Compare recursive checksum lists
 from both sides (they must match exactly, same files and same hashes):
 
 ```bash
-ssh ... 'cd /root/output && find . -type f -exec sha256sum {} + | sort -k2' > remote.sha
-(cd ./output && find . -type f -exec sha256sum {} + | sort -k2) > local.sha
-diff remote.sha local.sha && echo COPY_OK
+ssh ... 'set -e; cd /root/output; find . -type f -exec sha256sum {} + | sort -k2' > remote.sha \
+  && (set -e; cd ./output; find . -type f -exec sha256sum {} + | sort -k2) > local.sha \
+  && [ -s remote.sha ] && [ -s local.sha ] \
+  && diff remote.sha local.sha && echo COPY_OK
 ```
+
+Every step is chained with `&&` and both lists must be non-empty, so a failed
+ssh, a missing directory or an empty result can never print `COPY_OK`. Treat
+anything other than `COPY_OK` as a failed check.
 
 On macOS use `shasum -a 256` instead of `sha256sum` on the local side (the
 output format is the same). If you copy again, copy into a fresh, empty local
