@@ -39,6 +39,8 @@ enough GPU memory for the model, enough GPUs, reliability above about 98%.
 
 Offers are datacenter hosts by default. Only add `--any-host` (community
 hosts, run by individuals) if the user agrees, and never for sensitive data.
+If you picked an offer from `search --any-host`, launch it with `--any-host`
+too, or the launch fails with "That offer is no longer available".
 
 ## 2. Launch with a realistic `--max-hours`
 
@@ -61,6 +63,7 @@ alfe gpu launch --offer <offerId> --image pytorch/pytorch:latest --max-hours 2
   after a space.
 - `--disk <GB>` (default 32, 8 to 2048) sizes the disk. Datasets and model
   weights need room.
+- `--any-host` is needed when the offer came from `alfe gpu search --any-host`.
 - An agent can have at most 5 instances that are not ended at once.
 
 The first launch creates the SSH key `~/.ssh/alfe_gpu_ed25519`. Do not delete
@@ -76,8 +79,10 @@ Before launching, tell the user the offer, its hourly price and the
 alfe gpu show <instanceId>
 ```
 
-It starts as `starting`. Run `show` again every 30 seconds or so. When it
-says `running`, `show` prints the exact `ssh` and `scp` commands to use. If it
+It starts as `starting`. `launch` does not print SSH commands; run `show`
+every 30 seconds or so. When it says `running`, `show` prints the exact `ssh`
+and `scp` commands to use (and finishes setting up SSH access, so always get
+them from `show`). If it
 is still `starting` after 10 minutes, destroy it and launch a different offer.
 
 ## 4. Do the work over SSH
@@ -148,9 +153,15 @@ because it was copied up; the instance is temporary.
   smaller `--max-hours`, or ask the user to raise the limit under Billing >
   Usage limits.
 - "That offer is no longer available": run `alfe gpu search` again and pick
-  another. Offers disappear quickly.
+  another. Offers disappear quickly. If the offer came from
+  `search --any-host`, add `--any-host` to the launch.
 - "The connected Vast.ai account does not have enough credit": ask the user to
   add credit at https://cloud.vast.ai/billing/.
+- "Alfe ran out of time before it reached Vast.ai. Nothing was created": try
+  the same launch again.
+- "This instance is still launching, so it cannot be destroyed yet": wait
+  about a minute and run the same `alfe gpu destroy` again. Do not give up on
+  destroying it.
 - "No GPU instance with that ID belongs to this agent": run `alfe gpu ls`.
 - "This agent already has 5 GPU instances that are not ended": destroy the
   ones you no longer need first.
@@ -166,8 +177,9 @@ it reached `--max-hours`, a usage limit was reached, or Vast stopped it
 (usually the Vast account ran out of credit). Anything that was not copied off
 is gone; tell the user and decide together whether to relaunch.
 
-A status of `cleanup_pending` means a launch did not complete and Alfe is
-making sure the machine is destroyed on Vast. You cannot use it and you do
+A status of `cleanup_pending` (also what `destroy` reports for a launch that
+never finished) means a launch did not complete and Alfe is making sure the
+machine is destroyed on Vast. You cannot use it and you do
 not need to do anything; launch a new instance if you still need one.
 
 A status of `orphaned` means Alfe lost access to the Vast connection the
