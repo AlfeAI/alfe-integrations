@@ -118,8 +118,8 @@ Then check the copy worked, file by file. Compare recursive checksum lists
 from both sides (they must match exactly, same files and same hashes):
 
 ```bash
-ssh ... 'cd /root/output && find . -type f -exec sha256sum {} + > /tmp/alfe.sha && sort -k2 /tmp/alfe.sha' > remote.sha \
-  && (cd ./output && find . -type f -exec sha256sum {} + > ../local.unsorted && sort -k2 ../local.unsorted) > local.sha \
+ssh ... 'cd /root/output && find . -type f -exec sha256sum {} + > /tmp/alfe.sha && LC_ALL=C sort -k2 /tmp/alfe.sha' > remote.sha \
+  && (cd ./output && find . -type f -exec sha256sum {} + > ../local.unsorted && LC_ALL=C sort -k2 ../local.unsorted) > local.sha \
   && [ -s remote.sha ] && [ -s local.sha ] \
   && diff remote.sha local.sha && echo COPY_OK
 ```
