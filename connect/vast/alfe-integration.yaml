@@ -1,0 +1,61 @@
+id: vast
+name: "Vast.ai GPUs"
+version: 1.0.0
+description: Let your agent rent GPUs on Vast.ai with your own Vast API key, run work on them over SSH, and destroy them when it is done
+icon: ./assets/icon.svg
+license: MIT
+min_gateway_version: 1.0.0
+# First @alfe.ai/cli release with `alfe gpu` (0.8.4 + the minor changeset in
+# alfe PR feat/vast-byok-gpu-jobs). Re-check with `npm view` before merging.
+min_cli_version: 0.9.0
+
+# Connect providers this integration's tools resolve credentials from.
+# OR-semantics: any one satisfies. Validated against the connect provider registry.
+requires_connection: [vast]
+
+# Every runtime with a shell gets `alfe gpu`; the skill reaches openclaw,
+# claude-code and codex. Hermes' applier treats Alfe skill directories as a
+# no-op today, so a Hermes agent has the CLI but not the skill text.
+supported_agents: [openclaw, hermes, claude-code, codex]
+
+author:
+  name: Alfe
+  url: https://alfe.ai
+
+# Bring your own key: Vast bills the user's Vast account directly. Alfe
+# tracks the spend against the tenant's GPU usage limits; nothing is charged
+# to Alfe credits.
+pricing:
+  type: free
+
+features:
+  - Search Vast.ai GPU offers by model, count, price, memory and region (datacenter hosts by default)
+  - Launch an instance with a hard runtime cap (at most 24 hours); it destroys itself at the cap
+  - SSH and scp straight into the instance with an agent-only SSH key
+  - Spend counts toward the GPU usage limits you set in Billing; launches that would go over are refused
+  - Your Vast API key stays in Alfe and never reaches the agent
+
+installs:
+  runtimes:
+    openclaw:
+      skills:
+        - path: skills/vast
+    hermes:
+      skills:
+        - path: skills/vast
+    claude-code:
+      skills:
+        - path: skills/vast
+    codex:
+      skills:
+        - path: skills/vast
+
+# Local only: probes `alfe gpu --help`. Hooks run once per integration,
+# gated on supported_agents.
+hooks:
+  health_check: hooks/health.sh
+
+config_schema: []
+
+capabilities:
+  - gpu.instances
