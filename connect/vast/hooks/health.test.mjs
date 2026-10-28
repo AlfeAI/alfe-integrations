@@ -12,9 +12,28 @@ afterEach(() => { for (const path of roots.splice(0)) rmSync(path, { recursive: 
 
 /**
  * Runs health.sh with a PATH holding only bash, a fake `alfe` and (optionally)
- * fake OpenSSH tools. The fake alfe logs every call and only succeeds for
- * `gpu --help` when alfe = 'new', so the test proves health is local only.
+ * fake OpenSSH tools. The fake alfe logs every call, so the test proves health
+ * is local only. It models commander 13 (the CLI's parser): `alfe gpu --help`
+ * on a CLI WITHOUT `gpu` prints the ROOT help and still exits 0, so the hook
+ * must look for the `Usage: alfe gpu` line, not trust the exit code.
  */
+// Shapes of commander 13's real output for `alfe gpu --help` (no single
+// quotes: the fake prints them with a shell builtin, PATH has no cat).
+const GPU_HELP = `Usage: alfe gpu [options] [command]
+
+Rent GPU instances on Vast.ai through Alfe
+
+Commands:
+  search [options]  Search Vast.ai GPU offers
+  destroy [options] <instanceId>  Destroy an instance now`;
+const ROOT_HELP = `Usage: alfe [options] [command]
+
+CLI for setting up and managing Alfe AI agents
+
+Commands:
+  setup [options]  Set up an agent
+  aws              AWS commands`;
+
 function runHealth({ alfe = 'new', ssh = true } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'alfe-vast-health-'));
   roots.push(root);
@@ -25,7 +44,10 @@ function runHealth({ alfe = 'new', ssh = true } = {}) {
   if (alfe !== 'missing') {
     writeFileSync(join(bin, 'alfe'), `#!/bin/sh
 echo "$*" >> "${join(root, 'calls.log')}"
-if [ "$1" = "gpu" ] && [ "$2" = "--help" ]; then exit ${alfe === 'new' ? 0 : 1}; fi
+if [ "$1" = "gpu" ] && [ "$2" = "--help" ]; then
+  printf '%s\\n' '${alfe === 'new' ? GPU_HELP : ROOT_HELP}'
+  exit 0
+fi
 exit 1
 `, { mode: 0o755 });
   }
@@ -46,7 +68,7 @@ test('healthy when `alfe gpu --help` works; the only alfe call is the local help
   assert.equal(result.calls.trim(), 'gpu --help');
 });
 
-test('an alfe CLI without `alfe gpu` fails with an ERROR that says to update it', () => {
+test('an alfe CLI without `alfe gpu` (root help, exit 0) fails with an ERROR that says to update it', () => {
   const result = runHealth({ alfe: 'old' });
   assert.equal(result.status, 1, result.stdout);
   assert.match(result.stdout, /ERROR: this alfe CLI predates `alfe gpu`/u);

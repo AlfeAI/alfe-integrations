@@ -20,7 +20,9 @@ alfe gpu ls
 ```
 
 If an instance you started earlier is still `running` or `starting` and you no
-longer need it, destroy it now (`alfe gpu destroy <instanceId>`).
+longer need it, destroy it now (`alfe gpu destroy <instanceId>`). If one is
+`orphaned`, tell the user now: it may still be billing their Vast account and
+you cannot destroy it from here (see the end of this page).
 
 ## 1. Find an offer
 
@@ -80,8 +82,10 @@ is still `starting` after 10 minutes, destroy it and launch a different offer.
 
 ## 4. Do the work over SSH
 
-Use the commands `alfe gpu show` prints, exactly as printed (they carry the
-key, the port and a per-instance known-hosts file). The user is `root`.
+Use the commands `alfe gpu show` prints. Keep their options exactly as
+printed (they carry the key, the port and a per-instance known-hosts file).
+The `scp` paths (`./input`, `/root/output`, `./output`) are only examples:
+change them to your files, keep the options. The user is `root`.
 
 ```bash
 ssh -i ~/.ssh/alfe_gpu_ed25519 -p <port> -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=~/.ssh/alfe_gpu_known_hosts_<instanceId> root@<host> 'nvidia-smi'
@@ -131,6 +135,11 @@ because it was copied up; the instance is temporary.
 
 `alfe gpu` prints what to do. The common cases:
 
+- "The launch may have gone through. Run `alfe gpu ls` before launching
+  again.": the launch timed out or failed in a way that does not prove nothing
+  was created. Run `alfe gpu ls` first. If a new instance is there, use it (or
+  destroy it); do not launch a second one. If none is there, it is safe to
+  launch again.
 - "No Vast.ai account is connected for this agent": ask the user to add their
   Vast API key under Connections in the Alfe dashboard.
 - "Vast.ai rejected the API key connected in Alfe": ask the user to replace it

@@ -18,8 +18,10 @@ in the alfe repo.
 
 ## Health (`hooks/health.sh`)
 
-Local only: `alfe gpu --help` must exit 0 (an `alfe` that predates it, or no
-`alfe`, is an ERROR). Missing `ssh`, `scp` or `ssh-keygen` is a WARNING. Never
+Local only: `alfe gpu --help` must print a `Usage: alfe gpu` line (an `alfe`
+that predates it, or no `alfe`, is an ERROR). Do not rely on the exit code:
+commander prints the ROOT help and exits 0 for `alfe gpu --help` on a CLI
+without `gpu`, and the test's fake `alfe` models exactly that. Missing `ssh`, `scp` or `ssh-keygen` is a WARNING. Never
 call `alfe gpu ls` or any other subcommand from the hook: it would make an API
 call, and a network blip or an empty Vast balance must not mark the
 integration errored.

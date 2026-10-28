@@ -3,7 +3,8 @@
 # a network blip or an empty Vast balance never marks the integration errored.
 #
 # Fails when the alfe CLI is missing or predates `alfe gpu` (probed with
-# `alfe gpu --help`, which needs no config and makes no API call). Missing
+# `alfe gpu --help`, which needs no config and makes no API call, and must
+# print a `Usage: alfe gpu` line). Missing
 # OpenSSH client tools are a WARNING: launch needs ssh-keygen and the agent
 # needs ssh/scp to use an instance, but nothing is broken until it tries.
 set -euo pipefail
@@ -12,7 +13,11 @@ if ! command -v alfe >/dev/null 2>&1; then
   echo "ERROR: alfe CLI not found on PATH; GPU instances cannot be used until it is installed"
   exit 1
 fi
-if ! alfe gpu --help >/dev/null 2>&1; then
+# The exit code alone proves nothing: on a CLI without `gpu`, commander prints
+# the ROOT help for `alfe gpu --help` and exits 0. Require the subcommand's
+# own usage line. Pure bash matching: no grep dependency.
+help="$(alfe gpu --help 2>/dev/null || true)"
+if [[ $'\n'"$help" != *$'\n''Usage: alfe gpu '* ]]; then
   echo "ERROR: this alfe CLI predates \`alfe gpu\`; update the Alfe CLI to use GPU instances"
   exit 1
 fi
