@@ -274,8 +274,10 @@ LAUNCHER
 #!/usr/bin/env bash
 set -euo pipefail
 
-WORKING_DIR="${MAESTRO_WORKING_DIR:-${HOME}/.openclaw/workspace}"
-if [ ! -d "${WORKING_DIR}" ]; then
+# The daemon starts every runtime (OpenClaw and the terminal hosts) in the
+# agent's workspace, and MCP servers inherit that cwd.
+WORKING_DIR="${MAESTRO_WORKING_DIR:-${PWD:-}}"
+if [ -z "${WORKING_DIR}" ] || [ "${WORKING_DIR}" = "/" ] || [ ! -d "${WORKING_DIR}" ]; then
   WORKING_DIR="${HOME}"
 fi
 
