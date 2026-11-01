@@ -1,6 +1,6 @@
 id: google
 name: "Google Workspace"
-version: 1.0.13
+version: 1.1.0
 description: Connect your agent to Google Workspace — Chat, Drive, Gmail, Calendar, Sheets, Docs and more
 license: MIT
 depends_on: []
@@ -10,12 +10,11 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [google]
 
-# claude-code: Claude Code drives `gws` through its Bash tool, which only
-# MANAGED claude-code agents have (self-hosted claude-code agents run a
-# Bash-free tool allow-list). The manifest schema has no hosting field, so a
-# self-hosted claude-code agent can install this but cannot use it; the
-# alfe-google-workspace skill tells the agent to say so.
-supported_agents: [openclaw, claude-code]
+# Terminal runtimes (claude-code, codex, gemini-cli, grok-build) drive `gws`
+# through their own shell tool, which every terminal host enables, managed
+# and self-hosted. The gws-shared skill covers account selection and the
+# commands that are off-limits.
+supported_agents: [openclaw, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -70,6 +69,63 @@ installs:
     # gws-shared and gws-calendar-agenda slugs are ambiguous on ClawHub (409)
     # and gws-drive-search does not exist (404), so they are not listed here.
     claude-code:
+      skills:
+        - path: skills/gws-shared
+        - clawhub: gws-chat
+        - clawhub: gws-drive
+        - clawhub: gws-gmail
+        - clawhub: gws-calendar
+        - clawhub: gws-sheets
+        - clawhub: gws-docs
+        - clawhub: gws-slides
+        - clawhub: gws-tasks
+        - clawhub: gws-people
+        - clawhub: gws-forms
+        - clawhub: gws-keep
+        - clawhub: gws-chat-send
+        - clawhub: gws-gmail-send
+        - clawhub: gws-gmail-triage
+        - clawhub: gws-sheets-read
+        - clawhub: gws-drive-upload
+    codex:
+      skills:
+        - path: skills/gws-shared
+        - clawhub: gws-chat
+        - clawhub: gws-drive
+        - clawhub: gws-gmail
+        - clawhub: gws-calendar
+        - clawhub: gws-sheets
+        - clawhub: gws-docs
+        - clawhub: gws-slides
+        - clawhub: gws-tasks
+        - clawhub: gws-people
+        - clawhub: gws-forms
+        - clawhub: gws-keep
+        - clawhub: gws-chat-send
+        - clawhub: gws-gmail-send
+        - clawhub: gws-gmail-triage
+        - clawhub: gws-sheets-read
+        - clawhub: gws-drive-upload
+    gemini-cli:
+      skills:
+        - path: skills/gws-shared
+        - clawhub: gws-chat
+        - clawhub: gws-drive
+        - clawhub: gws-gmail
+        - clawhub: gws-calendar
+        - clawhub: gws-sheets
+        - clawhub: gws-docs
+        - clawhub: gws-slides
+        - clawhub: gws-tasks
+        - clawhub: gws-people
+        - clawhub: gws-forms
+        - clawhub: gws-keep
+        - clawhub: gws-chat-send
+        - clawhub: gws-gmail-send
+        - clawhub: gws-gmail-triage
+        - clawhub: gws-sheets-read
+        - clawhub: gws-drive-upload
+    grok-build:
       skills:
         - path: skills/gws-shared
         - clawhub: gws-chat

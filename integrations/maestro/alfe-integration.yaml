@@ -1,13 +1,13 @@
 id: maestro
 name: "Maestro Testing"
-version: 1.0.0
+version: 1.1.0
 description: Install Maestro CLI and let your agent inspect, interact with, and test mobile or web apps through Maestro's official MCP server.
 icon: ./assets/icon.svg
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
-supported_agents: [openclaw]
+supported_agents: [openclaw, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -25,6 +25,20 @@ features:
 installs:
   runtimes:
     openclaw:
+      skills:
+        - path: skills/maestro-testing
+    # Terminal runtimes receive the maestro MCP server through their McpSync
+    # writer; the skill lands in each CLI's skills dir.
+    claude-code:
+      skills:
+        - path: skills/maestro-testing
+    codex:
+      skills:
+        - path: skills/maestro-testing
+    gemini-cli:
+      skills:
+        - path: skills/maestro-testing
+    grok-build:
       skills:
         - path: skills/maestro-testing
 

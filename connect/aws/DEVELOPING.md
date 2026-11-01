@@ -180,9 +180,10 @@ WARNINGs.
 ## Runtimes
 
 Hooks run once per integration, gated on `supported_agents` (openclaw,
-hermes). Both runtimes run shell commands as the same user, so both see
-`~/.aws/config` and `alfe`. The `skills/aws` skill is declared for both;
-the Hermes applier currently treats Alfe skill directories as a no-op, so a
+hermes and the terminal runtimes claude-code, codex, gemini-cli, grok-build).
+Every runtime runs shell commands as the same user, so all see
+`~/.aws/config` and `alfe`. The `skills/aws` skill is declared for each; the
+Hermes applier currently treats Alfe skill directories as a no-op, so a
 Hermes agent gets the profiles but not the skill text until that lands.
 
 ## Profiles tied to a person's AWS session

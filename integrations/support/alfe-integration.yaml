@@ -1,13 +1,15 @@
 id: support
 name: "Remote Support"
-version: 1.0.0
+version: 1.1.0
 description: Remote diagnostics and shell access for Alfe support
 icon: ./assets/icon.svg
 license: MIT
 depends_on: []
 min_gateway_version: 1.0.0
 
-supported_agents: [openclaw]
+# The commands run in the daemon, not the agent runtime, so every runtime
+# that runs the daemon's integration manager can serve them.
+supported_agents: [openclaw, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe

@@ -1,6 +1,6 @@
 id: discord
 name: "Discord"
-version: 1.0.1
+version: 1.1.0
 description: Connect your agent to a Discord server
 license: MIT
 depends_on: []
@@ -13,10 +13,11 @@ requires_connection: [discord]
 # Locked enum from packages/integration-manifest.
 channel_type: discord
 
-# Agent runtimes this integration supports. OpenClaw-only: this channel
-# adapter has no Hermes equivalent yet. (An empty list means "all runtimes",
-# which would wrongly attempt this on Hermes — so it is pinned to openclaw.)
-supported_agents: [openclaw]
+# Agent runtimes this integration supports. The adapter is server-side and
+# replies flow back through the chat service, so any runtime that serves Alfe
+# chat (OpenClaw and every terminal-runtime host) works. Hermes is left out:
+# it has no equivalent yet, and an empty list would mean "all runtimes".
+supported_agents: [openclaw, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe

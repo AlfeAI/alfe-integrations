@@ -46,13 +46,11 @@ the skill in the same change and bumping this capability's `version`.
 
 ## Runtimes
 
-The skill is declared for openclaw, hermes, claude-code and codex. The Codex
-and Gemini appliers drop a `SKILL.md` without YAML frontmatter, so keep the
-`name`/`description` block. Hermes' applier treats Alfe skill directories as a
-no-op, so a Hermes agent gets the CLI but not the skill text until that
-lands. A self-hosted claude-code agent runs without Bash; the skill tells the
-agent to say so instead of trying. gemini-cli and grok-build are not declared
-yet: add them once their skill delivery is confirmed.
+The skill is declared for openclaw, hermes and every terminal runtime
+(claude-code, codex, gemini-cli, grok-build). The Codex and Gemini appliers
+drop a `SKILL.md` without YAML frontmatter, so keep the `name`/`description`
+block. Hermes' applier treats Alfe skill directories as a no-op, so a Hermes
+agent gets the CLI but not the skill text until that lands.
 
 ## Rollout
 

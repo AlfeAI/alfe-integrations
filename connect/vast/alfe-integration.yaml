@@ -1,6 +1,6 @@
 id: vast
 name: "Vast.ai GPUs"
-version: 1.0.0
+version: 1.1.0
 description: Let your agent rent GPUs on Vast.ai with your own Vast API key, run work on them over SSH, and destroy them when it is done
 icon: ./assets/icon.svg
 license: MIT
@@ -13,10 +13,10 @@ min_cli_version: 0.9.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [vast]
 
-# Every runtime with a shell gets `alfe gpu`; the skill reaches openclaw,
-# claude-code and codex. Hermes' applier treats Alfe skill directories as a
+# Every runtime with a shell gets `alfe gpu`; the skill reaches openclaw
+# and every terminal runtime. Hermes' applier treats Alfe skill directories as a
 # no-op today, so a Hermes agent has the CLI but not the skill text.
-supported_agents: [openclaw, hermes, claude-code, codex]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -47,6 +47,12 @@ installs:
       skills:
         - path: skills/vast
     codex:
+      skills:
+        - path: skills/vast
+    gemini-cli:
+      skills:
+        - path: skills/vast
+    grok-build:
       skills:
         - path: skills/vast
 

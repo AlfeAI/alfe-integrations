@@ -1,6 +1,6 @@
 id: aws
 name: "AWS"
-version: 1.0.2
+version: 1.1.0
 description: Give your agent the AWS CLI with one profile per connected AWS account and role, using short-lived credentials
 license: MIT
 min_gateway_version: 1.0.0
@@ -9,7 +9,7 @@ min_gateway_version: 1.0.0
 # OR-semantics: any one satisfies. Validated against the connect provider registry.
 requires_connection: [aws]
 
-supported_agents: [openclaw, hermes]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -33,6 +33,20 @@ installs:
     # Hermes shares the same shell and ~/.aws/config; its applier currently
     # treats Alfe skill directories as a no-op (see DEVELOPING.md).
     hermes:
+      skills:
+        - path: skills/aws
+    # Terminal runtimes run the same shell as the hooks' user, so they see
+    # ~/.aws/config and `alfe`; the skill lands in each CLI's skills dir.
+    claude-code:
+      skills:
+        - path: skills/aws
+    codex:
+      skills:
+        - path: skills/aws
+    gemini-cli:
+      skills:
+        - path: skills/aws
+    grok-build:
       skills:
         - path: skills/aws
 

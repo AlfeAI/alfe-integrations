@@ -1,3 +1,8 @@
+---
+name: maestro-testing
+description: Inspect, interact with, or test a mobile or web app with Maestro (CLI and MCP server). Use when the user asks to test, drive or check a mobile or web application.
+---
+
 # Maestro Testing
 
 Use Maestro when the user asks you to inspect, interact with, or test a mobile
