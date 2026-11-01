@@ -43,9 +43,9 @@ which must never run on an Alfe agent. Keep the skill's rules in step with
 `auth`, workspace-confined `--upload`/`--output`). On Claude Code these rules
 are instructions, not enforcement.
 
-Only managed claude-code agents have Bash. The manifest schema cannot express
-a hosting requirement, so a self-hosted claude-code agent can install Google
-but cannot use it; the skill tells the agent to say so.
+Every terminal-runtime host (claude-code, codex, gemini-cli, grok-build)
+enables its CLI's shell tool, managed and self-hosted, so each drives `gws`
+directly. Each runtime section lists the same skills; keep them in step.
 
 Do not list ClawHub slugs that are ambiguous (409, several publishers) or
 missing (404) in any runtime section. Neither applier guesses a publisher, and
@@ -56,14 +56,14 @@ first start by minutes. Check a slug with
 `curl -s -o /dev/null -w "%{http_code}" "https://clawhub.ai/api/v1/download?slug=<slug>"`.
 ClawHub also returns intermittent 500s; retry before treating a 500 as missing.
 
-### Accepted risk on Claude Code (2026-10-14)
+### Accepted risk on terminal runtimes (2026-10-14, extended 2026-11-02)
 
 On OpenClaw the `@alfe.ai/openclaw-google` plugin enforces the boundary in
 code: it blocks `gws auth`, requires an exact confirmation for destructive
 methods, confines `--upload`/`--output` to the workspace, and never exposes the
-credential directories to the model. On Claude Code that boundary is
-instructions only (`skills/gws-shared/SKILL.md`). The agent runs with Bash on
-its own managed VM, so it can technically read `~/.config/gws-*`, call
+credential directories to the model. On the terminal runtimes that boundary is
+instructions only (`skills/gws-shared/SKILL.md`). The agent runs with a shell on
+its own host, so it can technically read `~/.config/gws-*`, call
 destructive methods without asking, or write outside the workspace. We accept
 this because the VM, the tokens and the connected accounts all belong to the
 same agent owner, and it is the same trust model as an OpenClaw agent with

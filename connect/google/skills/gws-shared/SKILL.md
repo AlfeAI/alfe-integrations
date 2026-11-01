@@ -7,10 +7,10 @@ description: "Google Workspace (gws CLI) on Alfe: read this before running any g
 
 The user connected one or more Google accounts to Alfe. Alfe keeps each
 account's credentials in its own directory on this machine and refreshes them
-for you. You run the Google Workspace CLI, `gws`, through your Bash tool.
+for you. You run the Google Workspace CLI, `gws`, through your shell tool.
 
-If you have no Bash tool, you cannot use Google Workspace here. Tell the user
-that Google Workspace needs a managed Alfe agent and stop.
+If you have no shell tool, you cannot use Google Workspace here. Tell the user
+so and stop.
 
 ## 1. Pick the account
 

@@ -1,12 +1,12 @@
 id: connectwise-psa
 name: "ConnectWise PSA"
-version: 1.0.2
+version: 1.1.0
 description: Manage PSA companies, contacts, service tickets, and ticket notes using a scoped API-member connection
 icon: ./assets/icon.svg
 license: UNLICENSED
 min_gateway_version: 1.0.0
 requires_connection: [connectwise-psa]
-supported_agents: [openclaw, hermes]
+supported_agents: [openclaw, hermes, claude-code, codex, gemini-cli, grok-build]
 
 author:
   name: Alfe
@@ -24,6 +24,12 @@ installs:
   runtimes:
     openclaw: {}
     hermes: {}
+    # Terminal runtimes receive the same stdio MCP server through their
+    # McpSync writer (ClaudeCodeMcpSync / TerminalMcpSync, ALFE_API_KEY injected).
+    claude-code: {}
+    codex: {}
+    gemini-cli: {}
+    grok-build: {}
 
 mcp_servers:
   - id: connectwise-psa
