@@ -1,6 +1,6 @@
 id: maestro
 name: "Maestro Testing"
-version: 1.1.0
+version: 1.1.1
 description: Install Maestro CLI and let your agent inspect, interact with, and test mobile or web apps through Maestro's official MCP server.
 icon: ./assets/icon.svg
 license: MIT
