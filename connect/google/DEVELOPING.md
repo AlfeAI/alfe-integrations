@@ -48,9 +48,13 @@ a hosting requirement, so a self-hosted claude-code agent can install Google
 but cannot use it; the skill tells the agent to say so.
 
 Do not list ClawHub slugs that are ambiguous (409, several publishers) or
-missing (404) in the `claude-code` section: the claude-code applier never
-guesses a publisher. Check a slug with
+missing (404) in any runtime section. Neither applier guesses a publisher, and
+a slug cannot carry one (`@publisher/slug` fails the applier's path-segment
+check). On OpenClaw each failed `openclaw skills install` costs up to its 60 s
+timeout and runs inside the first reconcile, so bad slugs delay a new agent's
+first start by minutes. Check a slug with
 `curl -s -o /dev/null -w "%{http_code}" "https://clawhub.ai/api/v1/download?slug=<slug>"`.
+ClawHub also returns intermittent 500s; retry before treating a 500 as missing.
 
 ### Accepted risk on Claude Code (2026-10-14)
 
